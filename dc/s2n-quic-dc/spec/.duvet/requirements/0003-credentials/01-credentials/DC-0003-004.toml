@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/01-credentials.md#DC-0003-004"
+
+[[spec]]
+level = "MUST"
+quote = "The most significant bit of the first byte of a path secret identifier MUST be set where the server holds the secret and clear where the client holds it."

@@ -1,0 +1,46 @@
+[section]
+anchor = "ciphersuites"
+title = "Ciphersuites"
+problem = "Two endpoints that disagree on the algorithms of a path derive different keys and can't open each other's packets, and an endpoint that guesses an unknown suite could accept a weaker one than its peer meant."
+motivation = "A fixed list of ciphersuites, each named by one byte, lets both endpoints read every algorithm of a path from one value."
+prose = "A ciphersuite sets the AEAD algorithm that protects application data, the hash function of the key derivation and the hash function of the message authentication code that protects control packets. Each path secret is bound to one ciphersuite and holds a 32-byte export secret, from which every key of the path is derived."
+
+[[requirement]]
+id = "DC-0003-007"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Ciphersuite 0 MUST use AES-128-GCM for packet protection, HKDF with SHA-256 for key derivation and HMAC with SHA-256 for control authentication."
+rationale = "Both endpoints read every algorithm of a path from one value, so they derive and use the same keys."
+
+[[requirement]]
+id = "DC-0003-008"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Ciphersuite 1 MUST use AES-256-GCM for packet protection, HKDF with SHA-384 for key derivation and HMAC with SHA-384 for control authentication."
+rationale = "A suite of larger keys and a longer hash serves deployments that need a higher security margin."
+
+[[requirement]]
+id = "DC-0003-009"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST refuse a ciphersuite value other than 0 and 1."
+rationale = "An unknown value leaves the algorithms unknown, and a guess would make the endpoints derive different keys."
+
+[[requirement]]
+id = "DC-0003-010"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The key length of a ciphersuite MUST be 16 bytes for ciphersuite 0 and 32 bytes for ciphersuite 1."
+rationale = "The key length is the AEAD key length of the suite, and the layout of every derivation's output depends on it."
+
+[[requirement]]
+id = "DC-0003-011"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Each path secret MUST hold an export secret of 32 bytes and the one ciphersuite it was established with."
+rationale = "Every key of a path is derived from its export secret under its ciphersuite, so a secret without either can't produce keys both endpoints agree on."

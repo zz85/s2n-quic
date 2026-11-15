@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/04-protection.md#DC-0003-049"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint that runs a stream without control keys MUST refuse each control-tag operation on that stream, verifying a control tag and making a retransmission tag alike."

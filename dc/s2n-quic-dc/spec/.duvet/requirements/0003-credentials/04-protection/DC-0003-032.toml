@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/04-protection.md#DC-0003-032"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST compare a control tag with the tag it computes in time that doesn't depend on the bytes in which they differ."

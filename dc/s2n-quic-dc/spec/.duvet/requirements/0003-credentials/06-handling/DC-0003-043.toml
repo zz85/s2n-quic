@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/06-handling.md#DC-0003-043"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST overwrite a path secret's export secret with zeros when it drops the path secret."

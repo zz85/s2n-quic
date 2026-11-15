@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/05-key-update.md#DC-0003-040"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST keep an opening key for each of the two key phases."

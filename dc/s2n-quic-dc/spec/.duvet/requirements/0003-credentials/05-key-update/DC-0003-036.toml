@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/05-key-update.md#DC-0003-036"
+
+[[spec]]
+level = "MUST"
+quote = "A key update MUST expand the current key-update secret, used as the pseudorandom key, with an info input of the output length followed by the label `ku`."

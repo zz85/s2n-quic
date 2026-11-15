@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/03-derivation.md#DC-0003-017"
+
+[[spec]]
+level = "MUST"
+quote = "Where a derivation yields a client's value and a server's value, the client MUST seal with the client's value and open with the server's value."

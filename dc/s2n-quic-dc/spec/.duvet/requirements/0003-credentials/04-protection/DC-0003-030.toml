@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/04-protection.md#DC-0003-030"
+
+[[spec]]
+level = "MUST"
+quote = "The tag of a control packet MUST be the HMAC of its header under the sender's control key, truncated to the tag length of its packet type."

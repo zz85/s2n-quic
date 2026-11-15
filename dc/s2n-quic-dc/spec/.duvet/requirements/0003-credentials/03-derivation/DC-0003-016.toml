@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/03-derivation.md#DC-0003-016"
+
+[[spec]]
+level = "MUST"
+quote = "The output of a bidirectional stream's application key derivation MUST be read, in order, as the client's key-update secret, the server's key-update secret, the client's key, the server's key, the client's 12-byte IV and the server's 12-byte IV, each secret and key of the ciphersuite's key length."

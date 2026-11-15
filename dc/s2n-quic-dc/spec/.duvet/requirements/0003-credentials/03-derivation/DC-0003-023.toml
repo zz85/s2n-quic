@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/03-derivation.md#DC-0003-023"
+
+[[spec]]
+level = "MUST"
+quote = "The info input of a secret-control key MUST be the output length, the label `ctl` and the role label of the sending endpoint, without a key identifier."

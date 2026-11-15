@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/05-key-update.md#DC-0003-038"
+
+[[spec]]
+level = "MUST"
+quote = "A sender MUST update its sealing key once it has sealed 2^23 - 2^16 packets with it."

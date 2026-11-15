@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/05-key-update.md#DC-0003-050"
+
+[[spec]]
+level = "MUST"
+quote = "A sender MUST switch its key phase to the other value at each key update."

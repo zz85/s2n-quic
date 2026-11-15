@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/03-derivation.md#DC-0003-024"
+
+[[spec]]
+level = "MUST"
+quote = "The output of a secret-control key derivation MUST be one HMAC key as long as the block length of the ciphersuite's hash function."

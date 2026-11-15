@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/02-ciphersuites.md#DC-0003-007"
+
+[[spec]]
+level = "MUST"
+quote = "Ciphersuite 0 MUST use AES-128-GCM for packet protection, HKDF with SHA-256 for key derivation and HMAC with SHA-256 for control authentication."

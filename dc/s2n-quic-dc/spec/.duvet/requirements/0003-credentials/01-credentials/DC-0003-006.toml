@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/01-credentials.md#DC-0003-006"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST derive each path secret identifier from its path secret, as the key derivation section states."

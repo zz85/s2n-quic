@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/01-credentials.md#DC-0003-001"
+
+[[spec]]
+level = "MUST"
+quote = "A credential MUST consist of a 16-byte path secret identifier followed by a key identifier."

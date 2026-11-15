@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/04-protection.md#DC-0003-034"
+
+[[spec]]
+level = "MUST"
+quote = "The tag of a retransmitted stream control packet MUST be its original tag combined by exclusive-or with the leading bytes of the HMAC, under the same control key, of the original packet number followed by the retransmission's packet number, each as an 8-byte big-endian integer."

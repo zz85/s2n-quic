@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/03-derivation.md#DC-0003-013"
+
+[[spec]]
+level = "MUST"
+quote = "The info input of each derivation other than the path secret identifier's MUST begin with the length of the derivation's output in bytes, as a 2-byte big-endian integer."

@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/04-protection.md#DC-0003-033"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST refuse a control tag whose length differs from the tag length of its packet type."

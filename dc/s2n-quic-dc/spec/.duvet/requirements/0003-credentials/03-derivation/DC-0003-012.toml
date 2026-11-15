@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/03-derivation.md#DC-0003-012"
+
+[[spec]]
+level = "MUST"
+quote = "Each key derivation MUST use the HKDF-Expand function of the path's ciphersuite with the export secret as its pseudorandom key, without an HKDF-Extract step."

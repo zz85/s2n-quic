@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/01-credentials.md#DC-0003-002"
+
+[[spec]]
+level = "MUST"
+quote = "A credential MUST encode its key identifier as a QUIC variable-length integer, whose value is at most 2^62-1."

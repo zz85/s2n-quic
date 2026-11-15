@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/03-derivation.md#DC-0003-014"
+
+[[spec]]
+level = "MUST"
+quote = "A path secret identifier MUST be the 16-byte output of an expansion whose info input is the single byte 16 followed by the label `pid`, with its role bit then set as the credentials section states."

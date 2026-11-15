@@ -1,0 +1,94 @@
+[section]
+anchor = "protection"
+title = "Packet protection and authentication"
+problem = "A receiver has to know that a packet came from the holder of the path secret and wasn't changed, and a nonce used twice under one key would break both the confidentiality and the integrity of AES-GCM."
+motivation = "A nonce built from the packet number, a header bound as associated data, and a truncated MAC compared in constant time give each packet integrity, and its payload confidentiality, without a repeated nonce or a timing side channel."
+prose = "Application data is sealed with the ciphersuite's AEAD algorithm. Control packets carry no secret payload and are authenticated with HMAC instead. A retransmitted control packet keeps its original tag, adjusted by a value derived from both of its packet numbers."
+
+[[requirement]]
+id = "DC-0003-026"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The AEAD nonce of a packet MUST be its key's 12-byte IV with the last 8 bytes combined by exclusive-or with the packet number as an 8-byte big-endian integer."
+rationale = "A distinct packet number gives a distinct nonce under one key, and the secret IV keeps the nonce from being predictable from the packet number alone."
+
+[[requirement]]
+id = "DC-0003-027"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The AEAD associated data of a packet MUST be the packet's header."
+rationale = "The tag then covers the header, so a change to any header field makes the packet fail to open."
+
+[[requirement]]
+id = "DC-0003-028"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The AEAD tag of a packet MUST be 16 bytes."
+rationale = "A 16-byte tag is the full tag of AES-GCM and gives the integrity margin that the key update limit assumes."
+
+[[requirement]]
+id = "DC-0003-029"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A sender MUST NOT seal two packets with the same key and the same packet number."
+rationale = "A repeated nonce under AES-GCM discloses the exclusive-or of the two plaintexts and lets an attacker forge tags."
+
+[[requirement]]
+id = "DC-0003-030"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The tag of a control packet MUST be the HMAC of its header under the sender's control key, truncated to the tag length of its packet type."
+rationale = "A control packet carries no secret payload and needs integrity alone, and a truncated HMAC is shorter on the wire than the whole output."
+
+[[requirement]]
+id = "DC-0003-031"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The tag length of a stream control packet MUST be 16 bytes."
+rationale = "A 16-byte tag is well above the 80 bits the HMAC specification sets as the least length of a truncated tag, and one length for both ciphersuites keeps the stream control packet's layout the same."
+
+[[requirement]]
+id = "DC-0003-032"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A receiver MUST compare a control tag with the tag it computes in time that doesn't depend on the bytes in which they differ."
+rationale = "A comparison that stops at the first difference tells an attacker how many leading bytes of a forged tag are right."
+
+[[requirement]]
+id = "DC-0003-033"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A receiver MUST refuse a control tag whose length differs from the tag length of its packet type."
+rationale = "A shorter tag is easier to forge, so the receiver checks the length before it compares the bytes."
+
+[[requirement]]
+id = "DC-0003-034"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The tag of a retransmitted stream control packet MUST be its original tag combined by exclusive-or with the leading bytes of the HMAC, under the same control key, of the original packet number followed by the retransmission's packet number, each as an 8-byte big-endian integer."
+rationale = "The sender adjusts the original tag without keeping the original packet, and the receiver can tell a retransmission from a replay of the original."
+
+[[requirement]]
+id = "DC-0003-035"
+level = "MAY"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MAY run a stream without control keys over a transport that delivers packets reliably and in order."
+rationale = "A reliable transport already detects loss and corruption and retransmits on its own, so control tags would add work without adding protection."
+
+[[requirement]]
+id = "DC-0003-049"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint that runs a stream without control keys MUST refuse each control-tag operation on that stream, verifying a control tag and making a retransmission tag alike."
+rationale = "Without control keys no tag can be checked, so a refusal keeps an unchecked control packet from being taken as authenticated."

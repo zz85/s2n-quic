@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/04-protection.md#DC-0003-029"
+
+[[spec]]
+level = "MUST"
+quote = "A sender MUST NOT seal two packets with the same key and the same packet number."
