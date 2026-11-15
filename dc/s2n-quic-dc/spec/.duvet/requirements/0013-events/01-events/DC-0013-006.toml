@@ -1,0 +1,5 @@
+target = "rendered/0013-events/01-events.md#DC-0013-006"
+
+[[spec]]
+level = "SHOULD"
+quote = "The endpoint SHOULD report an event without waiting for the subscriber to write or send anything."

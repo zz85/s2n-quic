@@ -1,0 +1,5 @@
+target = "rendered/0013-events/02-catalog.md#DC-0013-013"
+
+[[spec]]
+level = "MUST"
+quote = "The path secret map MUST report an event for each key it accepts, with the gap between that key and the highest key it accepted before, and how far its window of accepted keys moved forward."

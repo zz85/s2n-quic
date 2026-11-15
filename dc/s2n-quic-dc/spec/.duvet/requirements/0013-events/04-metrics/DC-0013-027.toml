@@ -1,0 +1,5 @@
+target = "rendered/0013-events/04-metrics.md#DC-0013-027"
+
+[[spec]]
+level = "SHOULD"
+quote = "The name of a counter that counts a failure SHOULD mark it as a failure, so that a reader tells it apart from a count of successes."

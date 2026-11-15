@@ -1,0 +1,5 @@
+target = "rendered/0013-events/01-events.md#DC-0013-001"
+
+[[spec]]
+level = "MUST"
+quote = "The endpoint MUST deliver each event it reports to the subscriber that the application supplied when it created the endpoint."

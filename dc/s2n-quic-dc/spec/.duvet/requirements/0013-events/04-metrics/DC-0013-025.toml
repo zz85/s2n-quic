@@ -1,0 +1,5 @@
+target = "rendered/0013-events/04-metrics.md#DC-0013-025"
+
+[[spec]]
+level = "MUST"
+quote = "Recording a value to a metric MUST NOT wait for a lock that another processor holds, except for a single counter increment larger than the per-processor record holds."

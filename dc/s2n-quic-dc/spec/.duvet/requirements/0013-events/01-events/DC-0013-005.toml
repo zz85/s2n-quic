@@ -1,0 +1,5 @@
+target = "rendered/0013-events/01-events.md#DC-0013-005"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint created without a subscriber MUST use a subscriber that discards every event."

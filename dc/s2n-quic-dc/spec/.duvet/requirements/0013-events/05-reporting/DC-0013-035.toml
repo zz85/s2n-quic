@@ -1,0 +1,5 @@
+target = "rendered/0013-events/05-reporting.md#DC-0013-035"
+
+[[spec]]
+level = "MAY"
+quote = "An application MAY turn an exporter off and on while the endpoint runs."

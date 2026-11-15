@@ -1,0 +1,5 @@
+target = "rendered/0013-events/06-endpoint-counters.md#DC-0013-039"
+
+[[spec]]
+level = "MUST"
+quote = "The receive path MUST count each datagram by its outcome: dispatched to a stream, dispatched to a control queue, refused because no acceptor was available, the acceptor was closed or no free slot was available, or dropped for an unallocated, half-closed, stale or future binding."

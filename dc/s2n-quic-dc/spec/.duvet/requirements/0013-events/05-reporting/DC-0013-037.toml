@@ -1,0 +1,5 @@
+target = "rendered/0013-events/05-reporting.md#DC-0013-037"
+
+[[spec]]
+level = "MAY"
+quote = "The system MAY fold recorded values into the aggregate between reports, as long as a later report still includes every value recorded."

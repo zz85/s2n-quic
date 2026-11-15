@@ -1,0 +1,5 @@
+target = "rendered/0013-events/05-reporting.md#DC-0013-032"
+
+[[spec]]
+level = "MUST"
+quote = "A report MUST pass one snapshot to every exporter it feeds, so that each exporter receives the same values."

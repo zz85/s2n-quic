@@ -1,0 +1,5 @@
+number = 13
+title = "Events, metrics and tracing"
+area = "dc"
+abstract = "What the endpoint reports about its own work: the events it delivers to the application, the metrics it records and how they are reported to exporters, the counters of its receive path, its diagnostic logging, and the secrets that none of these may show."
+retired = []

@@ -1,0 +1,5 @@
+target = "rendered/0013-events/02-catalog.md#DC-0013-008"
+
+[[spec]]
+level = "MUST"
+quote = "The endpoint MUST report an event for each datagram it transmits and each datagram it receives, with the size of its buffer in bytes, its segment size in bytes and its segment count."

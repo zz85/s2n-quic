@@ -1,0 +1,5 @@
+target = "rendered/0013-events/05-reporting.md#DC-0013-038"
+
+[[spec]]
+level = "MUST"
+quote = "A registry that is closed MUST stop reporting its metrics."

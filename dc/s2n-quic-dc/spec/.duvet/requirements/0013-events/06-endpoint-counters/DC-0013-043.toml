@@ -1,0 +1,5 @@
+target = "rendered/0013-events/06-endpoint-counters.md#DC-0013-043"
+
+[[spec]]
+level = "MUST"
+quote = "The receive path MUST record the time it spends looking up the peer, decrypting and dispatching each datagram."

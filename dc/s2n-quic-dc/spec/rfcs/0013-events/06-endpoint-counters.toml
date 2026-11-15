@@ -1,0 +1,62 @@
+[section]
+anchor = "endpoint-counters"
+title = "Endpoint counters"
+problem = "Operators need to see quickly where datagrams go on the receive path and why some are dropped, without an event for each datagram."
+motivation = "Counters for each outcome and timers for each stage of the receive path show drops and slow stages at a cost the data path can carry at all times."
+prose = "The receive path counts each datagram by what happened to it, each failure by its cause, each frame by its type and each datagram by its congestion marking, and it times each stage of its work."
+
+[[requirement]]
+id = "DC-0013-039"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The receive path MUST count each datagram by its outcome: dispatched to a stream, dispatched to a control queue, refused because no acceptor was available, the acceptor was closed or no free slot was available, or dropped for an unallocated, half-closed, stale or future binding."
+rationale = "The outcomes add up to the datagrams received, so a drop shows up as a count with its reason."
+
+[[requirement]]
+id = "DC-0013-040"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The receive path MUST count each processing failure by its cause: an unknown peer, a decryption failure, a duplicate packet, a stale key or a missing sender identifier."
+rationale = "Each cause has a different fix, from a missing secret to an attack, so a single failure count wouldn't say which to apply."
+
+[[requirement]]
+id = "DC-0013-041"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The receive path MUST count received datagrams by their explicit congestion notification marking."
+rationale = "The markings show congestion on the network before it causes loss."
+
+[[requirement]]
+id = "DC-0013-042"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The receive path MUST count each frame it receives by the frame's type."
+rationale = "The mix of frame types shows what peers ask of the endpoint, such as how much of the traffic is data and how much is acknowledgment."
+
+[[requirement]]
+id = "DC-0013-043"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The receive path MUST record the time it spends looking up the peer, decrypting and dispatching each datagram."
+rationale = "The time of each stage shows which one limits the receive rate."
+
+[[requirement]]
+id = "DC-0013-044"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "The receive path SHOULD count the hits and the misses of its peer cache."
+rationale = "A low hit rate explains a slow peer lookup."
+
+[[requirement]]
+id = "DC-0013-048"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The receive path MUST record the size and the frame count of each datagram it receives."
+rationale = "The size and the frame count show how fully senders fill their datagrams."

@@ -1,0 +1,78 @@
+[section]
+anchor = "metrics"
+title = "Metrics"
+problem = "Events are too many to keep for every datagram, so an operator needs counts and distributions that are cheap to record and small to store."
+motivation = "A fixed set of metric kinds and units lets every exporter represent each metric the same way, and recording without contention keeps the cost of a metric low on the data path."
+prose = "A metric has a name, an optional variant that splits it into parts sharing that name, a kind and a unit. A counter adds counts. A gauge holds the latest value. A boolean counter counts true outcomes and false outcomes apart. A summary records a distribution of values in buckets. Each metric is registered once, before any value is recorded to it, and recording is cheap enough for the data path."
+
+[[requirement]]
+id = "DC-0013-021"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Each metric MUST be registered with a name, a kind, a unit and an optional variant before any value is recorded to it."
+rationale = "Registration fixes how a metric is reported, so that recording a value does nothing but record it."
+
+[[requirement]]
+id = "DC-0013-022"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The kind of each metric MUST be one of a counter, a gauge, a boolean counter and a summary."
+rationale = "Every exporter can represent each of these kinds, so every metric reaches every exporter."
+
+[[requirement]]
+id = "DC-0013-023"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The unit of each metric MUST be one of count, microseconds, bytes, seconds and percent."
+rationale = "A fixed set of units lets readers compare metrics and lets exporters label each value."
+
+[[requirement]]
+id = "DC-0013-024"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A summary MUST place each value it records in buckets whose relative error is the same at every magnitude."
+rationale = "Latencies and sizes span many orders of magnitude, and a fixed relative error keeps both small and large values readable in one summary."
+
+[[requirement]]
+id = "DC-0013-025"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "Recording a value to a metric MUST NOT wait for a lock that another processor holds, except for a single counter increment larger than the per-processor record holds."
+rationale = "Metrics are recorded on the data path of every processor, where contention for a shared lock would slow every datagram; an increment too large for the per-processor record is rare, so taking the shared lock for it costs little."
+
+[[requirement]]
+id = "DC-0013-026"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The counters registered for the variants of one enumerated outcome MUST share one metric name and differ by variant, with one variant that counts each value the enumeration doesn't list."
+rationale = "A shared name lets a reader add the outcomes into a total, and the extra variant keeps an outcome added to the enumeration later from going uncounted."
+
+[[requirement]]
+id = "DC-0013-027"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "The name of a counter that counts a failure SHOULD mark it as a failure, so that a reader tells it apart from a count of successes."
+rationale = "Readers scan for failures first, and a mark in the name finds them without a list of which counters are failures; the count of datagrams dropped for a stale binding is an exception today, since drops of that kind are expected after a binding moves on."
+
+[[requirement]]
+id = "DC-0013-028"
+level = "MAY"
+polarity = "required"
+binds_to = "system"
+statement = "A handle to the registry MAY add a prefix to the name of each metric registered through it, leaving the variant as it is."
+rationale = "A prefix keeps the metrics of two components apart in one registry without changing how either splits its metrics."
+
+[[requirement]]
+id = "DC-0013-029"
+level = "MAY"
+polarity = "required"
+binds_to = "system"
+statement = "The system MAY report metrics of the scheduler that runs the endpoint's tasks, such as the depth of its queues, sampled at an interval the application sets."
+rationale = "A scheduler that falls behind delays every datagram, and its queue depths show it before the delays do."

@@ -1,0 +1,5 @@
+target = "rendered/0013-events/02-catalog.md#DC-0013-010"
+
+[[spec]]
+level = "MUST"
+quote = "The endpoint MUST report an event when the confirmation of a handshake or a path MTU probe times out, with the peer's address."

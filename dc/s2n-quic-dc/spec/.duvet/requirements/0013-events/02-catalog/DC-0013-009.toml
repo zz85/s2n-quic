@@ -1,0 +1,5 @@
+target = "rendered/0013-events/02-catalog.md#DC-0013-009"
+
+[[spec]]
+level = "MUST"
+quote = "The endpoint MUST report an event for each transmission and each receive operation that fails, with the error it met."

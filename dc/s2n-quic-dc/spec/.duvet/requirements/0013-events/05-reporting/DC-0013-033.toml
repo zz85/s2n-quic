@@ -1,0 +1,5 @@
+target = "rendered/0013-events/05-reporting.md#DC-0013-033"
+
+[[spec]]
+level = "MUST"
+quote = "A report MUST pass each exporter the value of each metric as a number rather than as text, with its name, its variant, its kind and its unit."

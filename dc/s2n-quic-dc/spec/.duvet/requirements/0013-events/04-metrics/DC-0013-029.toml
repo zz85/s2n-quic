@@ -1,0 +1,5 @@
+target = "rendered/0013-events/04-metrics.md#DC-0013-029"
+
+[[spec]]
+level = "MAY"
+quote = "The system MAY report metrics of the scheduler that runs the endpoint's tasks, such as the depth of its queues, sampled at an interval the application sets."

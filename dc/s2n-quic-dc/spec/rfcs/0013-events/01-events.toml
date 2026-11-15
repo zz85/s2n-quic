@@ -1,0 +1,62 @@
+[section]
+anchor = "events"
+title = "Events"
+problem = "Without a record of what an endpoint does, an operator can't tell why a connection failed, why a datagram was dropped or why a peer was refused."
+motivation = "Events report each thing that happens in the endpoint as it happens, so that the application decides what to keep, count or forward."
+prose = "The endpoint reports what it does as events. Each event names one thing that happened, such as a datagram sent, a key accepted or a handshake confirmation that timed out. An event carries the time it happened and its subject: the endpoint as a whole, or one connection, named by an identifier that is unique within the process. The events of a stream's key updates carry the identifier 0, which no connection is assigned. The application supplies a subscriber when it creates the endpoint, and the subscriber receives every event. An application that supplies none gets a subscriber that discards them."
+
+[[requirement]]
+id = "DC-0013-001"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The endpoint MUST deliver each event it reports to the subscriber that the application supplied when it created the endpoint."
+rationale = "The application owns the decision of what to keep from the events, so every event reaches its subscriber."
+
+[[requirement]]
+id = "DC-0013-002"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Each event MUST carry the time at which it happened and its subject, which is either the endpoint as a whole or one connection."
+rationale = "A reader orders events by their time and groups them by connection, which needs both on every event."
+
+[[requirement]]
+id = "DC-0013-003"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Each identifier the system assigns to a connection MUST differ from every identifier it assigned earlier in the same process, counting up from 1."
+rationale = "An identifier that is never reused within a process lets a reader join the events of one connection without mixing in another, and the order of identifiers shows the order connections began."
+
+[[requirement]]
+id = "DC-0013-004"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "The endpoint MUST NOT change its protocol behavior according to whether a subscriber is present or what the subscriber does with an event."
+rationale = "Observing the endpoint can't alter what is observed, or a failure seen with one subscriber would differ from the failure seen with another."
+
+[[requirement]]
+id = "DC-0013-005"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint created without a subscriber MUST use a subscriber that discards every event."
+rationale = "An application that doesn't want events pays only for reporting them, and the endpoint keeps a single path for every event."
+
+[[requirement]]
+id = "DC-0013-006"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "The endpoint SHOULD report an event without waiting for the subscriber to write or send anything."
+rationale = "Events are reported on the data path, where a wait on output would slow every datagram."
+
+[[requirement]]
+id = "DC-0013-049"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An event of a stream's key update MUST carry the connection identifier 0, which the system assigns to no connection."
+rationale = "A stream updates its keys without a handle on its connection's identifier, and a reader who knows that 0 names no connection doesn't join these events to the wrong one."

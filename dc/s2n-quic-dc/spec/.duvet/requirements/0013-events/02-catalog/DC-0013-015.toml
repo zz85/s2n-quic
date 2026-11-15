@@ -1,0 +1,5 @@
+target = "rendered/0013-events/02-catalog.md#DC-0013-015"
+
+[[spec]]
+level = "MUST"
+quote = "The path secret map MUST report an event for each lookup in its address cache and its identifier cache, saying whether the lookup found an entry and the age of the entry it found."

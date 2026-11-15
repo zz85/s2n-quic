@@ -1,0 +1,94 @@
+[section]
+anchor = "catalog"
+title = "Event catalog"
+problem = "An event set that leaves out a step of the endpoint's work hides exactly the failures an operator needs to find."
+motivation = "Naming the events each part of the endpoint reports lets an operator rely on finding them, and tells an implementer what to report."
+prose = "The endpoint reports events for its own life, for each datagram it sends and receives, for the path secret map that holds the secrets it shares with each peer, and for the keys of each stream. A measure on an event, such as a size, a count, a duration or a share of capacity, carries its unit."
+
+[[requirement]]
+id = "DC-0013-007"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The endpoint MUST report an event when it initializes, with each address it accepts connections on and handshakes on, and whether it serves datagram transport and stream transport."
+rationale = "The first event of an endpoint states how it was set up, which every later event is read against."
+
+[[requirement]]
+id = "DC-0013-008"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The endpoint MUST report an event for each datagram it transmits and each datagram it receives, with the size of its buffer in bytes, its segment size in bytes and its segment count."
+rationale = "Datagram sizes and segmentation explain throughput and the load each transmission puts on the network."
+
+[[requirement]]
+id = "DC-0013-009"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The endpoint MUST report an event for each transmission and each receive operation that fails, with the error it met."
+rationale = "A failed operation is otherwise visible only as missing traffic, which doesn't say where it failed."
+
+[[requirement]]
+id = "DC-0013-010"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The endpoint MUST report an event when the confirmation of a handshake or a path MTU probe times out, with the peer's address."
+rationale = "These timeouts end the work with a peer without any message from it, so the event and its address are the only record of which peer stopped answering."
+
+[[requirement]]
+id = "DC-0013-011"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The path secret map MUST report an event for each entry it inserts, makes ready, replaces or evicts, with the age of each evicted entry."
+rationale = "The life of each entry shows whether the map holds the peers it needs, and the age at eviction shows whether its capacity is too small."
+
+[[requirement]]
+id = "DC-0013-012"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The path secret map MUST report an event for each unknown path secret packet, replay detected packet and stale key packet that it sends, receives, accepts, rejects or drops."
+rationale = "These control packets are how two peers recover a lost or stale secret, and each step of that recovery can fail."
+
+[[requirement]]
+id = "DC-0013-013"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The path secret map MUST report an event for each key it accepts, with the gap between that key and the highest key it accepted before, and how far its window of accepted keys moved forward."
+rationale = "The gap and the movement of the window show reordering and loss between peers, which decide whether replay protection rejects valid packets."
+
+[[requirement]]
+id = "DC-0013-014"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The path secret map MUST report an event for each replay it detects, saying whether the replay is certain or only possible."
+rationale = "A certain replay points at an attacker or a fault, while a possible one can come from a window that is too small, and an operator acts differently on each."
+
+[[requirement]]
+id = "DC-0013-015"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The path secret map MUST report an event for each lookup in its address cache and its identifier cache, saying whether the lookup found an entry and the age of the entry it found."
+rationale = "The hit rate and the age of the entries found show whether the caches hold the peers in use."
+
+[[requirement]]
+id = "DC-0013-016"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The path secret map MUST report an event for each cleaning cycle, with the share of its capacity in use and the time the cycle took."
+rationale = "Cleaning competes with lookups for the map, so its duration and the map's fill show its cost and its need."
+
+[[requirement]]
+id = "DC-0013-017"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A stream MUST report an event each time it updates its read key or its write key, with the new key phase."
+rationale = "Key updates change which packets a peer can read, so a decryption failure is read against the key phase in force."

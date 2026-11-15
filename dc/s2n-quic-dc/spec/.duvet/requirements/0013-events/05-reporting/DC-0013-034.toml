@@ -1,0 +1,5 @@
+target = "rendered/0013-events/05-reporting.md#DC-0013-034"
+
+[[spec]]
+level = "MUST"
+quote = "Whether a report emits a metric with no recorded value as a zero MUST follow the report's setting, unless the metric was registered to always emit a zero or to always drop one."

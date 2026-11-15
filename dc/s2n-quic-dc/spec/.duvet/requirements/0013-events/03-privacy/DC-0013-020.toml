@@ -1,0 +1,5 @@
+target = "rendered/0013-events/03-privacy.md#DC-0013-020"
+
+[[spec]]
+level = "MAY"
+quote = "An event delivered to the subscriber MAY carry the identifier of the credential a connection uses."

@@ -1,0 +1,5 @@
+target = "rendered/0013-events/04-metrics.md#DC-0013-024"
+
+[[spec]]
+level = "MUST"
+quote = "A summary MUST place each value it records in buckets whose relative error is the same at every magnitude."

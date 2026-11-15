@@ -1,0 +1,5 @@
+target = "rendered/0013-events/05-reporting.md#DC-0013-030"
+
+[[spec]]
+level = "MUST"
+quote = "A report MUST read each metric's values recorded since the previous report and reset them, so that each recorded value is reported exactly once."

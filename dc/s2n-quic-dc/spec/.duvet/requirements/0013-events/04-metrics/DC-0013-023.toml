@@ -1,0 +1,5 @@
+target = "rendered/0013-events/04-metrics.md#DC-0013-023"
+
+[[spec]]
+level = "MUST"
+quote = "The unit of each metric MUST be one of count, microseconds, bytes, seconds and percent."
