@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/03-probes.md#DC-0007-014"
+
+[[spec]]
+level = "MUST"
+quote = "Each probe MUST consist of two ack-eliciting packets."

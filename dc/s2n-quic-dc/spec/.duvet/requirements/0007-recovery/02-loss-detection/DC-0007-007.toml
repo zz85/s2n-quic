@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/02-loss-detection.md#DC-0007-007"
+
+[[spec]]
+level = "MUST"
+quote = "The system MUST NOT declare a packet lost before it receives an acknowledgement of a packet with a larger packet number."

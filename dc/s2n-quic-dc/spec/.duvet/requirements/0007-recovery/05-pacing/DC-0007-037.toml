@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/05-pacing.md#DC-0007-037"
+
+[[spec]]
+level = "MUST"
+quote = "The system MUST publish a sender's load score again after each change of its queue, and after all of an acknowledgement's updates to its controller."

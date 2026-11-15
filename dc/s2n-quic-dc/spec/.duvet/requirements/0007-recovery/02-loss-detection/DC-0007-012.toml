@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/02-loss-detection.md#DC-0007-012"
+
+[[spec]]
+level = "MUST"
+quote = "A sent packet's record MUST hold only its frames other than acknowledgement frames."

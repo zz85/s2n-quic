@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/03-probes.md#DC-0007-013"
+
+[[spec]]
+level = "MUST"
+quote = "While packets are outstanding, the system MUST send a probe once the probe timeout elapses without an acknowledgement."

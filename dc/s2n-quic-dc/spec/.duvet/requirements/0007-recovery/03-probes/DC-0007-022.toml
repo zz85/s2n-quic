@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/03-probes.md#DC-0007-022"
+
+[[spec]]
+level = "MUST"
+quote = "The system MUST measure the probe timeout from the most recent packet send."

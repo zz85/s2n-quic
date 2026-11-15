@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/02-loss-detection.md#DC-0007-010"
+
+[[spec]]
+level = "MUST"
+quote = "The loss time threshold MUST be nine-eighths of the larger of the smoothed and the latest round-trip time, and at least 1 millisecond."

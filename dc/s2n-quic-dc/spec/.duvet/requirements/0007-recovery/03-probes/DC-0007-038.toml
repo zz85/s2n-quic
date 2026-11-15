@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/03-probes.md#DC-0007-038"
+
+[[spec]]
+level = "MUST"
+quote = "When a probe is due and data is queued, the probe MUST carry the queued data."

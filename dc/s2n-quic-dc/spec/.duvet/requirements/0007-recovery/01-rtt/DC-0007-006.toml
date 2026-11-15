@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/01-rtt.md#DC-0007-006"
+
+[[spec]]
+level = "MUST"
+quote = "The system MUST update the round-trip time estimate from an acknowledgement before it runs loss detection for that acknowledgement."

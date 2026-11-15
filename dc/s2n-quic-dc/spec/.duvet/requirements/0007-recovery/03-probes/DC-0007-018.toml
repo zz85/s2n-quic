@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/03-probes.md#DC-0007-018"
+
+[[spec]]
+level = "MUST"
+quote = "When a probe is due and no data is queued, the probe MUST carry the frames of the oldest outstanding packet that a probe hasn't carried yet and that holds a frame that isn't cancelled, under a new packet number."

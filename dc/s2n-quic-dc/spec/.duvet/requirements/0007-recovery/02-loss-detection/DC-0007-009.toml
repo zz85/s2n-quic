@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/02-loss-detection.md#DC-0007-009"
+
+[[spec]]
+level = "MUST"
+quote = "The system MUST declare lost each outstanding packet sent at least the loss time threshold before the newest packet that an acknowledgement acknowledges."

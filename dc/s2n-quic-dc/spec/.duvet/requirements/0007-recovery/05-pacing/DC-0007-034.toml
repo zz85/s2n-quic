@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/05-pacing.md#DC-0007-034"
+
+[[spec]]
+level = "MUST"
+quote = "Acknowledgements and probes MUST NOT wait for pacing."

@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/03-probes.md#DC-0007-016"
+
+[[spec]]
+level = "MUST"
+quote = "On each acknowledgement, the system MUST reset the probe backoff to the base probe timeout."

@@ -1,0 +1,5 @@
+number = 7
+title = "Loss recovery, congestion control and pacing"
+area = "dc"
+abstract = "How a sender learns what the network did with its packets and how fast it may send: its round-trip time estimate, how it declares packets lost, the probes it sends when acknowledgements stop, the congestion controller that sets its window and its pacing rate, and the load it publishes for choosing among senders."
+retired = []

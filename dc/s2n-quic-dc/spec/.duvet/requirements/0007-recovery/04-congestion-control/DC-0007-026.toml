@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/04-congestion-control.md#DC-0007-026"
+
+[[spec]]
+level = "MUST"
+quote = "The system MUST report each lost packet's bytes to the controller, with whether it begins a new run of lost packet numbers."

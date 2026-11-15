@@ -1,0 +1,54 @@
+[section]
+anchor = "loss-detection"
+title = "Loss detection"
+problem = "A packet that the network dropped holds its frames, and the share of the congestion window it occupies, until the sender notices that it is gone."
+motivation = "Thresholds in packet numbers and in round trips find a loss within about one round trip of the next acknowledgement, without mistaking a little reordering for loss."
+prose = "A packet stays outstanding until an acknowledgement covers it or loss detection declares it lost. Loss detection runs on each acknowledgement that acknowledges a packet, and uses two thresholds. By the packet threshold, a packet is lost when its packet number is at least two less than the largest packet number the acknowledgement covers. By the time threshold, a packet is lost when it was sent at least the loss time threshold before the newest packet the acknowledgement acknowledges; the loss time threshold is nine-eighths of the larger of the smoothed and the latest round-trip time, and at least 1 millisecond. Loss is declared from the oldest outstanding packet onward, and the scan stops at the first packet that meets neither threshold. The frames of each lost packet are recovered one by one, as RFC 0005 says. A packet's record holds only its ack-eliciting frames: acknowledgement frames are never retransmitted, since a later acknowledgement replaces them."
+
+[[requirement]]
+id = "DC-0007-007"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "The system MUST NOT declare a packet lost before it receives an acknowledgement of a packet with a larger packet number."
+rationale = "Only an acknowledgement of a later packet shows that the network carried packets past this one."
+
+[[requirement]]
+id = "DC-0007-008"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The system MUST declare lost each outstanding packet whose packet number is at least two less than the largest packet number an acknowledgement covers."
+rationale = "A threshold of two lets the two packets of a probe reveal every packet lost before them."
+
+[[requirement]]
+id = "DC-0007-009"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The system MUST declare lost each outstanding packet sent at least the loss time threshold before the newest packet that an acknowledgement acknowledges."
+rationale = "The time threshold finds a loss when too few later packets were sent to meet the packet threshold."
+
+[[requirement]]
+id = "DC-0007-010"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The loss time threshold MUST be nine-eighths of the larger of the smoothed and the latest round-trip time, and at least 1 millisecond."
+rationale = "A margin of one eighth over the round trip tolerates small reordering and jitter, and the minimum keeps the threshold above the timer's granularity."
+
+[[requirement]]
+id = "DC-0007-011"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "The system MUST NOT declare a packet lost while an outstanding packet with a smaller packet number isn't declared lost."
+rationale = "Declaring loss as a run from the oldest packet lets one ordered scan find every lost packet."
+
+[[requirement]]
+id = "DC-0007-012"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A sent packet's record MUST hold only its frames other than acknowledgement frames."
+rationale = "A later acknowledgement replaces an earlier one, so retransmitting it only adds load; keeping acknowledgement frames out of the record leaves the frames recovered on a loss to the ack-eliciting ones."

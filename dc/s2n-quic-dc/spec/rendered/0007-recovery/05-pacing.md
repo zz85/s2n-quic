@@ -1,0 +1,23 @@
+## Pacing and sender load {#pacing}
+
+The controller's pacing rate sets each sender's earliest departure time, the time before which its next data may not leave. Data frames wait for that time unless a probe carries them; acknowledgements and probes go at once, since they add little load and a delayed acknowledgement slows the peer. The earliest departure time is never more than one second in the future, so a degenerate pacing rate can't hold a sender for longer. The socket's own pacing, which RFC 0010 states, applies after this one. Each sender publishes a load score for the endpoint's choice among the senders of the same peer: the later of the current time and its earliest departure time, plus one smoothed round-trip time while the congestion window limits it, plus its queued bytes divided by its pacing rate. The score is published again after each change of the sender's queue and after all of an acknowledgement's updates to its controller, so that the choice reads the sender's current state.
+
+### DC-0007-033 {#DC-0007-033}
+
+The system MUST hold each sender's data frames, other than those a probe carries, until the earliest departure time that its controller's pacing rate sets.
+
+### DC-0007-034 {#DC-0007-034}
+
+Acknowledgements and probes MUST NOT wait for pacing.
+
+### DC-0007-035 {#DC-0007-035}
+
+A sender's earliest departure time MUST NOT be more than one second in the future.
+
+### DC-0007-036 {#DC-0007-036}
+
+The system MUST publish for each sender a load score: the later of the current time and its earliest departure time, plus one smoothed round-trip time while the congestion window limits it, plus its queued bytes divided by its pacing rate.
+
+### DC-0007-037 {#DC-0007-037}
+
+The system MUST publish a sender's load score again after each change of its queue, and after all of an acknowledgement's updates to its controller.

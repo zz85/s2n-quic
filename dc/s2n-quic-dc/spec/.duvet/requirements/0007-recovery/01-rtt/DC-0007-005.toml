@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/01-rtt.md#DC-0007-005"
+
+[[spec]]
+level = "MUST"
+quote = "Before its first sample, the system MUST use an initial round-trip time of 2 milliseconds."

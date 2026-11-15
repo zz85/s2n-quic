@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/03-probes.md#DC-0007-017"
+
+[[spec]]
+level = "MUST"
+quote = "The system MUST NOT arm the probe timer while no packet is outstanding."

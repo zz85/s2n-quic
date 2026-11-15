@@ -1,0 +1,102 @@
+[section]
+anchor = "probes"
+title = "Probe timeout"
+problem = "When the last outstanding packets are lost, a later acknowledgement doesn't arrive to reveal the loss, and their frames would wait until the idle timeout."
+motivation = "Probing after a timeout that follows the round-trip time, and backing off while the peer stays silent, recovers a tail loss quickly without flooding a peer that has gone away."
+prose = "When packets are outstanding and acknowledgements stop arriving, such as when the last packets of a burst are lost, an acknowledgement can't trigger loss detection. The probe timer covers that case. Its base period is QUIC's probe timeout, computed from the round-trip time estimate, and it is measured from the most recent packet send. When it elapses, the sender sends a probe of two ack-eliciting packets, so that their acknowledgement lets the packet threshold find the packets lost before them. When data is queued, the probe carries that data. When no data is queued, the probe carries the frames of the oldest outstanding packet that a probe hasn't carried yet and that holds a frame that isn't cancelled, under a new packet number, and the frames that don't fit in the probe go back to the sender's queue. The original packet's record stays as a link to the probe, so a late acknowledgement of the original still completes its frames, while a loss of the original leaves them to the probe. Each probe doubles the wait for the next one, up to 32 base periods, and each acknowledgement resets the wait to one base period. The timer is armed only while packets are outstanding, and once outstanding bytes reach zero, the records left as links are discarded."
+
+[[requirement]]
+id = "DC-0007-013"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "While packets are outstanding, the system MUST send a probe once the probe timeout elapses without an acknowledgement."
+rationale = "Without a probe, a tail loss would hold its frames until the idle timeout."
+
+[[requirement]]
+id = "DC-0007-014"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Each probe MUST consist of two ack-eliciting packets."
+rationale = "Two packets let the packet threshold of two declare the earlier packets lost when the probes are acknowledged."
+
+[[requirement]]
+id = "DC-0007-015"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "After each probe, the system MUST double the time until the next probe, up to 32 times the base probe timeout."
+rationale = "Backing off spares a peer that has gone away, and the cap keeps probes coming before the idle timeout ends the path."
+
+[[requirement]]
+id = "DC-0007-016"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "On each acknowledgement, the system MUST reset the probe backoff to the base probe timeout."
+rationale = "An acknowledgement shows that the peer is answering, so the next probe follows the round trip again."
+
+[[requirement]]
+id = "DC-0007-017"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "The system MUST NOT arm the probe timer while no packet is outstanding."
+rationale = "A packet that isn't outstanding can't be lost, and a probe would only start an exchange of acknowledgements."
+
+[[requirement]]
+id = "DC-0007-018"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "When a probe is due and no data is queued, the probe MUST carry the frames of the oldest outstanding packet that a probe hasn't carried yet and that holds a frame that isn't cancelled, under a new packet number."
+rationale = "The oldest packet is the one most likely lost, a packet that a probe already carried or whose frames are all cancelled has nothing left to recover, and a new packet number lets loss detection tell the probe from the original."
+
+[[requirement]]
+id = "DC-0007-019"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An acknowledgement of a packet whose frames a probe carried MUST complete those frames as an acknowledgement of the probe would."
+rationale = "An acknowledgement of the original can arrive after the probe is sent, and it shows that the frames arrived."
+
+[[requirement]]
+id = "DC-0007-020"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Once a probe carries a packet's frames, the system MUST treat those frames as frames of the probe's packet."
+rationale = "The probe carries those frames already, so recovering them through the probe's packet sends them once, and a loss of the original packet then leaves it no frames of its own to queue for retransmission."
+
+[[requirement]]
+id = "DC-0007-021"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The system MUST discard each record of a packet whose frames a probe carried no later than when the outstanding bytes reach zero."
+rationale = "Once nothing is outstanding, such a record can't be resolved, and keeping it would hold the probe timer armed."
+
+[[requirement]]
+id = "DC-0007-022"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The system MUST measure the probe timeout from the most recent packet send."
+rationale = "Measuring from the latest send keeps a sender that is still sending from probing too early."
+
+[[requirement]]
+id = "DC-0007-038"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "When a probe is due and data is queued, the probe MUST carry the queued data."
+rationale = "Queued data elicits an acknowledgement as a retransmission would, so sending it as the probe delays neither the data nor the recovery."
+
+[[requirement]]
+id = "DC-0007-039"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The system MUST return to the sender's queue each frame of the probed packet that doesn't fit in the probe."
+rationale = "A frame that doesn't fit still has to reach the peer, and the queue sends it with the sender's next data."

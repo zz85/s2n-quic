@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/05-pacing.md#DC-0007-035"
+
+[[spec]]
+level = "MUST"
+quote = "A sender's earliest departure time MUST NOT be more than one second in the future."

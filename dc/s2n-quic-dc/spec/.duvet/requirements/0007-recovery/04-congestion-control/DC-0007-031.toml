@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/04-congestion-control.md#DC-0007-031"
+
+[[spec]]
+level = "MUST"
+quote = "The outstanding bytes that the controller holds MUST equal the total size of the outstanding packets whose bytes still count."

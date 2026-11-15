@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/01-rtt.md#DC-0007-004"
+
+[[spec]]
+level = "MUST"
+quote = "On an acknowledgement that doesn't newly acknowledge a data packet but covers an acknowledgement-only probe, the system MUST take the round-trip time sample from that probe."

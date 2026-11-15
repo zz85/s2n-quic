@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/03-probes.md#DC-0007-039"
+
+[[spec]]
+level = "MUST"
+quote = "The system MUST return to the sender's queue each frame of the probed packet that doesn't fit in the probe."

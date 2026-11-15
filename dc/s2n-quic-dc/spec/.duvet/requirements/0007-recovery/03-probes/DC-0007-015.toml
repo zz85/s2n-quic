@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/03-probes.md#DC-0007-015"
+
+[[spec]]
+level = "MUST"
+quote = "After each probe, the system MUST double the time until the next probe, up to 32 times the base probe timeout."

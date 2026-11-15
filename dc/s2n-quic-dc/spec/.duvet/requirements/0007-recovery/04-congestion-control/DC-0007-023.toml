@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/04-congestion-control.md#DC-0007-023"
+
+[[spec]]
+level = "MUST"
+quote = "The system MUST keep one congestion controller for each sender."

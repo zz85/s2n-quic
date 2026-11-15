@@ -1,0 +1,46 @@
+[section]
+anchor = "pacing"
+title = "Pacing and sender load"
+problem = "A sender that sends its whole window at once fills the queues of the network and of the receiver in bursts, and a choice among senders that ignores pacing sends new work to a sender that has to wait."
+motivation = "Spacing data at the rate the controller sets, while acknowledgements and probes go at once, keeps queues short, and a load score built from the same state steers new work to the sender that can send it soonest."
+prose = "The controller's pacing rate sets each sender's earliest departure time, the time before which its next data may not leave. Data frames wait for that time unless a probe carries them; acknowledgements and probes go at once, since they add little load and a delayed acknowledgement slows the peer. The earliest departure time is never more than one second in the future, so a degenerate pacing rate can't hold a sender for longer. The socket's own pacing, which RFC 0010 states, applies after this one. Each sender publishes a load score for the endpoint's choice among the senders of the same peer: the later of the current time and its earliest departure time, plus one smoothed round-trip time while the congestion window limits it, plus its queued bytes divided by its pacing rate. The score is published again after each change of the sender's queue and after all of an acknowledgement's updates to its controller, so that the choice reads the sender's current state."
+
+[[requirement]]
+id = "DC-0007-033"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The system MUST hold each sender's data frames, other than those a probe carries, until the earliest departure time that its controller's pacing rate sets."
+rationale = "Spacing data at the rate the path carries keeps queues short."
+
+[[requirement]]
+id = "DC-0007-034"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "Acknowledgements and probes MUST NOT wait for pacing."
+rationale = "A delayed acknowledgement slows the peer's own sending, and a delayed probe delays recovery."
+
+[[requirement]]
+id = "DC-0007-035"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A sender's earliest departure time MUST NOT be more than one second in the future."
+rationale = "A degenerate pacing rate would otherwise hold a sender's data for an unbounded time."
+
+[[requirement]]
+id = "DC-0007-036"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The system MUST publish for each sender a load score: the later of the current time and its earliest departure time, plus one smoothed round-trip time while the congestion window limits it, plus its queued bytes divided by its pacing rate."
+rationale = "The score estimates when the sender could send new work, so the choice among senders favors the one that can send it soonest."
+
+[[requirement]]
+id = "DC-0007-037"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The system MUST publish a sender's load score again after each change of its queue, and after all of an acknowledgement's updates to its controller."
+rationale = "A score read between updates would steer work by a state the sender has left."

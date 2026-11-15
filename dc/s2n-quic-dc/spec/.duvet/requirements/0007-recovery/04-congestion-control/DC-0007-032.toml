@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/04-congestion-control.md#DC-0007-032"
+
+[[spec]]
+level = "MUST"
+quote = "Once a probe carries a packet's frames, the system MUST remove that packet's bytes from the outstanding bytes."

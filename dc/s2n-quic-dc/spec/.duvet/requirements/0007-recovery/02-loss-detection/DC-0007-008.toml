@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/02-loss-detection.md#DC-0007-008"
+
+[[spec]]
+level = "MUST"
+quote = "The system MUST declare lost each outstanding packet whose packet number is at least two less than the largest packet number an acknowledgement covers."

@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/05-pacing.md#DC-0007-036"
+
+[[spec]]
+level = "MUST"
+quote = "The system MUST publish for each sender a load score: the later of the current time and its earliest departure time, plus one smoothed round-trip time while the congestion window limits it, plus its queued bytes divided by its pacing rate."

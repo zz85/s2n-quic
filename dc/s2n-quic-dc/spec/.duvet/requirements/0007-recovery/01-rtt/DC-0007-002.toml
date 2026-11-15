@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/01-rtt.md#DC-0007-002"
+
+[[spec]]
+level = "MUST"
+quote = "On an acknowledgement that newly acknowledges a data packet, the system MUST take a round-trip time sample from the newest packet it newly acknowledges: the time from that packet's send to the acknowledgement's arrival, less the acknowledgement delay the peer reports."

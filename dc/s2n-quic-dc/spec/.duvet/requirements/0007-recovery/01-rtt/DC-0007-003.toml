@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/01-rtt.md#DC-0007-003"
+
+[[spec]]
+level = "MUST"
+quote = "A round-trip time sample MUST NOT be less than one microsecond."

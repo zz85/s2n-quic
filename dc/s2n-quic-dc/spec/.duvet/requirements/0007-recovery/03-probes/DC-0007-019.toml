@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/03-probes.md#DC-0007-019"
+
+[[spec]]
+level = "MUST"
+quote = "An acknowledgement of a packet whose frames a probe carried MUST complete those frames as an acknowledgement of the probe would."

@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/04-congestion-control.md#DC-0007-024"
+
+[[spec]]
+level = "MUST"
+quote = "The congestion controller MUST estimate the path's bottleneck bandwidth and its minimum round-trip time from acknowledgements, and set the congestion window and the pacing rate from those estimates."

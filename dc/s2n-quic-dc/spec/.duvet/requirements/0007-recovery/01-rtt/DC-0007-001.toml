@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/01-rtt.md#DC-0007-001"
+
+[[spec]]
+level = "MUST"
+quote = "The system MUST keep a round-trip time estimate for each sender, holding its latest sample, a smoothed value, the variation of the samples and the minimum sample."

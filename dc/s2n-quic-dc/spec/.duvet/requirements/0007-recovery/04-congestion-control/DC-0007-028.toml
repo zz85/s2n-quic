@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/04-congestion-control.md#DC-0007-028"
+
+[[spec]]
+level = "MUST"
+quote = "The system MUST give the controller an acknowledgement's newly acknowledged bytes only after it has run loss detection and read the congestion marks of that acknowledgement."

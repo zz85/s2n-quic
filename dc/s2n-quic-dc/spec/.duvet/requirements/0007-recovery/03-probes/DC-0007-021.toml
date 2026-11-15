@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/03-probes.md#DC-0007-021"
+
+[[spec]]
+level = "MUST"
+quote = "The system MUST discard each record of a packet whose frames a probe carried no later than when the outstanding bytes reach zero."
