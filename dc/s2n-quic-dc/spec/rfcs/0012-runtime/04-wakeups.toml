@@ -1,0 +1,54 @@
+[section]
+anchor = "wakeups"
+title = "Task wakeups"
+problem = "A task that serves many sources, such as a task that serves every stream of a worker, would have to poll each of them on every wake to find which one is ready. A worker that is woken while it is already working pays for a wake it doesn't need, and a wake that is lost leaves a task stuck forever."
+motivation = "A set of wake sources tells the serving task which sources are ready, a worker's state lets a wake reach it only when it sleeps, and a wake that is delivered once a lock is released, or once its carrier is dropped, can't be lost."
+prose = "A task that serves many sources registers a wake source for each of them, by an identifier. Waking a source records its identifier in a shared ready set and wakes the serving task. A worker that sleeps between bursts of work records whether it is sleeping, has work pending or is working, so that a wake reaches its thread only when it sleeps. A deferred wake carries a waker to the point where a lock is released, and wakes it there."
+
+[[requirement]]
+id = "DC-0012-030"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Waking a registered source MUST record the source's identifier in the serving task's ready set and wake the serving task."
+rationale = "The serving task learns which source to poll from the set, and a source that only recorded its identifier would wait for some other wake."
+
+[[requirement]]
+id = "DC-0012-031"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Draining a ready set MUST return each woken identifier once, however many times it was woken since the last drain."
+rationale = "A source woken twice needs one poll, and polling it twice wastes the serving task's time."
+
+[[requirement]]
+id = "DC-0012-032"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A wake of a worker MUST wake the worker's thread only where the worker is sleeping."
+rationale = "A worker that is working or has work pending looks for new work anyway, and waking its thread costs a system call."
+
+[[requirement]]
+id = "DC-0012-033"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A forced wake of a worker MUST wake the worker's thread whatever the worker's state."
+rationale = "Some events, such as a shutdown, have to reach the worker whatever it is doing."
+
+[[requirement]]
+id = "DC-0012-034"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A component MUST NOT wake a task while it holds a lock that the woken task takes."
+rationale = "The woken task would run and wait on the lock its waker still holds, which wastes the wake and slows both tasks."
+
+[[requirement]]
+id = "DC-0012-035"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A deferred wake that is dropped before it is delivered MUST wake its task."
+rationale = "A wake that isn't needed only costs one poll, while a wake that is lost leaves its task waiting forever."

@@ -1,0 +1,70 @@
+[section]
+anchor = "clock"
+title = "Clocks and timers"
+problem = "Pacing, loss detection and timeouts all wait for points in time. A clock whose time goes backward, or arithmetic on times that wraps, would make a timer fire at the wrong moment or never."
+motivation = "One clock interface, with times that only grow and arithmetic that saturates, lets every component wait for a time in the same way, and lets a simulation replace the wall clock with its own."
+prose = "A clock reports the current time and creates timers. Time is a count of nanoseconds since the clock's start. A timer has an optional target, and while it has one it is armed: a task waiting on it wakes once the clock reaches the target. A timer's target can move, and the timer can be cancelled."
+
+[[requirement]]
+id = "DC-0012-011"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A clock MUST report time as a count of nanoseconds since its start that never decreases."
+rationale = "A component that compares two times read from the same clock relies on the later read never showing an earlier time."
+
+[[requirement]]
+id = "DC-0012-012"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Adding a duration to a time, or subtracting one from it, MUST saturate at the least and the greatest time instead of wrapping."
+rationale = "A deadline far in the future or a time near the clock's start would otherwise wrap to a time on the other side, and a timer would fire at once or never."
+
+[[requirement]]
+id = "DC-0012-013"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The duration from a time to an earlier time MUST be reported as zero."
+rationale = "A reader that measures from a time to an earlier one, such as after two reads race, gets an elapsed time of zero rather than a huge one."
+
+[[requirement]]
+id = "DC-0012-014"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A task waiting on an armed timer MUST be woken once the clock reaches the timer's target."
+rationale = "A task that waits for a time relies on the timer to wake it once the time comes."
+
+[[requirement]]
+id = "DC-0012-015"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A timer MUST NOT report that it is ready before the clock reaches its target."
+rationale = "A timer that fires early would make pacing send too soon and a timeout end a connection that is still alive."
+
+[[requirement]]
+id = "DC-0012-016"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A timer whose target is updated MUST wake its task at the new target instead of the old one."
+rationale = "Components move their deadlines often, such as when an acknowledgement arrives, and the old deadline then means nothing."
+
+[[requirement]]
+id = "DC-0012-017"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A cancelled timer MUST report that it isn't armed."
+rationale = "A component reads whether its timer is armed to decide whether to arm it again."
+
+[[requirement]]
+id = "DC-0012-018"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A time MUST be displayed as its whole seconds, a dot, and nine digits of nanoseconds."
+rationale = "One textual form of a time lets the logs and traces of different components be compared."

@@ -1,0 +1,46 @@
+[section]
+anchor = "buffers"
+title = "Byte buffers and allocation"
+problem = "Data moves through the stack in pieces of many sizes, and copying each piece into one contiguous buffer costs time and memory. Memory that held secret data and is reused without being cleared can leak it, and an operator who can't tell which component holds memory can't find a leak."
+motivation = "A chunked buffer shares its chunks instead of copying them, a builder's policy can clear a buffer's memory once the last chunk in it is released, and a tagged buffer counts its bytes against an owner."
+prose = "Data the stack holds is kept in chunked byte buffers: an ordered list of byte chunks that are shared rather than copied. A builder fills a head buffer and turns each completed buffer into a chunk, and the policy it follows sets the head buffer's size and how a completed buffer becomes a chunk, such as a chunk that clears its memory once the last chunk that points into it is released. A tagged buffer counts the bytes it holds against an owner, so that an operator can read how many bytes each owner holds. Allocations are drawn from named sub-heaps."
+
+[[requirement]]
+id = "DC-0012-049"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A chunked buffer MUST yield its bytes in the order they were appended."
+rationale = "Streams and frames are read in order, and a buffer that reordered its chunks would corrupt them."
+
+[[requirement]]
+id = "DC-0012-050"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "Appending a chunk to a chunked buffer MUST NOT copy the chunk's bytes."
+rationale = "A chunk is shared by reference, so appending it costs the same whatever its size."
+
+[[requirement]]
+id = "DC-0012-051"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A builder MUST turn each completed buffer into a chunk through its policy."
+rationale = "The policy decides what a chunk does with its memory, such as clearing it once the last chunk in it is released, so that secret data doesn't outlive its use."
+
+[[requirement]]
+id = "DC-0012-052"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A tagged buffer MUST count the bytes it holds against its owner for as long as it holds them."
+rationale = "An operator reads the counts to find which owner holds memory that keeps growing."
+
+[[requirement]]
+id = "DC-0012-053"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A request to allocate zero bytes MUST NOT return an allocation."
+rationale = "A zero-byte allocation has nothing to hold, and returning one would make its caller account for memory it doesn't have."

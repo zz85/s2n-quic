@@ -1,0 +1,94 @@
+[section]
+anchor = "timer-wheel"
+title = "Timing wheel"
+problem = "A peer holds many timers at once, one or more for each stream, and arming a separate timer for each would cost a system timer for each stream and wake the worker once for each timer."
+motivation = "A timing wheel holds every pending entry of a component behind one timer, finds the next due entry quickly, and releases due entries in the order they were sent, so that a component's later events don't overtake its earlier ones."
+prose = "A timing wheel holds pending entries, each with an optional target time, and releases each entry once its target has passed. It counts time in ticks of a fixed base length, which a component chooses for its use: a fine tick, such as a microsecond, for pacing and loss detection, and a coarse tick, such as a second, for idle timeouts. Entries arrive from a sender in order, and the wheel keeps that order among entries due at the same tick. An entry's target can be removed while the wheel holds it, which makes the entry due at once, but it can't move to a later time."
+
+[[requirement]]
+id = "DC-0012-019"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A timing wheel MUST hold an entry whose target lies up to 2^32 ticks after the wheel's current tick."
+rationale = "Pacing at a fine tick and idle timeouts at a coarse tick both need targets far ahead of the current tick."
+
+[[requirement]]
+id = "DC-0012-020"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A timing wheel MUST release an entry that has no target time at once, without holding it."
+rationale = "An entry without a target is due now, and holding it would only delay it."
+
+[[requirement]]
+id = "DC-0012-021"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A timing wheel MUST treat an entry whose target is at or before its current tick as due at the current tick."
+rationale = "An entry whose target has already passed is due, and placing it in the past would lose it."
+
+[[requirement]]
+id = "DC-0012-022"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "When a timing wheel advances to a time, it MUST release every held entry whose target tick is at or before that time."
+rationale = "Every entry whose time has come is due, and leaving one behind would delay its event until the next advance."
+
+[[requirement]]
+id = "DC-0012-023"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Entries from one sender that are due at the same tick MUST be released in the order the sender sent them."
+rationale = "A sender's later event, such as a close, has to come after its earlier one, such as the data the close follows."
+
+[[requirement]]
+id = "DC-0012-024"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A timing wheel's current tick MUST NOT move backward, even where the clock reports an earlier time."
+rationale = "An entry is released once, and a tick that moved back would release it a second time."
+
+[[requirement]]
+id = "DC-0012-025"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "While a timing wheel holds an entry, it MUST keep its timer armed for the earliest held target."
+rationale = "The worker sleeps until the wheel's timer fires, so the timer has to be set for the earliest entry or that entry waits."
+
+[[requirement]]
+id = "DC-0012-026"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A timing wheel that is empty MUST cancel its timer."
+rationale = "An armed timer with nothing to release would wake the worker for nothing."
+
+[[requirement]]
+id = "DC-0012-027"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A sender MUST NOT move the target of an entry the wheel holds to a later time."
+rationale = "The wheel places an entry by its target, so a target that moved later would release the entry before its new time."
+
+[[requirement]]
+id = "DC-0012-028"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A component that receives an entry from a timing wheel MUST check the entry's current target, and either act on the entry or send it back to the wheel."
+rationale = "An entry's target can change after the wheel placed it, so the time it is released at can be out of date."
+
+[[requirement]]
+id = "DC-0012-029"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "When a timing wheel's input closes, the wheel MUST release every entry it holds and every entry still waiting in its input, and then end."
+rationale = "A closing component needs every pending entry back to release what each holds, and none of them can wait for a target that will never come."

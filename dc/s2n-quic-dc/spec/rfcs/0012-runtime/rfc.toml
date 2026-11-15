@@ -1,0 +1,5 @@
+number = 12
+title = "Runtime, timers and tasks"
+area = "dc"
+abstract = "How s2n-quic-dc runs its work: the executor and its workers, clocks and timers, the timing wheel, task wakeups, the per-peer queue slots that route inbound frames to their streams and the recycling of their identifiers, chunked byte buffers, and the fast random numbers used for load balancing."
+retired = []

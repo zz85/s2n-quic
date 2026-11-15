@@ -1,0 +1,86 @@
+[section]
+anchor = "executor"
+title = "Executor and workers"
+problem = "Each component of the stack runs as tasks, and some of those tasks hold state that only one thread can touch. Without a shared way to start tasks and bind them to a worker, each component would start its own threads, and a task bound to one thread could be moved to another."
+motivation = "One executor interface, with a fixed set of workers and a way to start a task on a chosen worker, lets every component share the same threads, lets a test replace them with a deterministic simulation, and lets a tool list the tasks a configuration starts without running them."
+prose = "An executor bundles a way to start tasks with a clock. It has a fixed number of workers, numbered from zero. A component starts a task either on any worker or on a chosen worker, and a task started on a chosen worker runs on that worker for its whole life. Several executors meet this interface: one whose workers poll without sleeping, one whose workers each run a single-threaded event loop, a simulation that runs every worker on one thread in a deterministic order, and an inspector that records the tasks a configuration starts without running them."
+
+[[requirement]]
+id = "DC-0012-001"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An executor MUST report a fixed number of workers, which stays the same for the executor's whole life."
+rationale = "Components size their per-worker state and spread their work by the number of workers, so the number can't change under them."
+
+[[requirement]]
+id = "DC-0012-002"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A task started on a chosen worker MUST run on that worker until it completes."
+rationale = "A task bound to a worker keeps state that only that worker's thread can touch, and a move to another thread would break it."
+
+[[requirement]]
+id = "DC-0012-003"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An executor MUST let a component start a task whose state can't move between threads on a chosen worker, by running a setup step on that worker that creates the task there."
+rationale = "Such a task can't be built on one thread and sent to another, so it has to be created on the worker that runs it."
+
+[[requirement]]
+id = "DC-0012-004"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An executor MUST record the name and the worker of each task it starts for a pipeline stage, so that a tool can show which tasks run on which worker."
+rationale = "An operator reads which pipeline stages share a worker to find the worker that a slow stage holds back."
+
+[[requirement]]
+id = "DC-0012-005"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A worker of an event-loop executor MUST keep running the tasks started on it after every handle to the executor is dropped."
+rationale = "Components start long-lived tasks and drop their handle to the executor, and those tasks still have to run."
+
+[[requirement]]
+id = "DC-0012-006"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "An executor MUST NOT silently discard a task started on a worker that has stopped."
+rationale = "A task that is dropped without notice leaves every task that waits on it waiting forever, while a failure at the call shows the fault where it happens."
+
+[[requirement]]
+id = "DC-0012-007"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A simulation executor MUST run its tasks on one thread, in an order set by its seed and its inputs alone."
+rationale = "A test that runs the same way each time lets a failure be reproduced from its seed."
+
+[[requirement]]
+id = "DC-0012-008"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An inspector executor MUST record each task started on it, with its name and its worker, without running the task."
+rationale = "A tool lists the tasks a configuration would start, with their workers, without starting the system."
+
+[[requirement]]
+id = "DC-0012-009"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "An inspector executor MUST NOT drop a task it recorded while the inspector exists."
+rationale = "Dropping a task runs its cleanup, such as closing its channels, which would change the topology the inspector reports."
+
+[[requirement]]
+id = "DC-0012-010"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An inspector executor MUST report at least one worker."
+rationale = "Components divide their work by the number of workers, and zero workers would leave nowhere to place a task."
