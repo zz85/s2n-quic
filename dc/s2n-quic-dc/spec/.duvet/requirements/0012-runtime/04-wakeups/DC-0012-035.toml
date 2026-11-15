@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/04-wakeups.md#DC-0012-035"
+
+[[spec]]
+level = "MUST"
+quote = "A deferred wake that is dropped before it is delivered MUST wake its task."

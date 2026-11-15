@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/07-buffers.md#DC-0012-049"
+
+[[spec]]
+level = "MUST"
+quote = "A chunked buffer MUST yield its bytes in the order they were appended."

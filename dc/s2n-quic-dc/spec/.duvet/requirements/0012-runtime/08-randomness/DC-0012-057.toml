@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/08-randomness.md#DC-0012-057"
+
+[[spec]]
+level = "MUST"
+quote = "A uniform number drawn from the fast generator MUST be at least zero and less than one."

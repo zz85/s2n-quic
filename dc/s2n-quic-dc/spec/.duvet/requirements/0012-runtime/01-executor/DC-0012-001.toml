@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/01-executor.md#DC-0012-001"
+
+[[spec]]
+level = "MUST"
+quote = "An executor MUST report a fixed number of workers, which stays the same for the executor's whole life."

@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/03-timer-wheel.md#DC-0012-024"
+
+[[spec]]
+level = "MUST"
+quote = "A timing wheel's current tick MUST NOT move backward, even where the clock reports an earlier time."

@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/02-clock.md#DC-0012-014"
+
+[[spec]]
+level = "MUST"
+quote = "A task waiting on an armed timer MUST be woken once the clock reaches the timer's target."

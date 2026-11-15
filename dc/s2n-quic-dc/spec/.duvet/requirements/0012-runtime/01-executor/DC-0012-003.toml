@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/01-executor.md#DC-0012-003"
+
+[[spec]]
+level = "MUST"
+quote = "An executor MUST let a component create a task on a chosen worker, so that a task whose state can't move between threads is never built on another thread."

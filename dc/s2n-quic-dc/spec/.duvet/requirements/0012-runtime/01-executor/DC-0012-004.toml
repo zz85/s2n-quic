@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/01-executor.md#DC-0012-004"
+
+[[spec]]
+level = "MUST"
+quote = "An executor MUST record the name and the worker of each task it starts for a pipeline stage, so that a tool can show which tasks run on which worker."

@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/01-executor.md#DC-0012-010"
+
+[[spec]]
+level = "MUST"
+quote = "An inspector executor MUST report at least one worker."

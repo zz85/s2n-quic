@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/02-clock.md#DC-0012-018"
+
+[[spec]]
+level = "MUST"
+quote = "A time MUST be displayed as its whole seconds, a dot, and nine digits of nanoseconds."

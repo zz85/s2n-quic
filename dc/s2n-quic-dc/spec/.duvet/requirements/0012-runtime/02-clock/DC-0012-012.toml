@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/02-clock.md#DC-0012-012"
+
+[[spec]]
+level = "MUST"
+quote = "Adding a duration to a time, or subtracting one from it, MUST saturate at the least and the greatest time instead of wrapping."

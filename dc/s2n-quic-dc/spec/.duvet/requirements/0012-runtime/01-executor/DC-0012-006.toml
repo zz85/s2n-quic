@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/01-executor.md#DC-0012-006"
+
+[[spec]]
+level = "MUST"
+quote = "An executor MUST NOT silently discard a task started on a worker that has stopped."

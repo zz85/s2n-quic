@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/06-queue-recycling.md#DC-0012-064"
+
+[[spec]]
+level = "MUST"
+quote = "A free message that the server sends again MUST keep its request number."

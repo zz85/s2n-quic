@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/03-timer-wheel.md#DC-0012-029"
+
+[[spec]]
+level = "MUST"
+quote = "When a timing wheel's input closes, the wheel MUST release every entry it holds and every entry still waiting in its input."

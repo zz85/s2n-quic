@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/01-executor.md#DC-0012-002"
+
+[[spec]]
+level = "MUST"
+quote = "A task started on a chosen worker MUST run on that worker until it completes."

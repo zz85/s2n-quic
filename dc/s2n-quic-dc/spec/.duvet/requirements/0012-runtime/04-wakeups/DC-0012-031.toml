@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/04-wakeups.md#DC-0012-031"
+
+[[spec]]
+level = "MUST"
+quote = "Draining a ready set MUST return each woken identifier once, however many times it was woken since the last drain."

@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/07-buffers.md#DC-0012-053"
+
+[[spec]]
+level = "MUST"
+quote = "A request to allocate zero bytes MUST NOT return an allocation."

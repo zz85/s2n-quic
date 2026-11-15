@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/02-clock.md#DC-0012-016"
+
+[[spec]]
+level = "MUST"
+quote = "A timer whose target is updated MUST wake its task at the new target instead of the old one."

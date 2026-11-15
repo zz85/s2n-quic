@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/05-queue-slots.md#DC-0012-037"
+
+[[spec]]
+level = "MUST"
+quote = "Dispatch MUST reject a frame where its slot is free and the frame can't bind it, its binding is older or newer than the bound slot's, the half it targets has no receiver, or that half's sender is closed."

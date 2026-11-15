@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/07-buffers.md#DC-0012-050"
+
+[[spec]]
+level = "MUST"
+quote = "Appending a chunk to a chunked buffer MUST NOT copy the chunk's bytes."

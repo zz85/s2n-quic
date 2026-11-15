@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/08-randomness.md#DC-0012-056"
+
+[[spec]]
+level = "MUST"
+quote = "Within a simulation, the fast generator MUST be seeded from the identifier of the simulation group it runs in."

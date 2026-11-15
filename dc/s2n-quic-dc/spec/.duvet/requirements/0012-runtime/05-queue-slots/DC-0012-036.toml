@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/05-queue-slots.md#DC-0012-036"
+
+[[spec]]
+level = "MUST"
+quote = "Dispatch MUST deliver a frame to a bound slot only where the frame's binding identifier equals the slot's current binding."

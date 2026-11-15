@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/06-queue-recycling.md#DC-0012-044"
+
+[[spec]]
+level = "MUST"
+quote = "Each new free message MUST carry a request number greater than that of every free message the server sent to the same client before it."

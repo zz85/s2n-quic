@@ -1,0 +1,46 @@
+[section]
+anchor = "randomness"
+title = "Fast randomness"
+problem = "Load balancing makes a random choice for each stream or each packet, and drawing those choices from a cryptographic generator would cost more than the choice is worth. A test that makes random choices can't be reproduced unless its choices repeat."
+motivation = "A fast generator, seeded from the operating system in production and from the simulation in tests, makes the choices cheap and repeatable, and keeping it away from secret values keeps it from weakening the system's security."
+prose = "Load balancing and other choices that need speed rather than secrecy draw from a fast generator of random numbers. A component that balances load samples two candidates at random and takes the less loaded one."
+
+[[requirement]]
+id = "DC-0012-054"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "The fast generator MUST NOT be used for a key, a nonce or any other value whose unpredictability the system's security depends on."
+rationale = "A fast generator's output can be predicted from a few of its values, so a secret drawn from it can be guessed."
+
+[[requirement]]
+id = "DC-0012-055"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Outside a simulation, the fast generator MUST be seeded from the operating system's source of randomness."
+rationale = "Seeds that differ across processes keep the processes from making the same choices and loading the same peers."
+
+[[requirement]]
+id = "DC-0012-056"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Within a simulation, the fast generator MUST be seeded from the identifier of the simulation group it runs in."
+rationale = "A run of the same simulation then makes the same choices, so a failure can be reproduced."
+
+[[requirement]]
+id = "DC-0012-057"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A uniform number drawn from the fast generator MUST be at least zero and less than one."
+rationale = "A caller that scales the number to a range of choices relies on it never reaching the top of the range."
+
+[[requirement]]
+id = "DC-0012-058"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "A component that balances load SHOULD sample two candidates at random and choose the less loaded one."
+rationale = "Two random samples avoid the worst choices nearly as well as checking every candidate, at the cost of two reads."

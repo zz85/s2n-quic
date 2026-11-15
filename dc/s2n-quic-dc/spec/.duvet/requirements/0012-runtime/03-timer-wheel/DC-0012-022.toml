@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/03-timer-wheel.md#DC-0012-022"
+
+[[spec]]
+level = "MUST"
+quote = "When a timing wheel advances to a time, it MUST release every held entry whose target tick is at or before that time."

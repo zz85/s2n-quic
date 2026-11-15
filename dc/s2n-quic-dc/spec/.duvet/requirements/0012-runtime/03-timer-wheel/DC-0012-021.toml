@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/03-timer-wheel.md#DC-0012-021"
+
+[[spec]]
+level = "MUST"
+quote = "A timing wheel MUST treat an entry whose target is at or before its current tick as due at the current tick."

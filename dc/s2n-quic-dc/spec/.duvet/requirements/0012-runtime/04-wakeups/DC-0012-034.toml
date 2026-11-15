@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/04-wakeups.md#DC-0012-034"
+
+[[spec]]
+level = "MUST"
+quote = "A component MUST NOT wake a task while it holds a lock that the woken task takes."

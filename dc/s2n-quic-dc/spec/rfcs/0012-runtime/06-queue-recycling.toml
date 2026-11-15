@@ -1,0 +1,70 @@
+[section]
+anchor = "queue-recycling"
+title = "Recycling queue identifiers"
+problem = "A client that couldn't reuse the queue identifier of an ended stream would run out of identifiers after as many streams as the agreed limit, and a free message that is replayed or duplicated would hand one identifier to two streams."
+motivation = "The server returns each freed identifier to the client, gathers the identifiers freed between two transmissions into one message, and numbers each message, so that the client reuses identifiers and applies each message once."
+prose = "When a server drops its receivers for a stream, it tells the client that the stream's queue identifier is free, so that the client can use it for another stream. The server gathers the identifiers freed until a free message is sent and sends them together. The client allocates fresh identifiers up to the agreed limit, and then reuses the freed ones. Each new free message carries a request number that increases, and a message sent again keeps its number, so that the client can find a message it has already applied."
+
+[[requirement]]
+id = "DC-0012-042"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A server MUST tell the client each queue identifier whose receivers it has dropped."
+rationale = "The client can only reuse an identifier the server has stopped using, and only the server knows when that is."
+
+[[requirement]]
+id = "DC-0012-043"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "A server SHOULD send in one free message every identifier freed since its last free message was sent."
+rationale = "Identifiers freed in a burst then cost one message instead of one each."
+
+[[requirement]]
+id = "DC-0012-044"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Each new free message MUST carry a request number greater than that of every free message the server sent to the same client before it."
+rationale = "An increasing number lets the client tell a new message from one it has seen."
+
+[[requirement]]
+id = "DC-0012-064"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A free message that the server sends again MUST keep its request number."
+rationale = "A message sent again, such as after its first send was lost, carries the identifiers of the first send, and the client applies them once only where it can tell the copy by its number."
+
+[[requirement]]
+id = "DC-0012-045"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A client MUST ignore a free message whose request number it has already applied."
+rationale = "A free message applied twice would free an identifier that a new stream already holds."
+
+[[requirement]]
+id = "DC-0012-046"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A client MUST allocate a fresh identifier below the agreed limit, while one remains, before it reuses a freed one."
+rationale = "Fresh identifiers cost nothing to find, and using them first keeps the freed identifiers for when the fresh ones run out."
+
+[[requirement]]
+id = "DC-0012-047"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A client waiting for a queue identifier MUST be woken once an identifier is freed or the peer's list of identifiers is closed."
+rationale = "A stream that waits for an identifier would otherwise never start, and one that waits on a closed list would never learn to give up."
+
+[[requirement]]
+id = "DC-0012-048"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A client MUST NOT allocate a fresh queue identifier at or above the limit the peers agreed."
+rationale = "The server holds slots only up to the agreed limit, and a fresh identifier beyond it would be a protocol violation."

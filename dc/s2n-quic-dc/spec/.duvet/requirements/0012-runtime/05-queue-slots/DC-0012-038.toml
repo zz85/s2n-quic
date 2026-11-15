@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/05-queue-slots.md#DC-0012-038"
+
+[[spec]]
+level = "MUST"
+quote = "A frame whose queue identifier is at or above the limit the peers agreed MUST be treated as a protocol violation."

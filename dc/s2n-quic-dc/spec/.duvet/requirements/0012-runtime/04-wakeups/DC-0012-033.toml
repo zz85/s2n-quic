@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/04-wakeups.md#DC-0012-033"
+
+[[spec]]
+level = "MUST"
+quote = "A forced wake of a worker MUST wake the worker's thread whatever the worker's state."
