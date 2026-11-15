@@ -74,8 +74,8 @@ id = "DC-0012-063"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "Delivering a segment of a message that ends the message, lies below the receiver's wake point, or carries the writer's blocked flag MUST wake the receiver's task."
-rationale = "A segment that ends a message makes the message readable, and a receiver woken earlier or a blocked writer waits on the other two kinds of segment."
+statement = "Delivering a segment of a message that ends the stream, lies below the receiver's wake point, or carries the writer's blocked flag MUST wake the receiver's task."
+rationale = "A segment that ends the stream makes the stream's end readable, and a receiver woken earlier or a blocked writer waits on the other two kinds of segment."
 
 [[requirement]]
 id = "DC-0012-065"

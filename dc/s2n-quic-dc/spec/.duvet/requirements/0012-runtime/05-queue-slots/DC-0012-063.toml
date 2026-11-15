@@ -2,4 +2,4 @@ target = "rendered/0012-runtime/05-queue-slots.md#DC-0012-063"
 
 [[spec]]
 level = "MUST"
-quote = "Delivering a segment of a message that ends the message, lies below the receiver's wake point, or carries the writer's blocked flag MUST wake the receiver's task."
+quote = "Delivering a segment of a message that ends the stream, lies below the receiver's wake point, or carries the writer's blocked flag MUST wake the receiver's task."
