@@ -3,7 +3,7 @@ anchor = "handling"
 title = "Handling keys and opened data"
 problem = "Key material left in memory, a key used twice where the protocol expects one use, or a payload released before its replay check would let an attacker recover secrets or replay data."
 motivation = "Clearing key material, enforcing single use and releasing a payload only after its checks keep a successful attack on one packet from becoming an attack on the path."
-prose = "Some keys protect one packet alone, such as the key of a single datagram. The replay check that RFC 0002 states runs once for each key, on the first packet the key opens, and the payload of that packet is released only after the check accepts it."
+prose = "Some keys protect one packet alone, such as the key of a single datagram. The replay check that RFC 0002 states runs once for each key, on the first packet the key opens, except the opening key of a bidirectional stream that the endpoint initiated, and the payload of that packet is released only after the check accepts it."
 
 [[requirement]]
 id = "DC-0003-043"
@@ -34,7 +34,7 @@ id = "DC-0003-046"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "A receiver MUST run a key's replay check on the first packet the key opens, after the AEAD verifies that packet's tag and before it releases the payload."
+statement = "A receiver MUST run a key's replay check on the first packet the key opens, after the AEAD verifies that packet's tag and before it releases the payload, except on the opening key of a bidirectional stream that the receiver initiated."
 rationale = "A forged packet checked for replay before its tag could mark a key identifier as used, and a payload released before the check could be a replay."
 
 [[requirement]]

@@ -51,7 +51,7 @@ level = "MUST"
 polarity = "required"
 binds_to = "system"
 statement = "The tag length of a stream control packet MUST be 16 bytes."
-rationale = "A 16-byte tag is well above the 80 bits the HMAC specification sets as the least length of a truncated tag, and one length for both ciphersuites keeps the stream control packet's layout the same."
+rationale = "A 16-byte tag is well above the 80 bits the HMAC specification sets as the least length of a truncated tag, though for HMAC-SHA-384 it is shorter than half the HMAC output, and one length for both ciphersuites keeps the stream control packet's layout the same."
 
 [[requirement]]
 id = "DC-0003-032"

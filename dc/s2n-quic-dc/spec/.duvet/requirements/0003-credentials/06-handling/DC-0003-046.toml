@@ -2,4 +2,4 @@ target = "rendered/0003-credentials/06-handling.md#DC-0003-046"
 
 [[spec]]
 level = "MUST"
-quote = "A receiver MUST run a key's replay check on the first packet the key opens, after the AEAD verifies that packet's tag and before it releases the payload."
+quote = "A receiver MUST run a key's replay check on the first packet the key opens, after the AEAD verifies that packet's tag and before it releases the payload, except on the opening key of a bidirectional stream that the receiver initiated."

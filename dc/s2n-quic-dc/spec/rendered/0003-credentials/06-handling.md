@@ -1,6 +1,6 @@
 ## Handling keys and opened data {#handling}
 
-Some keys protect one packet alone, such as the key of a single datagram. The replay check that RFC 0002 states runs once for each key, on the first packet the key opens, and the payload of that packet is released only after the check accepts it.
+Some keys protect one packet alone, such as the key of a single datagram. The replay check that RFC 0002 states runs once for each key, on the first packet the key opens, except the opening key of a bidirectional stream that the endpoint initiated, and the payload of that packet is released only after the check accepts it.
 
 ### DC-0003-043 {#DC-0003-043}
 
@@ -16,7 +16,7 @@ A single-use key MUST NOT open more than one packet.
 
 ### DC-0003-046 {#DC-0003-046}
 
-A receiver MUST run a key's replay check on the first packet the key opens, after the AEAD verifies that packet's tag and before it releases the payload.
+A receiver MUST run a key's replay check on the first packet the key opens, after the AEAD verifies that packet's tag and before it releases the payload, except on the opening key of a bidirectional stream that the receiver initiated.
 
 ### DC-0003-047 {#DC-0003-047}
 
