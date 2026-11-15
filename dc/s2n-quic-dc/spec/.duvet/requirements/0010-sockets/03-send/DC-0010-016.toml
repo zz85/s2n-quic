@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/03-send.md#DC-0010-016"
+
+[[spec]]
+level = "MUST"
+quote = "Each send MUST address all of its segments to one destination and give them one congestion marking."

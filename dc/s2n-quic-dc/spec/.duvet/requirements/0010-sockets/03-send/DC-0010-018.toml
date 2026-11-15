@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/03-send.md#DC-0010-018"
+
+[[spec]]
+level = "MUST"
+quote = "The last segment of a send MUST NOT be longer than the segments before it."

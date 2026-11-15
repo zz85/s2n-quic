@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/03-send.md#DC-0010-020"
+
+[[spec]]
+level = "MUST"
+quote = "A send of more than one segment MUST ask the network stack to split it into datagrams of the segments' size."

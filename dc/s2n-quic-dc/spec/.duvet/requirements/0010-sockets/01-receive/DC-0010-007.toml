@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/01-receive.md#DC-0010-007"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST release its readiness registration for a socket before the socket is closed."

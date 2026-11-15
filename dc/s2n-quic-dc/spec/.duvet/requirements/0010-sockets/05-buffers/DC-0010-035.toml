@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/05-buffers.md#DC-0010-035"
+
+[[spec]]
+level = "MAY"
+quote = "A pool MAY allocate buffers before they are needed, so that its first allocations don't wait on the system allocator."

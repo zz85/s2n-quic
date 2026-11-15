@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/04-pacing.md#DC-0010-029"
+
+[[spec]]
+level = "MUST"
+quote = "An item that is cancelled or skipped before it is sent MUST NOT consume a paced sender's credit."

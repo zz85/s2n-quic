@@ -1,0 +1,62 @@
+[section]
+anchor = "buffers"
+title = "Packet buffers"
+problem = "Allocating a buffer for every datagram costs more than the datagram's processing, and a reader that reads with nowhere to put the data loses it."
+motivation = "Reusing buffers keeps the allocator off the path of every datagram, and a pool that runs out tells the reader to wait."
+prose = "Each datagram lives in a packet buffer that holds its payload, its remote address and its congestion marking. A coalesced read fills one buffer that is then split into one datagram for each segment, and the buffer is released once the last of them is. A released buffer goes back to the pool of the worker that allocated it, and a pool that runs out of buffers holds the reader back."
+
+[[requirement]]
+id = "DC-0010-030"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Each packet buffer MUST hold the payload, the remote address and the congestion marking of one datagram."
+rationale = "The stages that handle a datagram need all three, and they travel together."
+
+[[requirement]]
+id = "DC-0010-031"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A receiver MUST NOT read from its socket without a free buffer to read into."
+rationale = "Data read without a buffer would be lost, while the socket holds it until a buffer is free."
+
+[[requirement]]
+id = "DC-0010-032"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A buffer split into several datagrams MUST be released only once every one of those datagrams is released."
+rationale = "Each datagram of a coalesced read is a part of the one buffer, and a part still in use keeps the buffer."
+
+[[requirement]]
+id = "DC-0010-033"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "A released buffer SHOULD return to the pool of the worker that allocated it, to be reused instead of freed."
+rationale = "Reuse keeps the system allocator off the path of every datagram."
+
+[[requirement]]
+id = "DC-0010-034"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A released buffer whose pool has shut down MUST be freed."
+rationale = "A buffer with nowhere to return would leak."
+
+[[requirement]]
+id = "DC-0010-035"
+level = "MAY"
+polarity = "required"
+binds_to = "system"
+statement = "A pool MAY allocate buffers before they are needed, so that its first allocations don't wait on the system allocator."
+rationale = "The first datagrams then cost no more than the later ones."
+
+[[requirement]]
+id = "DC-0010-036"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "Where a socket coalesces received datagrams, its receive buffers SHOULD hold 65535 bytes."
+rationale = "A coalesced read can return up to 65535 bytes, and a smaller buffer would cut it."

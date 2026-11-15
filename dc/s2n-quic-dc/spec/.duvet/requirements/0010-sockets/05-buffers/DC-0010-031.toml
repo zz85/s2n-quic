@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/05-buffers.md#DC-0010-031"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST NOT read from its socket without a free buffer to read into."

@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/07-workers.md#DC-0010-043"
+
+[[spec]]
+level = "MUST"
+quote = "A busy-poll worker MUST poll each of its tasks in order of priority, highest first, in every cycle."

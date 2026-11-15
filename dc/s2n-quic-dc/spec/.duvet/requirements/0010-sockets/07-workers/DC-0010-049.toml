@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/07-workers.md#DC-0010-049"
+
+[[spec]]
+level = "MUST"
+quote = "A worker task that fails with an unrecovered fault MUST stop the process."

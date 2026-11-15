@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/02-dispatch.md#DC-0010-013"
+
+[[spec]]
+level = "MUST"
+quote = "The receiver MUST ignore bytes of value zero that follow a packet up to the end of its datagram."

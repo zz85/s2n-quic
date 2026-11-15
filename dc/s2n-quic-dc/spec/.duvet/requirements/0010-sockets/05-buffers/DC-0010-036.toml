@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/05-buffers.md#DC-0010-036"
+
+[[spec]]
+level = "SHOULD"
+quote = "Where a socket coalesces received datagrams, its receive buffers SHOULD hold 65535 bytes."

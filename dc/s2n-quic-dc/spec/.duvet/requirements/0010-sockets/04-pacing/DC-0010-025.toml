@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/04-pacing.md#DC-0010-025"
+
+[[spec]]
+level = "MUST"
+quote = "A paced sender's burst MUST NOT exceed the time its configured rate takes to send 65535 bytes."

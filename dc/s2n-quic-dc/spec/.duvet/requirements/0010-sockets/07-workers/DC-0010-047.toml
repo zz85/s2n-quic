@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/07-workers.md#DC-0010-047"
+
+[[spec]]
+level = "MUST"
+quote = "A watchdog MUST stop the process when a worker's cycle doesn't complete within the configured timeout, after reporting the worker and the task it is stuck in."

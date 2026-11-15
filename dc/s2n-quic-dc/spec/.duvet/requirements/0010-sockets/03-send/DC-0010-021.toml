@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/03-send.md#DC-0010-021"
+
+[[spec]]
+level = "MUST"
+quote = "A send whose congestion marking is anything other than not congestion capable MUST set that marking on each datagram it sends."

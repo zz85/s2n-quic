@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/07-workers.md#DC-0010-046"
+
+[[spec]]
+level = "MUST"
+quote = "A busy-poll worker MUST stop once every handle that can give it tasks is dropped."

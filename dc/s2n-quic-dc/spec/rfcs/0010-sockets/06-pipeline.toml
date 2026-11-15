@@ -1,0 +1,70 @@
+[section]
+anchor = "pipeline"
+title = "Pipeline channels"
+problem = "A pipeline stage that processes everything ready before it yields keeps every other task on its worker waiting, and one that wakes itself too often spends its time waking."
+motivation = "A budget for each poll cycle bounds how long one stage runs, and one wake at the end keeps the pipeline going without a wake for every item."
+prose = "Received and sent items pass between stages through channels. A pipeline that is given a budget of items for each poll cycle processes items until its budget runs out and then yields, and wakes itself once where items remain. A two-input priority merge serves its priority input first, and a priority merge over a list of inputs starts each poll cycle at its highest-priority input and then takes the inputs in turn. A stage that spreads items over several outputs takes the outputs in turn, and moves every item its input holds in one poll."
+
+[[requirement]]
+id = "DC-0010-037"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Each poll of a pipeline stage that is given a budget for its poll cycle MUST process at most the items that budget allows and then yield."
+rationale = "A stage that runs until it is empty keeps the other tasks of its worker waiting."
+
+[[requirement]]
+id = "DC-0010-038"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A pipeline whose poll ends with items left MUST wake itself once to continue."
+rationale = "A pipeline that yields with items left and doesn't wake would leave them until an unrelated event."
+
+[[requirement]]
+id = "DC-0010-039"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A two-input priority merge MUST take an item from its priority input whenever one is ready, before it takes one from its other input."
+rationale = "Control traffic such as acknowledgements can't wait behind bulk data."
+
+[[requirement]]
+id = "DC-0010-051"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A priority merge over a list of inputs MUST start each poll cycle at its highest-priority input, and start each later take in that cycle at the input after the one it took last."
+rationale = "Each cycle serves the highest-priority input first, and taking the inputs in turn within the cycle keeps a busy input from starving the others."
+
+[[requirement]]
+id = "DC-0010-040"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An item a priority merge reads ahead MUST be delivered by its next receive."
+rationale = "A look-ahead that dropped its item would lose it."
+
+[[requirement]]
+id = "DC-0010-041"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A socket sender stage that fails to send an item MUST return the item with the error, so that the caller releases it."
+rationale = "The item holds a buffer and may hold state the caller has to clean up."
+
+[[requirement]]
+id = "DC-0010-042"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "A stage that spreads items across several outputs SHOULD give each item to the next output in turn after the one it used last."
+rationale = "Taking outputs in turn spreads the load evenly."
+
+[[requirement]]
+id = "DC-0010-052"
+level = "MAY"
+polarity = "required"
+binds_to = "system"
+statement = "A stage that spreads items across several outputs MAY move every item its input holds in one poll, until its input or every output is pending."
+rationale = "The stage does no work on an item beyond moving it, so moving every ready item at once keeps its outputs fed without a wake for each item."

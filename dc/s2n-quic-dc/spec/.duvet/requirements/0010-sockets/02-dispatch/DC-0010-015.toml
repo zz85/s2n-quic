@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/02-dispatch.md#DC-0010-015"
+
+[[spec]]
+level = "SHOULD"
+quote = "A receiver SHOULD log each packet it drops, with the reason it dropped it, at a level that is off by default."

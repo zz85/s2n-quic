@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/06-pipeline.md#DC-0010-037"
+
+[[spec]]
+level = "MUST"
+quote = "Each poll of a pipeline stage that is given a budget for its poll cycle MUST process at most the items that budget allows and then yield."

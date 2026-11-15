@@ -1,0 +1,70 @@
+[section]
+anchor = "send"
+title = "Sending datagrams"
+problem = "A send that mixes destinations or markings, or segments that the network stack can't split evenly, would deliver datagrams to the wrong place or in the wrong sizes."
+motivation = "Sending several equal segments in one call to the network stack costs far less than one call for each datagram, and the stack splits a send only at one segment size."
+prose = "A send hands the network stack one or more segments for one destination, with one congestion marking. Where it holds more than one segment, the stack splits it into datagrams of the segments' size: every segment but the last is that size, the last isn't longer, and the segments of one send total at most 65535 bytes."
+
+[[requirement]]
+id = "DC-0010-016"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Each send MUST address all of its segments to one destination and give them one congestion marking."
+rationale = "The network stack sets one destination and one marking for the datagrams of one send."
+
+[[requirement]]
+id = "DC-0010-017"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Every segment of a send except the last MUST be the same size."
+rationale = "The network stack splits a send at one segment size."
+
+[[requirement]]
+id = "DC-0010-018"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "The last segment of a send MUST NOT be longer than the segments before it."
+rationale = "A last segment longer than the segment size would be split into two datagrams, and its packet would be cut in two."
+
+[[requirement]]
+id = "DC-0010-019"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "The segments of one send MUST NOT total more than 65535 bytes."
+rationale = "The network stack takes at most 65535 bytes in one send of datagrams."
+
+[[requirement]]
+id = "DC-0010-020"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A send of more than one segment MUST ask the network stack to split it into datagrams of the segments' size."
+rationale = "Without the segment size, the stack would send the segments as one datagram."
+
+[[requirement]]
+id = "DC-0010-021"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A send whose congestion marking is anything other than not congestion capable MUST set that marking on each datagram it sends."
+rationale = "The peer's congestion feedback reads the marking the sender set."
+
+[[requirement]]
+id = "DC-0010-022"
+level = "MAY"
+polarity = "required"
+binds_to = "system"
+statement = "A send of a single segment MAY go without a segment size."
+rationale = "A single segment is already one datagram, so the stack has nothing to split."
+
+[[requirement]]
+id = "DC-0010-023"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "A sender SHOULD read its socket's local address once and keep it, instead of asking the operating system for it on each use."
+rationale = "A socket's local address doesn't change once it is bound, and asking for it costs a call to the operating system."

@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/03-send.md#DC-0010-019"
+
+[[spec]]
+level = "MUST"
+quote = "The segments of one send MUST NOT total more than 65535 bytes."

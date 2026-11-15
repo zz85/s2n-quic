@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/05-buffers.md#DC-0010-032"
+
+[[spec]]
+level = "MUST"
+quote = "A buffer split into several datagrams MUST be released only once every one of those datagrams is released."

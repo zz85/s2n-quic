@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/02-dispatch.md#DC-0010-009"
+
+[[spec]]
+level = "MUST"
+quote = "The receiver MUST decode each datagram as one packet and pass it to the handler of its kind: control, stream, application datagram, queue reset, stale key, replay detected or unknown path secret."

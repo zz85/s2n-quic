@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/06-pipeline.md#DC-0010-039"
+
+[[spec]]
+level = "MUST"
+quote = "A two-input priority merge MUST take an item from its priority input whenever one is ready, before it takes one from its other input."

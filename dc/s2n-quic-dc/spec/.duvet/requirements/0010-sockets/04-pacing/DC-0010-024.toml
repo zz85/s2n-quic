@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/04-pacing.md#DC-0010-024"
+
+[[spec]]
+level = "MUST"
+quote = "A paced sender MUST hold its average sending rate to the rate it is configured with, in bits per second."

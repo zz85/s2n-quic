@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/03-send.md#DC-0010-017"
+
+[[spec]]
+level = "MUST"
+quote = "Every segment of a send except the last MUST be the same size."

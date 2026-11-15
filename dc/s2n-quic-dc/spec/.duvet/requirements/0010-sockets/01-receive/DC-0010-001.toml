@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/01-receive.md#DC-0010-001"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST deliver each datagram it reads with the address of the datagram's sender and the explicit congestion notification marking the network set on it."

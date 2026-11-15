@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/03-send.md#DC-0010-023"
+
+[[spec]]
+level = "SHOULD"
+quote = "A sender SHOULD read its socket's local address once and keep it, instead of asking the operating system for it on each use."

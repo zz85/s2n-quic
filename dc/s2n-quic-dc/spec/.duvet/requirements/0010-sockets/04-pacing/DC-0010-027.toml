@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/04-pacing.md#DC-0010-027"
+
+[[spec]]
+level = "MAY"
+quote = "A paced sender MAY send an item that takes its credit below zero."

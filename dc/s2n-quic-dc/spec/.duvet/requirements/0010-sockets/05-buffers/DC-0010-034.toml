@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/05-buffers.md#DC-0010-034"
+
+[[spec]]
+level = "MUST"
+quote = "A released buffer whose pool has shut down MUST be freed."

@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/02-dispatch.md#DC-0010-011"
+
+[[spec]]
+level = "MUST"
+quote = "A datagram that doesn't decode as a packet MUST be dropped without stopping the receipt of later datagrams."

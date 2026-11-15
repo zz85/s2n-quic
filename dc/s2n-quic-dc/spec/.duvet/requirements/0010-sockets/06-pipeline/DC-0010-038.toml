@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/06-pipeline.md#DC-0010-038"
+
+[[spec]]
+level = "MUST"
+quote = "A pipeline whose poll ends with items left MUST wake itself once to continue."
