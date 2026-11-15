@@ -1,6 +1,6 @@
 ## Clocks and timers {#clock}
 
-A clock reports the current time and creates timers. Time is a count of nanoseconds since the clock's start. A timer has an optional target, and while it has one it is armed: a task waiting on it wakes once the clock reaches the target. A timer's target can move, and the timer can be cancelled.
+A clock reports the current time and creates timers. Time is a count of nanoseconds since the clock's start. A timer has an optional target, and while it has one it is armed: a task waiting on it wakes once the clock reaches the target. A timer's target can move, and the timer can be cancelled. The inspector executor runs nothing, so its clock doesn't advance and its timers never fire.
 
 ### DC-0012-011 {#DC-0012-011}
 

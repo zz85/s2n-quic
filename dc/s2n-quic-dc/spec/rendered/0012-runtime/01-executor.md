@@ -1,6 +1,6 @@
 ## Executor and workers {#executor}
 
-An executor bundles a way to start tasks with a clock. It has a fixed number of workers, numbered from zero. A component starts a task either on any worker or on a chosen worker, and a task started on a chosen worker runs on that worker for its whole life. Several executors meet this interface: one whose workers poll without sleeping, one whose workers each run a single-threaded event loop, a simulation that runs every worker on one thread in a deterministic order, and an inspector that records the tasks a configuration starts without running them.
+An executor bundles a way to start tasks with a clock. It has a fixed number of workers, numbered from zero. A component starts a task either on any worker or on a chosen worker, and a task started on a chosen worker runs on that worker for its whole life. Several executors meet this interface: one whose workers poll without sleeping, one whose workers each run a single-threaded event loop, a simulation that runs every worker on one thread in a deterministic order, and an inspector that holds the tasks a configuration starts without running them.
 
 ### DC-0012-001 {#DC-0012-001}
 
@@ -32,7 +32,7 @@ A simulation executor MUST run its tasks on one thread, in an order set by its s
 
 ### DC-0012-008 {#DC-0012-008}
 
-An inspector executor MUST record each task started on it, with its name and its worker, without running the task.
+An inspector executor MUST hold each task it is given without running it.
 
 ### DC-0012-009 {#DC-0012-009}
 

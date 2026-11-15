@@ -3,7 +3,7 @@ anchor = "clock"
 title = "Clocks and timers"
 problem = "Pacing, loss detection and timeouts all wait for points in time. A clock whose time goes backward, or arithmetic on times that wraps, would make a timer fire at the wrong moment or never."
 motivation = "One clock interface, with times that only grow and arithmetic that saturates, lets every component wait for a time in the same way, and lets a simulation replace the wall clock with its own."
-prose = "A clock reports the current time and creates timers. Time is a count of nanoseconds since the clock's start. A timer has an optional target, and while it has one it is armed: a task waiting on it wakes once the clock reaches the target. A timer's target can move, and the timer can be cancelled."
+prose = "A clock reports the current time and creates timers. Time is a count of nanoseconds since the clock's start. A timer has an optional target, and while it has one it is armed: a task waiting on it wakes once the clock reaches the target. A timer's target can move, and the timer can be cancelled. The inspector executor runs nothing, so its clock doesn't advance and its timers never fire."
 
 [[requirement]]
 id = "DC-0012-011"

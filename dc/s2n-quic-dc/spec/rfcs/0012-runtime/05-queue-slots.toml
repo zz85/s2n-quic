@@ -3,22 +3,30 @@ anchor = "queue-slots"
 title = "Queue slots"
 problem = "Many streams share one peer's path, and each inbound stream or control frame has to reach the handler of its own stream. A frame that reached a stream that has since ended, and whose slot now holds another stream, would corrupt that stream."
 motivation = "A table of slots indexed by the queue identifier routes each frame in constant time, and a binding identifier in each slot lets dispatch tell a frame of the current stream from a late frame of an earlier stream that held the same slot."
-prose = "Each peer has a table of queue slots that routes each inbound stream frame and control frame to the handler of its stream. A slot is found by its index, the queue identifier both peers agree on when a stream opens. A slot carries a binding identifier, which says which stream holds the slot now, and two halves, one for stream frames and one for control frames. Each half records whether its sender is alive and whether a receiver holds it. The table grows by adding pages, each twice the size of the one before, and never moves a slot it has."
+prose = "Each peer has a table of queue slots that routes each inbound stream frame and control frame to the handler of its stream. A stream's data can also arrive as a message in segments, and the receiver's wake point is the stream offset up to which it was last woken to read. A slot is found by its index, the queue identifier both peers agree on when a stream opens. A slot carries a binding identifier, which says which stream holds the slot now, and two halves, one for stream frames and one for control frames. Each half records whether its sender is alive and whether a receiver holds it. The table grows by adding pages, each twice the size of the one before, and never moves a slot it has."
 
 [[requirement]]
 id = "DC-0012-036"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "Dispatch MUST deliver a frame to a slot only where the frame's binding identifier equals the slot's current binding."
+statement = "Dispatch MUST deliver a frame to a bound slot only where the frame's binding identifier equals the slot's current binding."
 rationale = "A late frame of an earlier stream that held the slot carries that stream's binding, and delivering it would corrupt the stream that holds the slot now."
+
+[[requirement]]
+id = "DC-0012-062"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A server MUST accept the first frame of a stream for a free slot whose last binding is lower than the frame's binding, by binding the slot to the frame's stream."
+rationale = "The server learns of a new stream from its first frame, and a binding greater than the slot's last one shows that the frame is of a stream newer than any that held the slot."
 
 [[requirement]]
 id = "DC-0012-037"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "Dispatch MUST reject a frame where its slot isn't allocated, its binding is older or newer than the slot's, the half it targets has no receiver, or that half's sender is closed."
+statement = "Dispatch MUST reject a frame where its slot is free and the frame can't bind it, its binding is older or newer than the bound slot's, the half it targets has no receiver, or that half's sender is closed."
 rationale = "Each of these frames has no live stream to go to, and delivering it would put it in front of a handler it doesn't belong to."
 
 [[requirement]]
@@ -58,5 +66,13 @@ id = "DC-0012-041"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "Delivering a frame to a half that has a receiver MUST wake the receiver's task."
+statement = "Delivering a stream data frame or a control frame to a half that has a receiver MUST wake the receiver's task."
 rationale = "The receiver's task sleeps until a frame arrives, and without a wake it would never read the frame."
+
+[[requirement]]
+id = "DC-0012-063"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Delivering a segment of a message MUST wake the receiver's task only where the segment ends the message, lies below the receiver's wake point, or carries the writer's blocked flag."
+rationale = "A segment in the middle of a message can't be read on its own, so waking for it costs a poll for nothing, while a receiver woken earlier or a blocked writer waits on it."

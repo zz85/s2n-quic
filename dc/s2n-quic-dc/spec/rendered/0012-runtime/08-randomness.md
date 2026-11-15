@@ -12,7 +12,7 @@ Outside a simulation, the fast generator MUST be seeded from the operating syste
 
 ### DC-0012-056 {#DC-0012-056}
 
-Within a simulation, the fast generator MUST be seeded from the simulation's seed.
+Within a simulation, the fast generator MUST be seeded from the identifier of the simulation group it runs in.
 
 ### DC-0012-057 {#DC-0012-057}
 

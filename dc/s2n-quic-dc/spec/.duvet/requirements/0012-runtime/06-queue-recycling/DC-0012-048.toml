@@ -2,4 +2,4 @@ target = "rendered/0012-runtime/06-queue-recycling.md#DC-0012-048"
 
 [[spec]]
 level = "MUST"
-quote = "A client MUST NOT allocate a queue identifier at or above the limit the peers agreed."
+quote = "A client MUST NOT allocate a fresh queue identifier at or above the limit the peers agreed."

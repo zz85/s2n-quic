@@ -26,8 +26,8 @@ id = "DC-0012-056"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "Within a simulation, the fast generator MUST be seeded from the simulation's seed."
-rationale = "A run with the same seed then makes the same choices, so a failure can be reproduced."
+statement = "Within a simulation, the fast generator MUST be seeded from the identifier of the simulation group it runs in."
+rationale = "A run of the same simulation then makes the same choices, so a failure can be reproduced."
 
 [[requirement]]
 id = "DC-0012-057"

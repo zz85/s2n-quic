@@ -2,8 +2,8 @@
 anchor = "timer-wheel"
 title = "Timing wheel"
 problem = "A peer holds many timers at once, one or more for each stream, and arming a separate timer for each would cost a system timer for each stream and wake the worker once for each timer."
-motivation = "A timing wheel holds every pending entry of a component behind one timer and releases due entries in the order they were sent, so that a component's later events don't overtake its earlier ones. Its timer fires at the start of the earliest occupied slot, so an entry far ahead can wake the worker once for each level it moves down through, and an advance after a long sleep costs time in proportion to the ticks that passed."
-prose = "A timing wheel holds pending entries, each with an optional target time, and releases each entry once its target has passed. It counts time in ticks of a fixed base length, which a component chooses for its use: a fine tick, such as a microsecond, for pacing and loss detection, and a coarse tick, such as a second, for idle timeouts. Entries arrive from a sender in order, and the wheel keeps that order among entries due at the same tick. An entry's target can be removed while the wheel holds it, which makes the entry due at once, but it can't move to a later time. The wheel keeps its entries in levels of growing span, and moves an entry to a finer level as its target comes near."
+motivation = "A timing wheel holds every pending entry of a component behind one timer, and releases the entries that hold a target and fall due at the same tick in the order they were sent. An entry without a target is released as the wheel reads it, so it can come out ahead of an earlier entry whose target is already due. Its timer fires at the start of the earliest occupied slot, so an entry far ahead can wake the worker once for each level it moves down through, and an advance after a long sleep costs time in proportion to the ticks that passed."
+prose = "A timing wheel holds pending entries, each with an optional target time, and releases each entry once its target has passed. It counts time in ticks of a fixed base length, which a component chooses for its use: a fine tick, such as a microsecond, for pacing and loss detection, and a coarse tick, such as a second, for idle timeouts. Entries arrive from a sender in order, and the wheel keeps that order among the entries that hold a target and are due at the same tick. An entry's target can be removed while the wheel holds it, which makes the entry due at once, but it can't move to a later time. The wheel keeps its entries in levels of growing span, and moves an entry to a finer level as its target comes near."
 
 [[requirement]]
 id = "DC-0012-019"
@@ -42,8 +42,8 @@ id = "DC-0012-023"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "Entries from one sender that are due at the same tick MUST be released in the order the sender sent them."
-rationale = "A sender's later event, such as a close, has to come after its earlier one, such as the data the close follows."
+statement = "Entries from one sender that hold a target and are due at the same tick MUST be released in the order the sender sent them."
+rationale = "A component handles the timed events it scheduled for one tick in the order it scheduled them."
 
 [[requirement]]
 id = "DC-0012-024"

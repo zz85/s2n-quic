@@ -1,6 +1,6 @@
 ## Timing wheel {#timer-wheel}
 
-A timing wheel holds pending entries, each with an optional target time, and releases each entry once its target has passed. It counts time in ticks of a fixed base length, which a component chooses for its use: a fine tick, such as a microsecond, for pacing and loss detection, and a coarse tick, such as a second, for idle timeouts. Entries arrive from a sender in order, and the wheel keeps that order among entries due at the same tick. An entry's target can be removed while the wheel holds it, which makes the entry due at once, but it can't move to a later time. The wheel keeps its entries in levels of growing span, and moves an entry to a finer level as its target comes near.
+A timing wheel holds pending entries, each with an optional target time, and releases each entry once its target has passed. It counts time in ticks of a fixed base length, which a component chooses for its use: a fine tick, such as a microsecond, for pacing and loss detection, and a coarse tick, such as a second, for idle timeouts. Entries arrive from a sender in order, and the wheel keeps that order among the entries that hold a target and are due at the same tick. An entry's target can be removed while the wheel holds it, which makes the entry due at once, but it can't move to a later time. The wheel keeps its entries in levels of growing span, and moves an entry to a finer level as its target comes near.
 
 ### DC-0012-019 {#DC-0012-019}
 
@@ -20,7 +20,7 @@ When a timing wheel advances to a time, it MUST release every held entry whose t
 
 ### DC-0012-023 {#DC-0012-023}
 
-Entries from one sender that are due at the same tick MUST be released in the order the sender sent them.
+Entries from one sender that hold a target and are due at the same tick MUST be released in the order the sender sent them.
 
 ### DC-0012-024 {#DC-0012-024}
 

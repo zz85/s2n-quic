@@ -3,7 +3,7 @@ anchor = "executor"
 title = "Executor and workers"
 problem = "Each component of the stack runs as tasks, and some of those tasks hold state that only one thread can touch. Without a shared way to start tasks and bind them to a worker, each component would start its own threads, and a task bound to one thread could be moved to another."
 motivation = "One executor interface, with a fixed set of workers and a way to start a task on a chosen worker, lets every component share the same threads, lets a test replace them with a deterministic simulation, and lets a tool list the tasks a configuration starts without running them."
-prose = "An executor bundles a way to start tasks with a clock. It has a fixed number of workers, numbered from zero. A component starts a task either on any worker or on a chosen worker, and a task started on a chosen worker runs on that worker for its whole life. Several executors meet this interface: one whose workers poll without sleeping, one whose workers each run a single-threaded event loop, a simulation that runs every worker on one thread in a deterministic order, and an inspector that records the tasks a configuration starts without running them."
+prose = "An executor bundles a way to start tasks with a clock. It has a fixed number of workers, numbered from zero. A component starts a task either on any worker or on a chosen worker, and a task started on a chosen worker runs on that worker for its whole life. Several executors meet this interface: one whose workers poll without sleeping, one whose workers each run a single-threaded event loop, a simulation that runs every worker on one thread in a deterministic order, and an inspector that holds the tasks a configuration starts without running them."
 
 [[requirement]]
 id = "DC-0012-001"
@@ -66,8 +66,8 @@ id = "DC-0012-008"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "An inspector executor MUST record each task started on it, with its name and its worker, without running the task."
-rationale = "A tool lists the tasks a configuration would start, with their workers, without starting the system."
+statement = "An inspector executor MUST hold each task it is given without running it."
+rationale = "A tool lists the tasks a configuration would start, from the records of DC-0012-004, without starting the system."
 
 [[requirement]]
 id = "DC-0012-009"
