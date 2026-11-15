@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/01-encoding.md#DC-0004-011"
+
+[[spec]]
+level = "MUST"
+quote = "Each stream, datagram and control packet MUST end with an authentication tag at least 16 bytes long, of the length the path's cipher produces."

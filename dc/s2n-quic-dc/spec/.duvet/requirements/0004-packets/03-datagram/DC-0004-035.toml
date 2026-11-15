@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/03-datagram.md#DC-0004-035"
+
+[[spec]]
+level = "MUST"
+quote = "The packet number, the payload length and the application header length of a datagram packet MUST be variable-length integers."

@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/03-datagram.md#DC-0004-036"
+
+[[spec]]
+level = "MUST"
+quote = "Every datagram packet's payload MUST be encrypted."

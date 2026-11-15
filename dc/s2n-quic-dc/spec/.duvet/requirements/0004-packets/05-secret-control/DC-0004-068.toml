@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/05-secret-control.md#DC-0004-068"
+
+[[spec]]
+level = "MUST"
+quote = "The trigger of a queue reset packet MUST be 0 where an unroutable stream packet caused the reset and 1 where an unroutable control packet caused it."

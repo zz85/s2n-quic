@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/06-secret-transfer.md#DC-0004-072"
+
+[[spec]]
+level = "MUST"
+quote = "A secret transfer message MUST be sent only over a channel between processes on one host."

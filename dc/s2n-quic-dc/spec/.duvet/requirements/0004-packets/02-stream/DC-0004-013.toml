@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/02-stream.md#DC-0004-013"
+
+[[spec]]
+level = "MUST"
+quote = "In a stream packet's tag, bit 0x10 MUST be set exactly when the packet belongs to the recovery packet space."

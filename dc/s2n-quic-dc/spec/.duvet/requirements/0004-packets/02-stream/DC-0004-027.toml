@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/02-stream.md#DC-0004-027"
+
+[[spec]]
+level = "MUST"
+quote = "A sender MUST NOT retransmit a packet of a stream that isn't reliable."

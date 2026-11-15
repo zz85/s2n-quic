@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/03-datagram.md#DC-0004-032"
+
+[[spec]]
+level = "MUST"
+quote = "In a datagram packet's tag, bit 0x02 MUST be set exactly when the packet carries an application header length."

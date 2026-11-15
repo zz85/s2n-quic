@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/06-secret-transfer.md#DC-0004-078"
+
+[[spec]]
+level = "MUST"
+quote = "The encode time of a secret transfer message MUST be its sender's raw monotonic clock in microseconds when it encoded the message."

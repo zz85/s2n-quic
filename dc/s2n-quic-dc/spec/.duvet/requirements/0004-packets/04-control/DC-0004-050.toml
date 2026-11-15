@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/04-control.md#DC-0004-050"
+
+[[spec]]
+level = "MUST"
+quote = "The control data of a control packet MUST be a sequence of QUIC frames."

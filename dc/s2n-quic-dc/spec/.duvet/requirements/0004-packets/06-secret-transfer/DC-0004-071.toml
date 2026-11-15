@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/06-secret-transfer.md#DC-0004-071"
+
+[[spec]]
+level = "MUST"
+quote = "A secret transfer message MUST hold, in this order, a version byte, a ciphersuite byte, the export secret's length as a variable-length integer and its bytes, an application parameters version byte, the application parameters, an 8-byte encode time, and the payload's length as a variable-length integer and its bytes."

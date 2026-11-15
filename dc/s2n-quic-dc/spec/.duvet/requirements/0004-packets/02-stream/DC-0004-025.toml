@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/02-stream.md#DC-0004-025"
+
+[[spec]]
+level = "MUST"
+quote = "The associated data of a stream packet's seal MUST be every byte from its tag to the end of its control data."

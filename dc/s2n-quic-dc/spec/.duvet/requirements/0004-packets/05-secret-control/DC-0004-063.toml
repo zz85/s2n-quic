@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/05-secret-control.md#DC-0004-063"
+
+[[spec]]
+level = "MUST"
+quote = "An unknown path secret packet MUST hold, in this order, its tag, the credential identifier, the wire version, the queue identifier where the tag's bit 0x04 is set, and the 16-byte stateless reset token of that credential identifier."

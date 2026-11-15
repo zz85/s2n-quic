@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/04-control.md#DC-0004-052"
+
+[[spec]]
+level = "MUST"
+quote = "A control packet's authentication tag MUST cover every byte from the packet's tag to the end of its control data."

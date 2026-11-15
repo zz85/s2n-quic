@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/01-encoding.md#DC-0004-002"
+
+[[spec]]
+level = "MUST"
+quote = "Each field that this RFC calls a variable-length integer MUST be encoded as a QUIC variable-length integer, whose first byte's two most significant bits give its length of 1, 2, 4 or 8 bytes."

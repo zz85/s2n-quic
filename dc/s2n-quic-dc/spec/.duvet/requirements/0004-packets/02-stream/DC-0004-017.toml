@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/02-stream.md#DC-0004-017"
+
+[[spec]]
+level = "MUST"
+quote = "Bit 0x01 of a stream packet's tag MUST hold the key phase of the key that sealed the packet."

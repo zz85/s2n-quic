@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/05-secret-control.md#DC-0004-059"
+
+[[spec]]
+level = "MUST"
+quote = "A queue reset packet's tag MUST be 0x67."

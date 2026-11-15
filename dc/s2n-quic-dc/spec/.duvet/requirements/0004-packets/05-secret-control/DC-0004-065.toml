@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/05-secret-control.md#DC-0004-065"
+
+[[spec]]
+level = "MUST"
+quote = "A stale key packet MUST hold, in this order, its tag, the credential identifier, the wire version, the sender's queue identifier where the tag's bit 0x04 is set, the minimum key identifier its sender still accepts, and a 16-byte authentication tag."

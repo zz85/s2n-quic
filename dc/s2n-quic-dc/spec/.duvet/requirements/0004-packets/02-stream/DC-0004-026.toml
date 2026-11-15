@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/02-stream.md#DC-0004-026"
+
+[[spec]]
+level = "MUST"
+quote = "A stream packet in the recovery packet space that isn't a retransmission MUST NOT carry a payload."

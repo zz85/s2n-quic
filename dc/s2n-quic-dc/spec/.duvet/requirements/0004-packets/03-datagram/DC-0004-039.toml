@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/03-datagram.md#DC-0004-039"
+
+[[spec]]
+level = "MUST"
+quote = "A sender MUST NOT seal another packet with a key that sealed a datagram packet without a packet number."

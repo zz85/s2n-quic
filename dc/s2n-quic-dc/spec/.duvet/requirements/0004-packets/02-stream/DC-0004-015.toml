@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/02-stream.md#DC-0004-015"
+
+[[spec]]
+level = "MUST"
+quote = "In a stream packet's tag, bit 0x04 MUST be set exactly when the packet carries a final offset."
