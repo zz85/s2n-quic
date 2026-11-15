@@ -1,6 +1,6 @@
 ## Queue slots {#queue-slots}
 
-Each peer has a table of queue slots that routes each inbound stream frame and control frame to the handler of its stream. A stream's data can also arrive as a message in segments, and the receiver's wake point is the stream offset up to which it was last woken to read. A slot is found by its index, the queue identifier both peers agree on when a stream opens. A slot carries a binding identifier, which says which stream holds the slot now, and two halves, one for stream frames and one for control frames. Each half records whether its sender is alive and whether a receiver holds it. The table grows by adding pages, each twice the size of the one before, and never moves a slot it has.
+Each peer has a table of queue slots that routes each inbound stream frame and control frame to the handler of its stream. A stream's data can also arrive as a message in segments, and the receiver's wake point is the highest stream offset up to which a wake is owed: the end of the furthest stream data frame delivered, or of the furthest segment that ends the stream or asks for a wakeup. A slot is found by its index, the queue identifier both peers agree on when a stream opens. A slot carries a binding identifier, which says which stream holds the slot now, and two halves, one for stream frames and one for control frames. Each half records whether its sender is alive and whether a receiver holds it. The table grows by adding pages, each twice the size of the one before, and never moves a slot it has.
 
 ### DC-0012-036 {#DC-0012-036}
 
