@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/05-queue-slots.md#DC-0012-065"
+
+[[spec]]
+level = "MUST"
+quote = "Delivering any other segment of a message MUST NOT wake the receiver's task."

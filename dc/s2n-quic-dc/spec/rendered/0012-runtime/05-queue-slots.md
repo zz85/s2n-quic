@@ -36,4 +36,8 @@ Delivering a stream data frame or a control frame to a half that has a receiver 
 
 ### DC-0012-063 {#DC-0012-063}
 
-Delivering a segment of a message MUST wake the receiver's task only where the segment ends the message, lies below the receiver's wake point, or carries the writer's blocked flag.
+Delivering a segment of a message that ends the message, lies below the receiver's wake point, or carries the writer's blocked flag MUST wake the receiver's task.
+
+### DC-0012-065 {#DC-0012-065}
+
+Delivering any other segment of a message MUST NOT wake the receiver's task.
