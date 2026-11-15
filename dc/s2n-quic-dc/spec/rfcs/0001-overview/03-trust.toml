@@ -1,0 +1,62 @@
+[section]
+anchor = "trust"
+title = "Trust model"
+problem = "A key that a host other than the two peers could derive, or a packet that such a host could forge, would let it read or inject the peers' data."
+motivation = "Tying every key to one handshake lets each side trust a packet exactly as far as that handshake authenticated the other peer."
+prose = "Each peer trusts the other as far as the handshake between them authenticated it, with the credentials that the deployment's handshake configuration asks for: a server that doesn't ask for the client's credentials derives path secrets with any client that reaches it. That handshake's session yields the path secret, from which both peers derive the keys of each later stream and datagram, and the stateless reset tokens each sends the other. A packet that doesn't authenticate under a key, or against a stateless reset token, derived from a path secret comes from a host the system doesn't trust."
+
+[[requirement]]
+id = "DC-0001-014"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The system MUST derive a path secret only from a completed handshake with the peer that shares it."
+rationale = "A path secret is only as trustworthy as the handshake it comes from."
+
+[[requirement]]
+id = "DC-0001-015"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "A deployment SHOULD configure the handshake to authenticate both peers."
+rationale = "Where the server doesn't authenticate the client, any host that reaches the server can derive a path secret with it."
+
+[[requirement]]
+id = "DC-0001-016"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "The system MUST NOT accept the data of a packet of the dc protocol that doesn't authenticate under a key, or against a stateless reset token, derived from a path secret it holds."
+rationale = "Only a peer that completed the handshake can produce such a packet."
+
+[[requirement]]
+id = "DC-0001-017"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Once the handshake's path secret is derived, a client MUST send the server the stateless reset tokens it derives from that secret."
+rationale = "A client that later loses its state can then end the server's use of the path with a reset the server can verify."
+
+[[requirement]]
+id = "DC-0001-018"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A server MUST send the client the stateless reset tokens it derives from the path secret once it has received the client's tokens."
+rationale = "The server's tokens then also confirm to the client that the server received the client's tokens."
+
+[[requirement]]
+id = "DC-0001-019"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A client MUST treat the dc handshake as complete once it receives the server's stateless reset tokens."
+rationale = "The server sends its tokens only after it received the client's, so they confirm both exchanges to the client."
+
+[[requirement]]
+id = "DC-0001-020"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A server MUST treat the dc handshake as complete once the client acknowledges the frame that carries the server's stateless reset tokens."
+rationale = "The acknowledgement tells the server that the client can verify a reset of the path."

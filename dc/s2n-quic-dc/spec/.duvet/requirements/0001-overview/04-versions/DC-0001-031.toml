@@ -1,0 +1,5 @@
+target = "rendered/0001-overview/04-versions.md#DC-0001-031"
+
+[[spec]]
+level = "MUST"
+quote = "Every implementation MUST support dc version 0."

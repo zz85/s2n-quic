@@ -1,0 +1,5 @@
+target = "rendered/0001-overview/03-trust.md#DC-0001-014"
+
+[[spec]]
+level = "MUST"
+quote = "The system MUST derive a path secret only from a completed handshake with the peer that shares it."

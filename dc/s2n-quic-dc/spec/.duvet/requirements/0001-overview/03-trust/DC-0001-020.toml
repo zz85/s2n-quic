@@ -1,0 +1,5 @@
+target = "rendered/0001-overview/03-trust.md#DC-0001-020"
+
+[[spec]]
+level = "MUST"
+quote = "A server MUST treat the dc handshake as complete once the client acknowledges the frame that carries the server's stateless reset tokens."

@@ -1,0 +1,5 @@
+target = "rendered/0001-overview/01-goals.md#DC-0001-003"
+
+[[spec]]
+level = "MUST"
+quote = "The system MUST NOT send application data to a peer in a packet of the dc protocol before it holds a path secret shared with that peer."

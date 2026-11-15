@@ -1,0 +1,5 @@
+target = "rendered/0001-overview/04-versions.md#DC-0001-032"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint that runs the dc protocol MUST ignore each dc-specific frame it receives on a connection where it doesn't use the dc protocol."

@@ -1,0 +1,5 @@
+target = "rendered/0001-overview/01-goals.md#DC-0001-001"
+
+[[spec]]
+level = "MUST"
+quote = "The system MUST protect each packet of the dc protocol's streams and datagrams with a key derived from the path secret the two peers share."

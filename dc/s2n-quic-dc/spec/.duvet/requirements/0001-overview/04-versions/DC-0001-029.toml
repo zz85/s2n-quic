@@ -1,0 +1,5 @@
+target = "rendered/0001-overview/04-versions.md#DC-0001-029"
+
+[[spec]]
+level = "MUST"
+quote = "A peer MUST NOT use the dc protocol on a connection where the server didn't select a dc version."

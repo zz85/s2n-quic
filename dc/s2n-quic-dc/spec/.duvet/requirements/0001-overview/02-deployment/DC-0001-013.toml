@@ -1,0 +1,5 @@
+target = "rendered/0001-overview/02-deployment.md#DC-0001-013"
+
+[[spec]]
+level = "MAY"
+quote = "An endpoint MAY decline to use the dc protocol on a path after the dc version is negotiated."

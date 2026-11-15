@@ -1,0 +1,46 @@
+[section]
+anchor = "goals"
+title = "Goals"
+problem = "Applications inside a datacenter exchange many messages with peers they reach over a short, fast network, and a transport that runs a full authenticated handshake for each connection spends more time and processing on setup than on the data."
+motivation = "Authenticating each pair of hosts once, and then carrying any number of streams and datagrams between them under keys derived from that one handshake, makes each new flow cheap while every packet stays authenticated and encrypted."
+prose = "s2n-quic-dc is a transport for peers inside a datacenter. Two hosts run one authenticated handshake, which establishes a secret for the path between them, and each stream and datagram they exchange afterwards is protected by keys derived from that secret, without a handshake of its own. The later RFCs of this specification state the path secrets, the keys, the wire format, the streams, recovery and congestion control, scheduling, datagrams, sockets and the runtime."
+
+[[requirement]]
+id = "DC-0001-001"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The system MUST protect each packet of the dc protocol's streams and datagrams with a key derived from the path secret the two peers share."
+rationale = "Every packet then carries the authentication and the confidentiality that the one handshake established."
+
+[[requirement]]
+id = "DC-0001-002"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The system MUST let a peer open a stream or send a datagram on a path whose secret it already holds without running a new handshake."
+rationale = "Skipping the handshake for each new flow is the reason the system exists."
+
+[[requirement]]
+id = "DC-0001-003"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "The system MUST NOT send application data to a peer in a packet of the dc protocol before it holds a path secret shared with that peer."
+rationale = "Data sent before the path secret exists would travel without the protection the handshake provides."
+
+[[requirement]]
+id = "DC-0001-004"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The system MUST carry reliable, ordered streams between peers that share a path secret."
+rationale = "Most application messages need their bytes delivered whole and in order."
+
+[[requirement]]
+id = "DC-0001-005"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The system MUST carry unreliable datagrams between peers that share a path secret."
+rationale = "Some traffic tolerates loss and gains nothing from retransmission and ordering."

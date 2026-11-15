@@ -1,0 +1,5 @@
+target = "rendered/0001-overview/02-deployment.md#DC-0001-011"
+
+[[spec]]
+level = "MUST"
+quote = "A peer MUST complete a handshake with a peer that sends neither its peer information nor its data addresses."

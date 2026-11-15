@@ -1,0 +1,5 @@
+target = "rendered/0001-overview/02-deployment.md#DC-0001-007"
+
+[[spec]]
+level = "MAY"
+quote = "A peer MAY advertise in the handshake the addresses on which it receives data packets, which can differ from its handshake address."

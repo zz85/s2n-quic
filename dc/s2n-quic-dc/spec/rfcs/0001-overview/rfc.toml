@@ -1,0 +1,5 @@
+number = 1
+title = "Overview: goals, deployment model, trust model, versions"
+area = "dc"
+abstract = "What the s2n-quic-dc system is for, where it runs, whom it trusts, and how two peers agree on the version of the dc protocol they speak."
+retired = []

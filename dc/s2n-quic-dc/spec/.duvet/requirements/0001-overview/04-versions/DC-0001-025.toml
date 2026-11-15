@@ -1,0 +1,5 @@
+target = "rendered/0001-overview/04-versions.md#DC-0001-025"
+
+[[spec]]
+level = "MUST"
+quote = "A peer MUST encode each dc version in the transport parameter 0xdc0000 as a variable-length integer."

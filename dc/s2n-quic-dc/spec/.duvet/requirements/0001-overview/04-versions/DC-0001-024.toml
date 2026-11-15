@@ -1,0 +1,5 @@
+target = "rendered/0001-overview/04-versions.md#DC-0001-024"
+
+[[spec]]
+level = "MUST"
+quote = "A client MUST NOT list more than four dc versions."

@@ -1,0 +1,5 @@
+target = "rendered/0001-overview/01-goals.md#DC-0001-002"
+
+[[spec]]
+level = "MUST"
+quote = "The system MUST let a peer open a stream or send a datagram on a path whose secret it already holds without running a new handshake."
