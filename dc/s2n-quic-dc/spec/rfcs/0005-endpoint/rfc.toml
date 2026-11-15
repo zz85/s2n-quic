@@ -1,0 +1,5 @@
+number = 5
+title = "Stream endpoint: dispatch, receive, send, acknowledgement, assembly"
+area = "dc"
+abstract = "How one endpoint carries the frames of every stream of a process to its peers: how it packs frames into packets and sends them, authenticates and deduplicates the packets it receives, dispatches their frames to streams, acknowledges them, recovers the frames of lost packets, and discards the state of peers that reject its keys or go silent."
+retired = []

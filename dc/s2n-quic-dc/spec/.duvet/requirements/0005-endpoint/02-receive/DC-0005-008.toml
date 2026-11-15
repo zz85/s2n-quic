@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/02-receive.md#DC-0005-008"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST NOT deliver to a stream the payload of a frame whose packet fails authentication."

@@ -1,0 +1,46 @@
+[section]
+anchor = "binding"
+title = "Binding server streams"
+problem = "The first frames of a new stream can reach the server in any order, a reset can arrive before them, and frames can arrive for a stream the server has already closed; a server that built a stream differently for each order would give one stream different settings."
+motivation = "Letting any opening frame bind the stream, with the same settings carried on each, makes the stream the server builds the same in every arrival order, and answering frames for streams that don't exist lets the client stop sending them."
+prose = "A client opens a stream by sending frames marked as opening frames: a data frame, a message frame or a reset. Each opening frame carries the acceptor that is to receive the new stream and the credit tier the stream is to use. The server binds the stream on the first opening frame that arrives; once the server confirms the binding, the client sends later frames without the opening fields."
+
+[[requirement]]
+id = "DC-0005-017"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A server MUST bind a new stream on the first opening frame for it that arrives, whether that frame is a data frame, a message frame or a reset."
+rationale = "Packets are reordered and lost, so the frame that arrives first isn't always the one the client sent first, and a reset that arrives first still has to reach the stream it ends."
+
+[[requirement]]
+id = "DC-0005-018"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A client MUST carry the same acceptor and the same credit tier on every opening frame of a stream."
+rationale = "The server binds the stream on whichever opening frame arrives first, so the stream it builds is the same in every arrival order only when every opening frame carries the same settings."
+
+[[requirement]]
+id = "DC-0005-019"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A server MUST NOT bind a stream again when an opening frame arrives for a stream it has already bound."
+rationale = "A second binding would build a second stream for one client stream and split its data between them."
+
+[[requirement]]
+id = "DC-0005-020"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A server MUST answer a frame for a stream it hasn't bound, and won't bind from that frame, with a reset sent back to the frame's sender."
+rationale = "The reset tells the client that the stream doesn't exist at the server, so the client stops sending to it and ends the stream for its application."
+
+[[requirement]]
+id = "DC-0005-021"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A receiver MUST authenticate a packet whose frames it rejects for their routing before it acknowledges that packet."
+rationale = "Routing fields travel unencrypted, so a corrupted field can send a genuine packet of a live stream to a stream that doesn't exist; acknowledging that packet without authenticating it would stop its retransmission and leave a permanent gap in the live stream."

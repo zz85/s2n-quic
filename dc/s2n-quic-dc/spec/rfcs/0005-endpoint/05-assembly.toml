@@ -1,0 +1,78 @@
+[section]
+anchor = "assembly"
+title = "Assembling and sending packets"
+problem = "Frames waiting for a peer have to become packets that fit the path and the congestion window, keep their payload private, and can each be matched to the frames they carried when an acknowledgement or a loss comes back."
+motivation = "A packet that records its frames and is numbered in order lets the sender complete or retransmit each frame exactly from the acknowledgements it receives."
+prose = "When a peer's frames are due, the sender packs as many of them as fit into packets of at most the path's packet size and within the congestion window, protects each packet, sends it, and records which frames it carried until it is acknowledged or declared lost. A packet's routing fields and frame metadata travel unencrypted and are authenticated; the frame payloads are encrypted. A sender may zero-pad a datagram after the last packet's tag; the padding isn't part of the packet, and the receiver ignores the bytes after the tag. When the probe timeout of RFC 0007 fires, the sender sends probes so that the peer answers. RFC 0007 sets the congestion window, the pacing and the probe timeout."
+
+[[requirement]]
+id = "DC-0005-032"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A sender MUST NOT send a packet larger than the maximum packet size of the path."
+rationale = "A larger packet would be dropped or fragmented on the path, and every frame in it delayed."
+
+[[requirement]]
+id = "DC-0005-033"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A sender MUST number each packet it sends under one sender identifier higher than every packet it sent before under that identifier."
+rationale = "Increasing numbers let the receiver detect duplicates and let both sides tell which packets an acknowledgement covers."
+
+[[requirement]]
+id = "DC-0005-034"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A sender MUST encrypt the frame payloads of each packet."
+rationale = "Encryption keeps stream data private on the path."
+
+[[requirement]]
+id = "DC-0005-052"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A sender MUST authenticate every byte of each packet that carries frames, its unencrypted header and frame metadata among them."
+rationale = "Authenticating the unencrypted routing fields and metadata keeps an attacker from redirecting or reshaping frames without the receiver noticing."
+
+[[requirement]]
+id = "DC-0005-035"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A sender MUST record which frames each packet carried until the packet is acknowledged or declared lost."
+rationale = "Acknowledgements and losses refer to packets, and the sender completes or retransmits frames only through this record."
+
+[[requirement]]
+id = "DC-0005-036"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "When its probe timeout fires, a sender MUST send two ack-eliciting packets to the peer."
+rationale = "A single probe can't be declared lost by the packet number threshold, so two probes let either the peer's response or a detected loss end the wait."
+
+[[requirement]]
+id = "DC-0005-037"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "When a probe is due and no frames are pending for the peer, the sender MUST make the probe from frames of the oldest packet still awaiting acknowledgement, sent again under a new packet number."
+rationale = "Sending the oldest outstanding frames again makes the probe carry useful data, and the new number lets the response tell the two transmissions apart."
+
+[[requirement]]
+id = "DC-0005-038"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "A sender SHOULD send waiting acknowledgements and probes without holding them behind paced data frames."
+rationale = "Acknowledgements and probes drive recovery on both sides, and pacing exists to spread data over time, not to delay them."
+
+[[requirement]]
+id = "DC-0005-039"
+level = "MAY"
+polarity = "required"
+binds_to = "system"
+statement = "A sender MAY spread one peer's frames across several of its senders, each with its own sender identifier and packet number space."
+rationale = "Several senders let a busy peer use more than one socket, and steering new frames to the least loaded sender keeps each queue short."

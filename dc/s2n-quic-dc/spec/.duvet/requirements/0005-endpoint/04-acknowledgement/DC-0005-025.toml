@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/04-acknowledgement.md#DC-0005-025"
+
+[[spec]]
+level = "MUST"
+quote = "When an ack-eliciting packet arrives while an acknowledgement for its sender is waiting to be sent, the receiver MUST send a further acknowledgement that covers it after the waiting one is sent."

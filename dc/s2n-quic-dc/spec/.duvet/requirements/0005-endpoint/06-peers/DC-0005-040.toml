@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/06-peers.md#DC-0005-040"
+
+[[spec]]
+level = "MUST"
+quote = "The endpoint MUST NOT change any send or receive state on a notice from a peer that fails validation against its path secrets."

@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/05-assembly.md#DC-0005-038"
+
+[[spec]]
+level = "SHOULD"
+quote = "A sender SHOULD send waiting acknowledgements and probes without holding them behind paced data frames."

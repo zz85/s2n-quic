@@ -1,0 +1,62 @@
+[section]
+anchor = "frames"
+title = "Frames and their outcomes"
+problem = "A stream hands the endpoint units of work much smaller or much larger than a packet, and a writer that can't learn what happened to each unit can't free its buffers, retry or report an error."
+motivation = "Separating the stream's unit of work from the packet lets small writes share packets and large writes fill them, and one outcome for every frame lets a writer account for each byte it submitted."
+prose = "A frame is the unit of work a stream submits to the endpoint: a header that says what the frame is and which stream it is for, and an optional payload. The endpoint decides how frames are packed into packets. Every frame that its writer still waits on ends in one outcome that the writer can observe: acknowledged by the peer, or failed with a reason. The reasons are that the peer was declared dead, a transmission error, such as the frame reaching its bound on transmissions, and that the peer doesn't know the path secret. A frame its writer cancelled ends without a report, since nobody waits for it. Frames fall into priority classes, from acknowledgements through control frames to stream data."
+
+[[requirement]]
+id = "DC-0005-001"
+level = "MAY"
+polarity = "required"
+binds_to = "system"
+statement = "A sender MAY carry several frames, of one or more streams to the same peer, in one packet."
+rationale = "Packing small frames together spreads the cost of a packet's header, protection and send over every frame it carries."
+
+[[requirement]]
+id = "DC-0005-002"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "For each frame its writer hasn't cancelled, the endpoint MUST report exactly one outcome to the writer: acknowledged, or failed with its reason."
+rationale = "A writer frees its buffers, retries or reports an error only on a frame's outcome, so a frame without one would hold its writer forever, and a frame with two would be counted twice."
+
+[[requirement]]
+id = "DC-0005-003"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "The endpoint MUST NOT transmit a frame whose writer has cancelled it or gone away."
+rationale = "Nobody reads such a frame, so sending it would spend the path and the congestion window for nothing."
+
+[[requirement]]
+id = "DC-0005-004"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The endpoint MUST bound the number of transmissions of each frame."
+rationale = "A frame that never gets through would otherwise be sent forever, and spend the path for nothing."
+
+[[requirement]]
+id = "DC-0005-051"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "When a frame reaches its bound on transmissions without an acknowledgement, the endpoint MUST report the frame to its writer as failed with the transmission error reason."
+rationale = "The writer of a frame that stops being sent would otherwise never learn that it failed."
+
+[[requirement]]
+id = "DC-0005-005"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A sender MUST send a peer's pending frames of a higher priority class before its pending frames of a lower priority class."
+rationale = "Control frames, such as window updates and resets, unblock streams, so they can't wait behind bulk data."
+
+[[requirement]]
+id = "DC-0005-006"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A sender MUST NOT hold back an acknowledgement because the congestion window is full."
+rationale = "An acknowledgement barely adds to the load on the path, and the peer needs it to free its own window and to detect loss; holding it back would stall both directions."

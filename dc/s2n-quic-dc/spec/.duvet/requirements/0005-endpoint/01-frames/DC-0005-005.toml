@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/01-frames.md#DC-0005-005"
+
+[[spec]]
+level = "MUST"
+quote = "A sender MUST send a peer's pending frames of a higher priority class before its pending frames of a lower priority class."

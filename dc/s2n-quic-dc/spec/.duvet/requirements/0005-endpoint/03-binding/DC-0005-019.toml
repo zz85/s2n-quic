@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/03-binding.md#DC-0005-019"
+
+[[spec]]
+level = "MUST"
+quote = "A server MUST NOT bind a stream again when an opening frame arrives for a stream it has already bound."

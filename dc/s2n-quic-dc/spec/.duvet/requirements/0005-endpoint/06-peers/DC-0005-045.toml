@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/06-peers.md#DC-0005-045"
+
+[[spec]]
+level = "MUST"
+quote = "A sender MUST discard a send state once neither an acknowledgement nor any other packet has arrived from its peer for the idle timeout."

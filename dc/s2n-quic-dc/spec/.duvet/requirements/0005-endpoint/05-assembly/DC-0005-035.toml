@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/05-assembly.md#DC-0005-035"
+
+[[spec]]
+level = "MUST"
+quote = "A sender MUST record which frames each packet carried until the packet is acknowledged or declared lost."

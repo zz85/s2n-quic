@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/01-frames.md#DC-0005-003"
+
+[[spec]]
+level = "MUST"
+quote = "The endpoint MUST NOT transmit a frame whose writer has cancelled it or gone away."

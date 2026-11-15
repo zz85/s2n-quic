@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/03-binding.md#DC-0005-017"
+
+[[spec]]
+level = "MUST"
+quote = "A server MUST bind a new stream on the first opening frame for it that arrives, whether that frame is a data frame, a message frame or a reset."

@@ -1,0 +1,86 @@
+[section]
+anchor = "receive"
+title = "Receiving packets"
+problem = "A packet from the network may be forged, corrupted, replayed or a second copy of one already handled, and acting on any of those would deliver data to a stream twice, or from someone who isn't the peer."
+motivation = "Authenticating each packet and accepting each packet number once lets every stream trust that the frames it receives came from its peer, exactly once."
+prose = "The receiver keeps receive state for each pair of peer credential and sender identifier, since each sender of a peer numbers its packets in its own space. A packet is authenticated with the path secret its credential names and checked against the packet numbers already accepted from its sender, and only then is the payload of its frames delivered to their streams, in the order the packet holds them. When the receiver can't use a packet's credential, it tells the sender why, through the notices RFC 0002 defines."
+
+[[requirement]]
+id = "DC-0005-007"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A receiver MUST keep separate packet number and acknowledgement state for each pair of peer credential and sender identifier."
+rationale = "Each sender of a peer numbers its packets in its own space, so state shared across senders would take one sender's packets for duplicates of another's."
+
+[[requirement]]
+id = "DC-0005-008"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A receiver MUST NOT deliver to a stream the payload of a frame whose packet fails authentication."
+rationale = "A packet that fails authentication may be forged or corrupted, so a stream can't trust any byte of its payload."
+
+[[requirement]]
+id = "DC-0005-009"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A receiver MUST NOT acknowledge a packet that fails authentication."
+rationale = "The sender keeps retransmitting a packet it hasn't heard acknowledged, so the genuine copy of a corrupted packet still arrives."
+
+[[requirement]]
+id = "DC-0005-010"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A receiver MUST NOT dispatch the frames of a packet whose packet number it has already accepted from the same sender, or whose packet number is too old for it to tell."
+rationale = "A copy dispatched twice would give a stream the same data twice, and a packet too old to check might be such a copy."
+
+[[requirement]]
+id = "DC-0005-011"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "When a receiver doesn't hold the path secret that a packet's credential names, it MUST send the packet's sender an unknown path secret notice at the sender's control port."
+rationale = "The notice lets the sender stop using a secret the receiver can't use and fail its frames at once, instead of retransmitting them until they reach their transmission bound."
+
+[[requirement]]
+id = "DC-0005-012"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "When the first packet a receiver authenticates under a new key fails the replay check, the receiver MUST send the packet's sender a replay notice."
+rationale = "The notice tells the sender that its key was rejected, so it handshakes again and retransmits under a new key."
+
+[[requirement]]
+id = "DC-0005-013"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A receiver MUST NOT keep receive state for a new key until a packet under that key has passed both authentication and the replay check."
+rationale = "Receive state kept for a replayed or forged first packet would let a stale path secret take the place of the live one."
+
+[[requirement]]
+id = "DC-0005-014"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A receiver MUST dispatch the frames of an accepted packet in the order the packet carries them."
+rationale = "A sender that packs frames of one stream in order can then count on the stream seeing them in that order within a packet."
+
+[[requirement]]
+id = "DC-0005-015"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A receiver MUST stop dispatching a packet's frames at the first frame whose declared length runs past the end of the packet's payload."
+rationale = "The frames after a frame of impossible length can't be located, and guessing at them would hand a stream bytes that belong to another frame."
+
+[[requirement]]
+id = "DC-0005-016"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A receiver MUST count each packet it accepts as activity from the packet's peer."
+rationale = "The endpoint discards the state of a silent peer, so each packet from a live peer has to count toward keeping that state."

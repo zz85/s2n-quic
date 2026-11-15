@@ -1,0 +1,86 @@
+[section]
+anchor = "acknowledgement"
+title = "Acknowledging packets"
+problem = "A sender can't complete a frame or detect a loss until it learns which packets arrived, but a receiver that acknowledged each packet on its own would flood the path with acknowledgements."
+motivation = "Acknowledging ranges of packets, with at most one acknowledgement waiting for each sender, provides the sender with timely evidence of delivery at a cost that doesn't grow with the packet rate."
+prose = "The receiver acknowledges every packet that carries an ack-eliciting frame. Every frame other than an acknowledgement is ack-eliciting; an acknowledgement can be marked ack-eliciting to ask the peer for a response. An acknowledgement carries the ranges of packet numbers received from one sender, the explicit congestion notification counts of those packets, and the delay between the receipt of the largest packet it covers and its own assembly. The sender applies it to the packets it recorded: the frames of each acknowledged packet are complete, and the frames of each packet declared lost are recovered one by one. RFC 0007 says when a packet is declared lost."
+
+[[requirement]]
+id = "DC-0005-022"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A receiver MUST acknowledge each packet it accepts that carries an ack-eliciting frame."
+rationale = "The sender completes a frame, and detects the loss of others, only from acknowledgements."
+
+[[requirement]]
+id = "DC-0005-023"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A receiver MUST NOT send an acknowledgement in response to a packet that doesn't carry an ack-eliciting frame."
+rationale = "Two peers that each answered the other's acknowledgements would send them to each other forever."
+
+[[requirement]]
+id = "DC-0005-024"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A receiver MUST have at most one acknowledgement for each sender waiting to be sent at any time."
+rationale = "One waiting acknowledgement covers every packet received so far, so a second one would carry the same ranges again and cost a packet for nothing."
+
+[[requirement]]
+id = "DC-0005-025"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "When an ack-eliciting packet arrives while an acknowledgement for its sender is waiting to be sent, the receiver MUST send a further acknowledgement that covers it after the waiting one is sent."
+rationale = "The waiting acknowledgement may have been encoded before the packet arrived, so without a further one the packet could stay unacknowledged."
+
+[[requirement]]
+id = "DC-0005-026"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An acknowledgement MUST carry the sender identifier of the packets it acknowledges."
+rationale = "Each sender of a peer has its own packet number space, so the peer needs the identifier to apply the ranges to the right sender's packets."
+
+[[requirement]]
+id = "DC-0005-027"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An acknowledgement MUST carry the counts of explicit congestion notification marks on the packets received from its sender."
+rationale = "The counts let the sender check that the path supports the marks and react to the congestion they signal."
+
+[[requirement]]
+id = "DC-0005-028"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "On an acknowledgement, a sender MUST report each frame of each newly acknowledged packet to its writer as acknowledged."
+rationale = "A writer frees what it holds for a frame only on the frame's outcome."
+
+[[requirement]]
+id = "DC-0005-029"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "When a packet is declared lost, the sender MUST queue each of its frames for retransmission, except a frame that has been cancelled or has reached its bound on transmissions."
+rationale = "Recovery is per frame: a frame that is still wanted and still within its bound has to reach the peer, and every other frame ends with its own outcome."
+
+[[requirement]]
+id = "DC-0005-030"
+level = "MAY"
+polarity = "required"
+binds_to = "system"
+statement = "When a sender has no packet that carries data awaiting acknowledgement, it MAY mark one acknowledgement it sends as ack-eliciting to measure the round-trip time."
+rationale = "A peer that only receives would otherwise never sample the round-trip time, since nothing it sends asks for a response."
+
+[[requirement]]
+id = "DC-0005-031"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "After an acknowledgement that a sender marked ack-eliciting to measure the round-trip time yields a sample, the sender MUST NOT mark another acknowledgement as ack-eliciting until it has sent a packet that carries data."
+rationale = "Without the pause, two idle peers would keep asking each other for responses, and neither would ever stay quiet long enough for its state to time out."

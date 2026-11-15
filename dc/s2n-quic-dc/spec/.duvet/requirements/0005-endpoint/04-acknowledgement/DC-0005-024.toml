@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/04-acknowledgement.md#DC-0005-024"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST have at most one acknowledgement for each sender waiting to be sent at any time."

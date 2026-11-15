@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/05-assembly.md#DC-0005-032"
+
+[[spec]]
+level = "MUST"
+quote = "A sender MUST NOT send a packet larger than the maximum packet size of the path."

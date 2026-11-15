@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/02-receive.md#DC-0005-010"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST NOT dispatch the frames of a packet whose packet number it has already accepted from the same sender, or whose packet number is too old for it to tell."

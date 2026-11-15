@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/06-peers.md#DC-0005-047"
+
+[[spec]]
+level = "MUST"
+quote = "When a send state discarded for idleness still held packets its peer never acknowledged, and the cooldown of an earlier declaration of the peer as dead isn't running, the endpoint MUST reset every stream with that peer."

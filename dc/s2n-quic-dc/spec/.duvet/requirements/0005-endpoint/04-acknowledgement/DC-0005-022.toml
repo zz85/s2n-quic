@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/04-acknowledgement.md#DC-0005-022"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST acknowledge each packet it accepts that carries an ack-eliciting frame."

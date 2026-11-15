@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/05-assembly.md#DC-0005-033"
+
+[[spec]]
+level = "MUST"
+quote = "A sender MUST number each packet it sends under one sender identifier higher than every packet it sent before under that identifier."

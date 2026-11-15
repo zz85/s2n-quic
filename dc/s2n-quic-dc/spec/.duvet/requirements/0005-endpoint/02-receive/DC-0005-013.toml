@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/02-receive.md#DC-0005-013"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST NOT keep receive state for a new key until a packet under that key has passed both authentication and the replay check."

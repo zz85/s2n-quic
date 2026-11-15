@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/04-acknowledgement.md#DC-0005-028"
+
+[[spec]]
+level = "MUST"
+quote = "On an acknowledgement, a sender MUST report each frame of each newly acknowledged packet to its writer as acknowledged."

@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/05-assembly.md#DC-0005-052"
+
+[[spec]]
+level = "MUST"
+quote = "A sender MUST authenticate every byte of each packet that carries frames, its unencrypted header and frame metadata among them."

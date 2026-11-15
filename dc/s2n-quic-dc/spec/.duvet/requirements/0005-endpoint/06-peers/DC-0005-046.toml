@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/06-peers.md#DC-0005-046"
+
+[[spec]]
+level = "MUST"
+quote = "When a sender discards a send state for idleness, it MUST fail each of its pending and unacknowledged frames with the peer dead reason."

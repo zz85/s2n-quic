@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/01-frames.md#DC-0005-004"
+
+[[spec]]
+level = "MUST"
+quote = "The endpoint MUST bound the number of transmissions of each frame."

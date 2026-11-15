@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/04-acknowledgement.md#DC-0005-029"
+
+[[spec]]
+level = "MUST"
+quote = "When a packet is declared lost, the sender MUST queue each of its frames for retransmission, except a frame that has been cancelled or has reached its bound on transmissions."

@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/02-receive.md#DC-0005-012"
+
+[[spec]]
+level = "MUST"
+quote = "When the first packet a receiver authenticates under a new key fails the replay check, the receiver MUST send the packet's sender a replay notice."
