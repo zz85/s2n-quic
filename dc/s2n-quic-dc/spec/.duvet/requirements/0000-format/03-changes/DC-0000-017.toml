@@ -1,0 +1,5 @@
+target = "rendered/0000-format/03-changes.md#DC-0000-017"
+
+[[spec]]
+level = "MUST"
+quote = "A change MUST hold the rendered documents and the requirement files of its sources, as the render command writes them, in the same pull request as the sources."

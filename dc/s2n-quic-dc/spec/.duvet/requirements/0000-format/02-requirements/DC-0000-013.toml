@@ -1,0 +1,5 @@
+target = "rendered/0000-format/02-requirements.md#DC-0000-013"
+
+[[spec]]
+level = "SHOULD"
+quote = "A statement SHOULD describe what the system does as a peer or an operator observes it, rather than how its code is built."

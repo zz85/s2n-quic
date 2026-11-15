@@ -1,0 +1,5 @@
+target = "rendered/0000-format/02-requirements.md#DC-0000-006"
+
+[[spec]]
+level = "MUST"
+quote = "Each requirement MUST have an identifier of the form `DC-<rfc>-<n>`, where `<rfc>` is the four-digit number of its RFC and `<n>` is a number of at least three digits."

@@ -1,0 +1,5 @@
+target = "rendered/0000-format/02-requirements.md#DC-0000-010"
+
+[[spec]]
+level = "MUST"
+quote = "The statement of each requirement MUST hold exactly one key word, the one its level and its polarity set."

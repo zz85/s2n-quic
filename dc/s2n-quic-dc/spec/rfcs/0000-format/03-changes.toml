@@ -1,0 +1,46 @@
+[section]
+anchor = "changes"
+title = "Changing the specification"
+problem = "A change to the specification that no one reviews, or whose rendered files disagree with its sources, would leave readers and implementers working from requirements that weren't agreed."
+motivation = "A pull request with a review records who changed each requirement and why, and keeps the main branch's requirements the ones that were reviewed."
+prose = "A change to the specification is a pull request to the repository's main branch that edits the sources and holds the files the render command writes from them. A reviewer reads the change against this RFC, and once the review approves it, its writer merges it."
+
+[[requirement]]
+id = "DC-0000-015"
+level = "MUST"
+polarity = "required"
+binds_to = "process"
+statement = "Each change to the specification MUST be proposed as a pull request to the repository's main branch."
+rationale = "A pull request records the change, its review and its merge in one place."
+
+[[requirement]]
+id = "DC-0000-016"
+level = "MUST"
+polarity = "required"
+binds_to = "process"
+statement = "A change to the specification MUST be reviewed by someone other than its writer before it is merged."
+rationale = "A second reader finds the gaps and the conflicts that the writer misses."
+
+[[requirement]]
+id = "DC-0000-017"
+level = "MUST"
+polarity = "required"
+binds_to = "process"
+statement = "A change MUST hold the rendered documents and the requirement files of its sources, as the render command writes them, in the same pull request as the sources."
+rationale = "The rendered files are what readers and the requirement tracking read, so they change together with the sources."
+
+[[requirement]]
+id = "DC-0000-018"
+level = "SHOULD"
+polarity = "required"
+binds_to = "process"
+statement = "A change SHOULD pass the specification's check before it is merged."
+rationale = "The check finds a malformed identifier, a statement without its key word, a conflict between requirements and rendered files that drifted from their sources."
+
+[[requirement]]
+id = "DC-0000-019"
+level = "MAY"
+polarity = "required"
+binds_to = "process"
+statement = "The writer of a change MAY merge it once its review approves it."
+rationale = "The review is the agreement on the change, so a second person isn't needed for the merge itself."

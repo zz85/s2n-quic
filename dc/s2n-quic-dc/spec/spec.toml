@@ -1,0 +1,18 @@
+prefix = "DC"
+levels = ["MUST", "SHOULD", "MAY"]
+implementation_terms = ["rust", "tokio", "aws-lc", "s2n-tls", "io_uring", "epoll", "bach", "bolero", "crossbeam"]
+
+[paths]
+rfcs = "rfcs"
+rendered = "rendered"
+requirements = ".duvet/requirements"
+
+[[system]]
+name = "dc"
+first = 1
+last = 99
+
+[foundation]
+name = "format"
+first = 0
+last = 0

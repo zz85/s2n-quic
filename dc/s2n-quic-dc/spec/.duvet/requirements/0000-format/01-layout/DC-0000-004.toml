@@ -1,0 +1,5 @@
+target = "rendered/0000-format/01-layout.md#DC-0000-004"
+
+[[spec]]
+level = "MUST"
+quote = "Each section of an RFC MUST state the problem it addresses and the motivation for its requirements."

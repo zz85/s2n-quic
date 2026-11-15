@@ -1,0 +1,46 @@
+[section]
+anchor = "layout"
+title = "Layout of the specification"
+problem = "A reader who opens the specification needs to find each RFC, each section and each requirement, and to know which files a person writes and which files a tool writes."
+motivation = "A fixed layout lets a reader and the check find every RFC and every requirement in the same place, and keeps the files a person writes apart from the files the render command writes."
+prose = "The specification lives in the spec directory of the crate. Its configuration, spec.toml, holds the identifier prefix, the levels, the implementation terms, the paths and the groups of RFCs. The rfcs directory holds the sources: the index of every RFC, and one directory for each written RFC, which holds the RFC's rfc.toml and one file for each section. The rendered directory and the .duvet/requirements directory hold the files the render command writes from those sources."
+
+[[requirement]]
+id = "DC-0000-001"
+level = "MUST"
+polarity = "required"
+binds_to = "process"
+statement = "The specification MUST keep the sources of each RFC in a directory of its own under `rfcs`, named for the RFC's four-digit number and a short name."
+rationale = "One directory for each RFC lets a reader and the check find every section of an RFC in one place."
+
+[[requirement]]
+id = "DC-0000-002"
+level = "MUST"
+polarity = "required"
+binds_to = "process"
+statement = "Each RFC MUST have a row in `rfcs/index.toml` that holds its number, its title and its area."
+rationale = "The index is the list of every RFC, written or planned, so a reader sees the whole specification in one file."
+
+[[requirement]]
+id = "DC-0000-003"
+level = "MUST"
+polarity = "required"
+binds_to = "process"
+statement = "The `rfc.toml` of each written RFC MUST hold the same number, title and area as the RFC's row in `rfcs/index.toml`."
+rationale = "Two records of one RFC that disagree would leave a reader unsure which one holds."
+
+[[requirement]]
+id = "DC-0000-004"
+level = "MUST"
+polarity = "required"
+binds_to = "process"
+statement = "Each section of an RFC MUST state the problem it addresses and the motivation for its requirements."
+rationale = "A reader who knows the problem and the motivation can judge whether the requirements solve it, and can write a requirement the section lacks."
+
+[[requirement]]
+id = "DC-0000-005"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "process"
+statement = "A person MUST NOT edit a file under `rendered` or `.duvet/requirements` by hand."
+rationale = "Those files are the render command's output from the sources, and a hand edit would make them disagree with the sources they come from."

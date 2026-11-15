@@ -1,0 +1,5 @@
+target = "rendered/0000-format/01-layout.md#DC-0000-003"
+
+[[spec]]
+level = "MUST"
+quote = "The `rfc.toml` of each written RFC MUST hold the same number, title and area as the RFC's row in `rfcs/index.toml`."

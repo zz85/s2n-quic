@@ -1,0 +1,5 @@
+target = "rendered/0000-format/02-requirements.md#DC-0000-008"
+
+[[spec]]
+level = "MUST"
+quote = "An RFC MUST list in its `retired` list the identifier of each requirement a change removes from it."

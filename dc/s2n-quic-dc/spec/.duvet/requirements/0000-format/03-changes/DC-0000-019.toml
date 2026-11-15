@@ -1,0 +1,5 @@
+target = "rendered/0000-format/03-changes.md#DC-0000-019"
+
+[[spec]]
+level = "MAY"
+quote = "The writer of a change MAY merge it once its review approves it."

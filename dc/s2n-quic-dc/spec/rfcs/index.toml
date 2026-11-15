@@ -1,0 +1,69 @@
+[[rfc]]
+number = 0
+title = "Specification format and change process"
+area = "format"
+
+[[rfc]]
+number = 1
+title = "Overview: goals, deployment model, trust model, versions"
+area = "dc"
+
+[[rfc]]
+number = 2
+title = "Path secrets: handshake, secret map, rehandshake, replay protection"
+area = "dc"
+
+[[rfc]]
+number = 3
+title = "Credentials and key derivation"
+area = "dc"
+
+[[rfc]]
+number = 4
+title = "Wire format of packets"
+area = "dc"
+
+[[rfc]]
+number = 5
+title = "Stream endpoint: dispatch, receive, send, acknowledgement, assembly"
+area = "dc"
+
+[[rfc]]
+number = 6
+title = "Streams and accepting them"
+area = "dc"
+
+[[rfc]]
+number = 7
+title = "Loss recovery, congestion control and pacing"
+area = "dc"
+
+[[rfc]]
+number = 8
+title = "Credit and fair scheduling"
+area = "dc"
+
+[[rfc]]
+number = 9
+title = "Tunneled datagrams"
+area = "dc"
+
+[[rfc]]
+number = 10
+title = "Sockets and IO"
+area = "dc"
+
+[[rfc]]
+number = 11
+title = "Storage IO scheduler"
+area = "dc"
+
+[[rfc]]
+number = 12
+title = "Runtime, timers and tasks"
+area = "dc"
+
+[[rfc]]
+number = 13
+title = "Events, metrics and tracing"
+area = "dc"

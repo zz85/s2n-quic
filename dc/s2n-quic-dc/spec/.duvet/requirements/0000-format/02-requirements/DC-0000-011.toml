@@ -1,0 +1,5 @@
+target = "rendered/0000-format/02-requirements.md#DC-0000-011"
+
+[[spec]]
+level = "MUST"
+quote = "Each requirement MUST state one obligation."

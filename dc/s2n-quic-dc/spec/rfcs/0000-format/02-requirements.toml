@@ -1,0 +1,78 @@
+[section]
+anchor = "requirements"
+title = "Writing a requirement"
+problem = "A requirement that changes its identifier, holds several obligations or states how the code works can't be traced to the code that meets it or tested on its own."
+motivation = "Stable identifiers let code and tests cite a requirement for as long as it holds, and one obligation in plain words lets a reader build and test each requirement on its own."
+prose = "Each requirement holds an identifier, a level, a polarity, a statement and a rationale. The statement holds one key word, which matches the level: MUST, SHOULD or MAY for a required obligation, and MUST NOT, SHOULD NOT or MAY NOT for a forbidden one. A requirement states what the system does, in terms a reader can observe, and leaves out how the code does it."
+
+[[requirement]]
+id = "DC-0000-006"
+level = "MUST"
+polarity = "required"
+binds_to = "process"
+statement = "Each requirement MUST have an identifier of the form `DC-<rfc>-<n>`, where `<rfc>` is the four-digit number of its RFC and `<n>` is a number of at least three digits."
+rationale = "One form of identifier lets a reader, the check and a citation in code read the RFC of each requirement from its identifier."
+
+[[requirement]]
+id = "DC-0000-007"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "process"
+statement = "A change MUST NOT alter the identifier of a requirement that is on the main branch."
+rationale = "Code, tests and other RFCs cite a requirement by its identifier, and a changed identifier would break each citation."
+
+[[requirement]]
+id = "DC-0000-008"
+level = "MUST"
+polarity = "required"
+binds_to = "process"
+statement = "An RFC MUST list in its `retired` list the identifier of each requirement a change removes from it."
+rationale = "The list records which identifiers are spent, so a later writer can see them."
+
+[[requirement]]
+id = "DC-0000-009"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "process"
+statement = "A retired identifier MUST NOT be reused for another requirement."
+rationale = "A citation of a retired identifier would otherwise point at a requirement its writer never read."
+
+[[requirement]]
+id = "DC-0000-010"
+level = "MUST"
+polarity = "required"
+binds_to = "process"
+statement = "The statement of each requirement MUST hold exactly one key word, the one its level and its polarity set."
+rationale = "One key word states one level of obligation, so a reader and the check read the same level from the statement and from the requirement's fields."
+
+[[requirement]]
+id = "DC-0000-011"
+level = "MUST"
+polarity = "required"
+binds_to = "process"
+statement = "Each requirement MUST state one obligation."
+rationale = "A requirement of one obligation can be met, cited and tested on its own."
+
+[[requirement]]
+id = "DC-0000-012"
+level = "MUST"
+polarity = "required"
+binds_to = "process"
+statement = "Each requirement MUST state the reason for its obligation in its rationale."
+rationale = "A reader who knows why a requirement holds can judge a change to it."
+
+[[requirement]]
+id = "DC-0000-013"
+level = "SHOULD"
+polarity = "required"
+binds_to = "process"
+statement = "A statement SHOULD describe what the system does as a peer or an operator observes it, rather than how its code is built."
+rationale = "A statement of observable behavior holds whatever the implementation, so a second implementation can be built from it and checked against it."
+
+[[requirement]]
+id = "DC-0000-014"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "process"
+statement = "A statement MUST NOT name a library, a programming language, a runtime or another choice of implementation."
+rationale = "A named implementation ties the requirement to one way of building the system; the configuration lists such terms so the check finds them."
