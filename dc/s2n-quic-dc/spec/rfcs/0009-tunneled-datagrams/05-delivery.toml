@@ -1,0 +1,30 @@
+[section]
+anchor = "delivery"
+title = "Delivery"
+problem = "An application that takes tunneled datagrams for a reliable, ordered stream loses data without noticing it."
+motivation = "Leaving loss, order and pace to the application keeps each datagram one packet, sealed and sent at once, which suits traffic whose own protocol recovers from loss."
+prose = "Tunneled datagrams are unreliable and unordered: a sender sends each one once, and it can arrive in any order or not at all. The payload is opaque: its meaning is the application's, and the sender and the receiver carry it as it is."
+
+[[requirement]]
+id = "DC-0009-025"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A sender MUST NOT send a tunneled datagram a second time after its first send."
+rationale = "A second send would carry a packet number the receiver already accepted, and the receiver would reject it."
+
+[[requirement]]
+id = "DC-0009-026"
+level = "MAY"
+polarity = "required"
+binds_to = "system"
+statement = "A receiver MAY hand payloads to the application in another order than the order in which they were sent."
+rationale = "Datagrams can arrive out of order, and holding one back to restore the order would delay every datagram after it."
+
+[[requirement]]
+id = "DC-0009-027"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A receiver MUST hand the application each payload it accepts exactly as the sender's caller gave it."
+rationale = "The payload belongs to the application, so the datagram only carries it."

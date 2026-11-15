@@ -1,0 +1,5 @@
+target = "rendered/0009-tunneled-datagrams/04-replay.md#DC-0009-024"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST keep one replay window for each sender's packet numbers, holding the numbers accepted under every key phase it can still open."

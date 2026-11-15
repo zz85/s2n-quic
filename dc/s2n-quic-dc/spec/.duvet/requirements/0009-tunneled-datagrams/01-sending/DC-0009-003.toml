@@ -1,0 +1,5 @@
+target = "rendered/0009-tunneled-datagrams/01-sending.md#DC-0009-003"
+
+[[spec]]
+level = "MUST"
+quote = "A sender MUST NOT seal a datagram whose packet number is larger than a 62-bit variable-length integer holds, and fails that send instead."

@@ -1,0 +1,5 @@
+target = "rendered/0009-tunneled-datagrams/05-delivery.md#DC-0009-026"
+
+[[spec]]
+level = "MAY"
+quote = "A receiver MAY hand payloads to the application in another order than the order in which they were sent."

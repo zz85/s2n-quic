@@ -1,0 +1,5 @@
+target = "rendered/0009-tunneled-datagrams/03-receiving.md#DC-0009-016"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST reject a packet whose routing information bit is set."

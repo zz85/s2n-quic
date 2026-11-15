@@ -1,0 +1,5 @@
+target = "rendered/0009-tunneled-datagrams/03-receiving.md#DC-0009-015"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST reject a packet whose first byte doesn't hold 0100 in its high four bits."

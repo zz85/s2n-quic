@@ -1,0 +1,5 @@
+number = 9
+title = "Tunneled datagrams"
+area = "dc"
+abstract = "How a sender seals an application's payload into one numbered, authenticated datagram under a path secret's key, and how a receiver checks it, drops a repeat and hands its payload to the application, without retransmission or ordering."
+retired = []

@@ -1,0 +1,5 @@
+target = "rendered/0009-tunneled-datagrams/01-sending.md#DC-0009-001"
+
+[[spec]]
+level = "MUST"
+quote = "A sender MUST give each datagram it seals under a key a packet number that no earlier datagram under that key had, whichever of its callers sends it, and whether or not callers send at the same time."

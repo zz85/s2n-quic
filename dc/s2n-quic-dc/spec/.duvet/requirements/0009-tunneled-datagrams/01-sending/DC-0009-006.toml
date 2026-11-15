@@ -1,0 +1,5 @@
+target = "rendered/0009-tunneled-datagrams/01-sending.md#DC-0009-006"
+
+[[spec]]
+level = "MUST"
+quote = "A sender MUST answer a caller, before any send, the most bytes the packet of a payload of a given length can take, or that a payload of that length is too long to send."

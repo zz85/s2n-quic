@@ -1,0 +1,5 @@
+target = "rendered/0009-tunneled-datagrams/01-sending.md#DC-0009-005"
+
+[[spec]]
+level = "MUST"
+quote = "A sender MUST fail a send, without writing to the caller's buffer, where that buffer is shorter than the packet the send would write."

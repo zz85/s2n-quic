@@ -1,0 +1,5 @@
+target = "rendered/0009-tunneled-datagrams/03-receiving.md#DC-0009-020"
+
+[[spec]]
+level = "MAY"
+quote = "A datagram MAY carry more than one tunneled datagram packet, each starting at the byte after the end of the one before it."

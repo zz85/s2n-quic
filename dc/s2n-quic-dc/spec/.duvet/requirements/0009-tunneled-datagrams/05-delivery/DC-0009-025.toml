@@ -1,0 +1,5 @@
+target = "rendered/0009-tunneled-datagrams/05-delivery.md#DC-0009-025"
+
+[[spec]]
+level = "MUST"
+quote = "A sender MUST NOT send a tunneled datagram a second time after its first send."
