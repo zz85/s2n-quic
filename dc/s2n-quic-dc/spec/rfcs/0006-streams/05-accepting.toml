@@ -3,7 +3,7 @@ anchor = "accepting"
 title = "Accepting streams"
 problem = "A server needs to hand each incoming stream to the part of the application that serves it, and to keep a slow consumer from holding an unbounded number of streams."
 motivation = "Routing by acceptor identifier lets one endpoint serve several services, bounded queues with a chosen eviction policy keep memory bounded under load, and spreading streams over receivers lets the application scale out."
-prose = "A server registers acceptors on its endpoint, each under an identifier. Each incoming stream goes to the acceptor its identifier names, and waits in a receiver's queue until the application takes it. A stream that arrives before any receiver has asked for one is turned away as busy. The application clones a receiver to add workers, and drops every receiver to retire the acceptor."
+prose = "A server registers acceptors on its endpoint, each under an identifier. Each incoming stream goes to the acceptor its identifier names, and waits in a receiver's queue until the application takes it. A stream that arrives before any receiver has polled for one or registered to take one is turned away as busy. The application clones a receiver to add workers, and drops every receiver to retire the acceptor."
 
 [[requirement]]
 id = "DC-0006-037"
@@ -82,15 +82,15 @@ id = "DC-0006-046"
 level = "MUST"
 polarity = "forbidden"
 binds_to = "system"
-statement = "The server MUST NOT give streams to a receiver that hasn't yet asked for one."
-rationale = "Streams sent to a receiver that nobody polls would wait in its queue and be evicted while other receivers are idle."
+statement = "The server MUST NOT give streams to a receiver that hasn't yet polled for a stream or registered to take one."
+rationale = "Streams sent to a receiver that nobody polls would wait in its queue and be evicted while other receivers are idle; a receiver that registers says that it is ready to take them."
 
 [[requirement]]
 id = "DC-0006-054"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "Where an acceptor has receivers and none of them has asked for a stream yet, the server MUST reset an incoming stream to that acceptor as busy."
+statement = "Where an acceptor has receivers and none of them has polled for a stream or registered to take one, the server MUST reset an incoming stream to that acceptor as busy."
 rationale = "The client learns at once that the service isn't ready, instead of waiting on a stream that nobody takes."
 
 [[requirement]]
@@ -98,5 +98,13 @@ id = "DC-0006-047"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "Once every receiver of an acceptor is dropped, the server MUST reject streams to the acceptor's identifier, and remove its registration once a stream to it finds every receiver gone."
-rationale = "A retired acceptor then stops taking streams at once, and frees its identifier for a new registration once the server has seen that it is gone."
+statement = "Once every receiver of an acceptor is dropped, the server MUST reject streams to the acceptor's identifier."
+rationale = "A retired acceptor then stops taking streams at once."
+
+[[requirement]]
+id = "DC-0006-056"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Once a stream to an acceptor finds every receiver of the acceptor dropped, the server MUST remove the acceptor's registration."
+rationale = "The retired acceptor's identifier is then free for a new registration once the server has seen that the acceptor is gone."

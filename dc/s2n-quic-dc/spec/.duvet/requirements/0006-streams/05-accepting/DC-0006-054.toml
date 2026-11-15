@@ -2,4 +2,4 @@ target = "rendered/0006-streams/05-accepting.md#DC-0006-054"
 
 [[spec]]
 level = "MUST"
-quote = "Where an acceptor has receivers and none of them has asked for a stream yet, the server MUST reset an incoming stream to that acceptor as busy."
+quote = "Where an acceptor has receivers and none of them has polled for a stream or registered to take one, the server MUST reset an incoming stream to that acceptor as busy."
