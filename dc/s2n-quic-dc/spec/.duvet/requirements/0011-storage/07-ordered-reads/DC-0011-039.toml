@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/07-ordered-reads.md#DC-0011-039"
+
+[[spec]]
+level = "MUST"
+quote = "An ordered read MUST remove a device block's head trim and tail trim from the bytes it delivers for that block."

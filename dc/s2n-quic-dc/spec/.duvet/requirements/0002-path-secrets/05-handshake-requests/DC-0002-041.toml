@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/05-handshake-requests.md#DC-0002-041"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST mark a path secret dead when a flow it opens under that path secret goes unanswered by the peer."

@@ -1,0 +1,5 @@
+target = "rendered/0001-overview/04-versions.md#DC-0001-028"
+
+[[spec]]
+level = "MUST"
+quote = "A server MUST ignore each version of a client's list after its fourth."

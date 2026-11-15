@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/01-encoding.md#DC-0004-007"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST NOT accept a packet whose wire version is other than 0."

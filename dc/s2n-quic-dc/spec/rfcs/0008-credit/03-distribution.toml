@@ -1,0 +1,94 @@
+[section]
+anchor = "distribution"
+title = "Distributing credit by priority"
+problem = "When requests wait, the pool has to choose which of them the returned credit serves: granting each its whole request lets a few holders drain the pool while the rest starve, and serving levels out of order defeats priority."
+motivation = "An equal share for each waiter of a level serves every waiter of the level within a bounded number of grants, and a strict order across levels keeps urgent bytes ahead."
+prose = "One distribution grants every waiting request of a pool. It runs in passes, each woken by a release or by the liveness refill. The credit a pass distributes is the pool's free credit, plus the credit owed to waiting requests, plus the credit returned, held back by the last pass or added by the refill and not yet distributed. Each cancelled wait the pass reclaims adds its request to that credit, and what a pass hasn't granted of it yet is the credit it has left to distribute. A pass serves the levels from highest to lowest, and the waiters of a level in arrival order. At the start of a level it computes one share: the credit it has left to distribute divided by the count of the level's waiters, cancelled ones not yet reclaimed included, but never less than the level's smallest grant. It grants each waiter the lesser of its request and that share. Where the credit left to distribute can't cover what the head waiter is due, the pass stops, and every waiter behind it waits for the next pass. A pass reclaims each cancelled wait it meets at the head of a level, and a reclaim of a wait it finds cancelled before it tries to grant it doesn't count against the budget of its turn. A holder whose grant was smaller than its request asks again and waits at the back of its level."
+
+[[requirement]]
+id = "DC-0008-016"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Exactly one distribution MUST grant credit to the waiting requests of a pool."
+rationale = "One distribution sees every waiter, so it applies the order of this section without coordinating with another."
+
+[[requirement]]
+id = "DC-0008-017"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A pass MUST serve a lower priority level only once it has served every waiter of each higher level."
+rationale = "Strict priority keeps bulk bytes from delaying urgent ones."
+
+[[requirement]]
+id = "DC-0008-018"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A pass MUST serve the waiters of one level in the order they began to wait."
+rationale = "Arrival order bounds how long any waiter waits behind the others of its level."
+
+[[requirement]]
+id = "DC-0008-019"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "At the start of each level, a pass MUST compute one share for all the level's waiters: the credit it has left to distribute divided by the count of requests waiting at the level, cancelled ones not yet reclaimed included, and at least the level's smallest grant."
+rationale = "A share computed once gives every waiter of the pass the same amount, so waiters at the back of the queue get as much as those at the front."
+
+[[requirement]]
+id = "DC-0008-020"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A pass MUST grant each waiter the lesser of its request and its level's share."
+rationale = "A cap at the share keeps a few waiters with large requests from draining the pool ahead of the rest, while a waiter alone at its level gets its whole request."
+
+[[requirement]]
+id = "DC-0008-021"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Where the credit a pass has left to distribute can't cover what the head waiter is due, the pass MUST stop, leaving that waiter and every waiter after it waiting."
+rationale = "Scraps smaller than a waiter is due would give holders too little to make progress, and skipping the head would break the order of levels and of arrivals."
+
+[[requirement]]
+id = "DC-0008-022"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A pool MUST return to its free credit the part of a request that a smaller grant leaves out."
+rationale = "The holder asks again for the rest, so the credit it didn't get stays open to that request and to the others."
+
+[[requirement]]
+id = "DC-0008-023"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A pass MUST wake the holder of each request it grants."
+rationale = "A grant is final once made, and a holder that isn't woken would never commit the bytes it was granted or release them."
+
+[[requirement]]
+id = "DC-0008-024"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The distribution MUST grant at most a set budget of requests in one turn."
+rationale = "A bound on one turn's work keeps a long queue from holding the distribution's task away from other work."
+
+[[requirement]]
+id = "DC-0008-025"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Where a turn ends on its budget while requests it could grant still wait, the distribution MUST run again without waiting for a release."
+rationale = "Otherwise credit the pool holds could sit unused until the next release."
+
+[[requirement]]
+id = "DC-0008-081"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A pass MUST NOT count against the budget of its turn a cancelled wait it reclaims before it tries to grant it."
+rationale = "The budget bounds the grants of a turn, so waits whose holders stopped waiting don't cut short the grants the turn makes to holders that still wait."

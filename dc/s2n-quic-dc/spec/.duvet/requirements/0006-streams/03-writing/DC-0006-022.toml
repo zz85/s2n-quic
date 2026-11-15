@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/03-writing.md#DC-0006-022"
+
+[[spec]]
+level = "MUST"
+quote = "After the write half has sent the end-of-stream signal or has been shut down, it MUST refuse further writes with an error."

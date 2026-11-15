@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/02-admission.md#DC-0011-005"
+
+[[spec]]
+level = "MUST"
+quote = "The device MUST acquire an operation's whole cost in credit from its pool before the operation enters the execution pipeline."

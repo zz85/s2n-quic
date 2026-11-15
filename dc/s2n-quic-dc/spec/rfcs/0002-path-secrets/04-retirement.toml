@@ -1,0 +1,30 @@
+[section]
+anchor = "retirement"
+title = "Retiring and evicting path secrets"
+problem = "A path secret that a rehandshake replaced is still in use by flows opened under it, and one that stays in the map forever wastes a slot of its capacity."
+motivation = "A periodic cleaning pass that evicts retired path secrets after a grace period frees their slots while giving their flows time to end."
+prose = "An endpoint runs a cleaning pass over its secret map at a steady interval. Each pass evicts the retired path secrets whose grace period has ended, and it also starts the periodic rehandshakes of the next section."
+
+[[requirement]]
+id = "DC-0002-033"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint SHOULD run a cleaning pass over its secret map about once a minute."
+rationale = "A pass a minute frees retired slots promptly while costing little."
+
+[[requirement]]
+id = "DC-0002-034"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint SHOULD start each cleaning pass at a random time within its minute."
+rationale = "Random times keep endpoints that start together from cleaning, and rehandshaking, all at once."
+
+[[requirement]]
+id = "DC-0002-035"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint SHOULD evict a retired path secret once 10 cleaning passes have run since it was retired."
+rationale = "About ten minutes lets the flows opened under the retired path secret finish before their keys are gone."

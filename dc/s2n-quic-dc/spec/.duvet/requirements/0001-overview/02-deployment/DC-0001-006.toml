@@ -1,0 +1,5 @@
+target = "rendered/0001-overview/02-deployment.md#DC-0001-006"
+
+[[spec]]
+level = "MUST"
+quote = "The system MUST run each handshake as a QUIC connection over UDP whose cryptographic handshake is TLS 1.3."

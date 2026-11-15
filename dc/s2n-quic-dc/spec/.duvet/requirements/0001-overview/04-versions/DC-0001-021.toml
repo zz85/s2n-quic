@@ -1,0 +1,5 @@
+target = "rendered/0001-overview/04-versions.md#DC-0001-021"
+
+[[spec]]
+level = "MUST"
+quote = "A dc version MUST be a whole number from 0 to 4294967295."

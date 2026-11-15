@@ -1,0 +1,5 @@
+target = "rendered/0013-events/04-metrics.md#DC-0013-022"
+
+[[spec]]
+level = "MUST"
+quote = "The kind of each metric MUST be one of a counter, a gauge, a boolean counter and a summary."

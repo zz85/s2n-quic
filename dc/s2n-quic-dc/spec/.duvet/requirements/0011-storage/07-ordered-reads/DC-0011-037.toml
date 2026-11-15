@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/07-ordered-reads.md#DC-0011-037"
+
+[[spec]]
+level = "MUST"
+quote = "An ordered read MUST NOT let a block waiting for credit on one device delay the submission of a block on another device."

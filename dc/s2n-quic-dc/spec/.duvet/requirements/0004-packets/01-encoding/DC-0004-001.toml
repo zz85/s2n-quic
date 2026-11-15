@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/01-encoding.md#DC-0004-001"
+
+[[spec]]
+level = "MUST"
+quote = "Each fixed-width integer field MUST be encoded most significant byte first."

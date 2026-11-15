@@ -1,0 +1,5 @@
+target = "rendered/0013-events/07-logging.md#DC-0013-047"
+
+[[spec]]
+level = "MUST"
+quote = "Writing or leaving out a log line MUST NOT change the endpoint's protocol behavior."

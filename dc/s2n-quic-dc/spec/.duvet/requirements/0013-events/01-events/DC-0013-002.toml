@@ -1,0 +1,5 @@
+target = "rendered/0013-events/01-events.md#DC-0013-002"
+
+[[spec]]
+level = "MUST"
+quote = "Each event MUST carry the time at which it happened and its subject, which is either the endpoint as a whole or one connection."

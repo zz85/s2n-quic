@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/08-observability.md#DC-0011-042"
+
+[[spec]]
+level = "MUST"
+quote = "The device MUST report its load as its pool capacity less its available credit, counting the credit that waiting submitters ask for, and never less than zero."

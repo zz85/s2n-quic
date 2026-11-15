@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/02-reading.md#DC-0006-055"
+
+[[spec]]
+level = "MUST"
+quote = "Where the read half is dropped while the application is failing abnormally, it MUST reset the stream in both directions."

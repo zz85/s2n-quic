@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/04-control.md#DC-0004-048"
+
+[[spec]]
+level = "MUST"
+quote = "A control packet's fields MUST appear in this order: the tag, the credentials, the wire version, the stream identifier, the source queue identifier, the packet number, the control data length, the routing information, the control data and the authentication tag, each optional field only where its condition holds."

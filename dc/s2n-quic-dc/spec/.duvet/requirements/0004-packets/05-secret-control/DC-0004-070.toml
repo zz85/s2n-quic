@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/05-secret-control.md#DC-0004-070"
+
+[[spec]]
+level = "MUST"
+quote = "The 16-byte authentication tag of a stale key, replay detected or queue reset packet MUST be a message authentication code, under the path's control secret, of every byte before it."

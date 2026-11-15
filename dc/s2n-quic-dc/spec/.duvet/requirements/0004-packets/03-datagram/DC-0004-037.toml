@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/03-datagram.md#DC-0004-037"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST read a datagram packet that doesn't carry an application header length as having an empty application header."

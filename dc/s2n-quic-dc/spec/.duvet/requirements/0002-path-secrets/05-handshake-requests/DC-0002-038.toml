@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/05-handshake-requests.md#DC-0002-038"
+
+[[spec]]
+level = "SHOULD"
+quote = "An endpoint SHOULD bound the number of handshake connections it holds open at once, to 750."

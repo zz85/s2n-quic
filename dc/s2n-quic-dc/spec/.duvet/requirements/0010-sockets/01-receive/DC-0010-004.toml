@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/01-receive.md#DC-0010-004"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver that finds its socket empty MUST yield until the socket signals that it is readable, or until its next poll in busy-poll mode."

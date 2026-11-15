@@ -1,0 +1,70 @@
+[section]
+anchor = "close"
+title = "Cancelling a wait and closing the pool"
+problem = "A holder can stop waiting, such as when its stream is reset, and the distribution can stop, such as when its endpoint shuts down; either can strand credit or leave holders waiting forever."
+motivation = "Clear rules for a cancelled wait and for a closed pool keep credit accounted for and let every waiting holder end."
+prose = "A holder can cancel its wait at any time. Where the cancel and a grant race, one of them takes effect: the holder keeps the grant and releases it later, or the pool keeps the credit. The distribution reclaims each cancelled wait it meets, and a cancelled wait at the head of a level doesn't hold back the waiters behind it. When the distribution stops, the pool closes: it answers each waiting request with the close, answers each later request with the close, and grants no more credit. A release to a closed pool succeeds and has no effect."
+
+[[requirement]]
+id = "DC-0008-038"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A holder MUST be able to cancel its waiting request."
+rationale = "A holder whose work ended no longer needs the credit, and a wait it couldn't leave would hold that credit."
+
+[[requirement]]
+id = "DC-0008-039"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Where a cancel and a grant of the same request race, the pool MUST let exactly one of them take effect."
+rationale = "Either the holder keeps the grant and releases it, or the pool keeps the credit: both would lose credit, and neither would create it."
+
+[[requirement]]
+id = "DC-0008-040"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A pool MUST return the request of a cancelled wait to its free credit."
+rationale = "The request's bytes were counted as owed, and a cancelled wait no longer owes them."
+
+[[requirement]]
+id = "DC-0008-041"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A cancelled wait at the head of a level MUST NOT hold back the waiters behind it."
+rationale = "A holder that left would otherwise stop every waiter of its level and below."
+
+[[requirement]]
+id = "DC-0008-042"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "When its distribution stops, a pool MUST answer each waiting request with the close."
+rationale = "No grant comes once the distribution is gone, so a waiter that isn't told would wait forever."
+
+[[requirement]]
+id = "DC-0008-043"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A pool MUST answer a request made after it closed with the close, without the request waiting."
+rationale = "A request that waited on a closed pool would never be answered."
+
+[[requirement]]
+id = "DC-0008-044"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A closed pool MUST NOT grant credit."
+rationale = "The pool can't account for credit once its distribution is gone."
+
+[[requirement]]
+id = "DC-0008-045"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A release to a closed pool MUST NOT fail."
+rationale = "Holders release credit as their bytes leave, and a release that could fail would make every holder check the pool's state on each release."

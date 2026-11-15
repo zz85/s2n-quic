@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/03-secret-map.md#DC-0002-027"
+
+[[spec]]
+level = "MUST"
+quote = "When a handshake completes for a peer address and role for which the endpoint already holds a path secret, the endpoint MUST choose the new path secret for the new flows of that address and role."

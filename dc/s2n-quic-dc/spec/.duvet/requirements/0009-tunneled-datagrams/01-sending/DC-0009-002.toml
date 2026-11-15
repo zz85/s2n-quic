@@ -1,0 +1,5 @@
+target = "rendered/0009-tunneled-datagrams/01-sending.md#DC-0009-002"
+
+[[spec]]
+level = "MUST"
+quote = "A sender MUST take zero as the packet number of its first send, and one more than the number of the send before it as the number of each later send, whether or not the send before it failed."

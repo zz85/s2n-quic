@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/08-scheduling.md#DC-0008-083"
+
+[[spec]]
+level = "MUST"
+quote = "A priority select MUST close when its fallback source closes while its priority source holds no item."

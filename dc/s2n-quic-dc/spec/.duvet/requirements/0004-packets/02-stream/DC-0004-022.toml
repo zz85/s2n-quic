@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/02-stream.md#DC-0004-022"
+
+[[spec]]
+level = "MUST"
+quote = "A packet of a reliable stream MUST carry a 4-byte retransmission offset after its packet number, whose value added to the packet number gives the number of this transmission."

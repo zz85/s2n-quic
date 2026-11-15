@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/05-refill.md#DC-0008-031"
+
+[[spec]]
+level = "SHOULD"
+quote = "An endpoint SHOULD turn on the liveness refill of each pool it makes, at the endpoint's send rate."

@@ -1,0 +1,5 @@
+target = "rendered/0009-tunneled-datagrams/04-replay.md#DC-0009-021"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST, once a packet's authentication tag verifies, check its packet number against its replay window and record it there in one step, and reject the packet where that step finds the number accepted before."

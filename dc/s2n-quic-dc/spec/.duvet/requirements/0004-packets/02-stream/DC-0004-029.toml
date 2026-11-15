@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/02-stream.md#DC-0004-029"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST take a stream packet as its stream's last where the packet's final offset equals its stream offset plus its payload length."

@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/08-scheduling.md#DC-0008-056"
+
+[[spec]]
+level = "MUST"
+quote = "The credit pool and the rules of this section MUST count cost in abstract units, without reference to a network protocol."

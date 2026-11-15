@@ -1,0 +1,5 @@
+number = 4
+title = "Wire format of packets"
+area = "dc"
+abstract = "The byte layout of every packet the s2n-quic-dc data path sends: the tag that names a packet's kind and the fields packets share, the stream, datagram and control packets, the four secret control packets, and the message that moves a path secret between two processes on one host."
+retired = []

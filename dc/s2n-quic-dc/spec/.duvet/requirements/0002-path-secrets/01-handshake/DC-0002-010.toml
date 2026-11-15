@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/01-handshake.md#DC-0002-010"
+
+[[spec]]
+level = "SHOULD"
+quote = "An endpoint SHOULD raise the maximum datagram size of a path secret to the size that path MTU discovery during the handshake confirms."

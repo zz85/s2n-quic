@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/02-admission.md#DC-0011-010"
+
+[[spec]]
+level = "SHOULD"
+quote = "The device SHOULD grant credit to a waiting submitter of a higher priority tier before a waiting submitter of a lower tier."

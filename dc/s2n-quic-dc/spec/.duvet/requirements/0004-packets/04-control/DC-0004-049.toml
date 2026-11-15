@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/04-control.md#DC-0004-049"
+
+[[spec]]
+level = "MUST"
+quote = "The stream identifier, source queue identifier, packet number and control data length of a control packet MUST be variable-length integers, the stream identifier encoded as a stream packet's is."

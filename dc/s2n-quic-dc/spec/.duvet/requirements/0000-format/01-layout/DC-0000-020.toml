@@ -1,0 +1,5 @@
+target = "rendered/0000-format/01-layout.md#DC-0000-020"
+
+[[spec]]
+level = "MUST"
+quote = "The files under `rendered` and `.duvet/requirements` MUST be exactly the files, byte for byte, that the render command writes from the sources."

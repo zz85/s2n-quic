@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/03-datagram.md#DC-0004-040"
+
+[[spec]]
+level = "MUST"
+quote = "The associated data of a datagram packet's seal MUST be every byte from its tag to the end of its application header."

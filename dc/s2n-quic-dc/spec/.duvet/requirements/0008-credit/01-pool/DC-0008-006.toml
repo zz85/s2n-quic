@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/01-pool.md#DC-0008-006"
+
+[[spec]]
+level = "SHOULD"
+quote = "Where a holder doesn't set the capacity, a pool SHOULD have a capacity of 256 MiB."

@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/05-execution.md#DC-0011-030"
+
+[[spec]]
+level = "MAY"
+quote = "A submitter MAY submit an operation without asking for its completion."

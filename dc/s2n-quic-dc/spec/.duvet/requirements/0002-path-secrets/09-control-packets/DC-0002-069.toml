@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/09-control-packets.md#DC-0002-069"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST request a handshake with the peer when it accepts an unknown path secret packet."

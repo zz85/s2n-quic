@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/03-cost.md#DC-0011-013"
+
+[[spec]]
+level = "MUST"
+quote = "Under the bytes cost model, the device MUST compute an operation's base cost as its length in bytes, and as one for an operation of length zero."

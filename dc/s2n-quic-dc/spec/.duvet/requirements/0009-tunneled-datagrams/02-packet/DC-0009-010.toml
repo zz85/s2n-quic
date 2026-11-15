@@ -1,0 +1,5 @@
+target = "rendered/0009-tunneled-datagrams/02-packet.md#DC-0009-010"
+
+[[spec]]
+level = "MUST"
+quote = "A tunneled datagram packet MUST NOT carry an application header, and its application header bit is clear."

@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/05-secret-control.md#DC-0004-067"
+
+[[spec]]
+level = "MUST"
+quote = "A queue reset packet MUST hold, in this order, its tag, the credentials, the wire version, the queue identifier, a code, the trigger and a 16-byte authentication tag."

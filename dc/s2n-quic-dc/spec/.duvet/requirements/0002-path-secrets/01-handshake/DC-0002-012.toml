@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/01-handshake.md#DC-0002-012"
+
+[[spec]]
+level = "MUST"
+quote = "A server MUST keep a handshake connection open until the client closes it or the bound of DC-0002-011 passes."

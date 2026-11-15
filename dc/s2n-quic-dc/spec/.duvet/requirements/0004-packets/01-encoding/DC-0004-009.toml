@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/01-encoding.md#DC-0004-009"
+
+[[spec]]
+level = "MUST"
+quote = "The most significant bit of a credential identifier's first byte MUST be set where the identifier names the server endpoint's side of a path, and clear where it names the client endpoint's side."

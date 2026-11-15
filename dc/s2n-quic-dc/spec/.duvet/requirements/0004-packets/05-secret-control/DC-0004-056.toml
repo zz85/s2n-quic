@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/05-secret-control.md#DC-0004-056"
+
+[[spec]]
+level = "MUST"
+quote = "An unknown path secret packet's tag, with bit 0x04 cleared, MUST be 0x60."

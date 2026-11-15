@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/04-opening.md#DC-0006-036"
+
+[[spec]]
+level = "MUST"
+quote = "Where the local resources a stream needs are closed, opening the stream MUST fail with an error."

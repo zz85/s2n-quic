@@ -1,0 +1,5 @@
+target = "rendered/0009-tunneled-datagrams/05-delivery.md#DC-0009-027"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST hand the application each payload it accepts exactly as the sender's caller gave it."

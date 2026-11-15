@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/01-receive.md#DC-0010-002"
+
+[[spec]]
+level = "MUST"
+quote = "Where one read returns several coalesced datagrams with a segment size, the receiver MUST deliver them as separate datagrams, each of that size except a shorter last one."

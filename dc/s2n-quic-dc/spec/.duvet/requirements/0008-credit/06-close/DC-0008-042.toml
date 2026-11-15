@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/06-close.md#DC-0008-042"
+
+[[spec]]
+level = "MUST"
+quote = "When its distribution stops, a pool MUST answer each waiting request with the close."

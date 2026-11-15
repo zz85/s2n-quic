@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/05-secret-control.md#DC-0004-060"
+
+[[spec]]
+level = "MUST"
+quote = "Bit 0x04 of the tag of an unknown path secret, stale key or replay detected packet MUST be set exactly when the packet carries a queue identifier."

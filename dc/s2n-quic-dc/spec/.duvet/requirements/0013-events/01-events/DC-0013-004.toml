@@ -1,0 +1,5 @@
+target = "rendered/0013-events/01-events.md#DC-0013-004"
+
+[[spec]]
+level = "MUST"
+quote = "The endpoint MUST NOT change its protocol behavior according to whether a subscriber is present or what the subscriber does with an event."

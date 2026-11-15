@@ -1,0 +1,70 @@
+[section]
+anchor = "receive"
+title = "Receiving datagrams"
+problem = "A reader of the network that loses a datagram's sender or congestion marking, or that hands on a coalesced read as one packet, gives every later stage wrong input."
+motivation = "Each later stage, the packet decoder, the congestion controller and the path secret map, needs one datagram at a time with where it came from and how the network marked it."
+prose = "A receiver reads datagrams from a datagram socket and hands each one, with its sender address and its explicit congestion notification marking, to the next stage. One read may return several datagrams that the network stack coalesced, each of the same segment size except a shorter last one. A receiver reads its socket in one of three ways: on the socket's readiness, by polling it in a busy-poll worker, or through a completion queue that the operating system fills. The first two read the socket again after a read of zero bytes, and the third hands the empty datagram on to dispatch, which drops it because it doesn't decode. Whichever way it reads, the same packets reach the handlers."
+
+[[requirement]]
+id = "DC-0010-001"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A receiver MUST deliver each datagram it reads with the address of the datagram's sender and the explicit congestion notification marking the network set on it."
+rationale = "The handlers answer the sender at its address, and the congestion controller reads the marking."
+
+[[requirement]]
+id = "DC-0010-002"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Where one read returns several coalesced datagrams with a segment size, the receiver MUST deliver them as separate datagrams, each of that size except a shorter last one."
+rationale = "Each datagram holds one packet, so a coalesced read decodes correctly only once it is split back into its datagrams."
+
+[[requirement]]
+id = "DC-0010-003"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A read that returns zero bytes MUST NOT reach a packet handler as a datagram."
+rationale = "A datagram without bytes doesn't hold a packet, so no handler has anything to act on."
+
+[[requirement]]
+id = "DC-0010-004"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A receiver that finds its socket empty MUST yield until the socket signals that it is readable, or until its next poll in busy-poll mode."
+rationale = "A receiver that reads an empty socket again at once spends its worker's time without receiving anything."
+
+[[requirement]]
+id = "DC-0010-005"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "The mechanism a receiver uses to read its socket MUST NOT change which packets reach a handler, or the payload, the sender address or the congestion marking of each one."
+rationale = "The stages after the receiver don't know how a datagram was read, so every read mechanism gives them the same packets."
+
+[[requirement]]
+id = "DC-0010-006"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "A receiver SHOULD deliver each payload in the buffer the operating system wrote it into, without copying it into another buffer."
+rationale = "A copy of every payload doubles the memory traffic of receiving."
+
+[[requirement]]
+id = "DC-0010-007"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A receiver MUST release its readiness registration for a socket before the socket is closed."
+rationale = "A registration that outlives its socket can wake a task for a later socket that reuses the same descriptor."
+
+[[requirement]]
+id = "DC-0010-008"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "A socket SHOULD be read by the worker that registered it for readiness, so that its wake-ups run on that worker."
+rationale = "A wake-up that crosses to another worker adds the delay of that worker's queue to every datagram."

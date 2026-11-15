@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/06-rehandshake.md#DC-0002-051"
+
+[[spec]]
+level = "SHOULD"
+quote = "An endpoint SHOULD run at most 2 periodic rehandshakes at once."

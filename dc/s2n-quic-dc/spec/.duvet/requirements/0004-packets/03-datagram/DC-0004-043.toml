@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/03-datagram.md#DC-0004-043"
+
+[[spec]]
+level = "MUST"
+quote = "The source control port of a datagram packet MUST be the port at which its sender receives secret control packets."

@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/03-cost.md#DC-0011-015"
+
+[[spec]]
+level = "MUST"
+quote = "The device MUST multiply an operation's base cost by the read weight for a read, or by the write weight for every other kind, round the result down to a whole number of credits, and charge at least one credit."

@@ -1,0 +1,110 @@
+[section]
+anchor = "handshake"
+title = "Establishing a path secret"
+problem = "Two endpoints that share no secret can't authenticate or encrypt the packets they exchange, and a secret that each side obtains differently can't open the other side's packets."
+motivation = "One mutually authenticated handshake per peer gives both endpoints the same path secret, from which the keys of every later flow between them come, so a flow doesn't need a handshake of its own."
+prose = "An endpoint establishes a path secret with a peer by a TLS 1.3 handshake carried over QUIC. Both endpoints export the same secret from the handshake, exchange stateless reset tokens for it, and record it in their secret maps. RFC 0003 specifies the keys derived from a path secret; this section states how the path secret itself is obtained and which parameters of the handshake it carries."
+
+[[requirement]]
+id = "DC-0002-001"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST obtain each path secret from the exporter of its TLS 1.3 handshake with the peer, with the label `EXPERIMENTAL EXPORTER s2n-quic-dc` and an empty context."
+rationale = "Both endpoints of a handshake export the same value only where they use the same label and context, so fixing them fixes the secret both sides hold."
+
+[[requirement]]
+id = "DC-0002-002"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "An endpoint MUST NOT complete a handshake whose negotiated cipher suite is neither TLS_AES_128_GCM_SHA256 nor TLS_AES_256_GCM_SHA384."
+rationale = "The keys derived from a path secret are defined for these two cipher suites alone, so a path secret from any other suite would have no defined keys."
+
+[[requirement]]
+id = "DC-0002-003"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST bind each path secret to the cipher suite and the protocol version negotiated in its handshake and to the endpoint's role in that handshake, client or server."
+rationale = "Two endpoints that disagree on any of these derive keys that don't match, and binding the role keeps the keys each side seals with apart from the keys it opens with."
+
+[[requirement]]
+id = "DC-0002-004"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST give its peer one stateless reset token for each path secret during the handshake."
+rationale = "The token lets the endpoint later prove, without the path secret, that it no longer holds the secret the peer is using."
+
+[[requirement]]
+id = "DC-0002-074"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST compute each stateless reset token as a keyed message authentication code over the path secret's identifier, with a key that only the endpoint holds."
+rationale = "Only the endpoint can compute the token, and it can compute it again from the identifier alone after it has lost the path secret."
+
+[[requirement]]
+id = "DC-0002-005"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST keep with each path secret the stateless reset token its peer gave for it."
+rationale = "The endpoint authenticates the peer's unknown path secret packets for that path secret with this token."
+
+[[requirement]]
+id = "DC-0002-006"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint SHOULD keep the key it computes stateless reset tokens with across its restarts."
+rationale = "An endpoint that restarts loses its path secrets, and only a token computed with the same key lets its peers accept its unknown path secret packets and handshake again at once. An endpoint that computes them with a random key on each start doesn't follow this recommendation."
+
+[[requirement]]
+id = "DC-0002-007"
+level = "MAY"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MAY refuse a handshake where its application rejects the peer information the peer advertised, closing the handshake with an application error."
+rationale = "An application that negotiates its own parameters once per handshake can decline a peer it can't serve before any path secret is recorded."
+
+[[requirement]]
+id = "DC-0002-008"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "An endpoint MUST NOT select a path secret for new flows to a peer before the handshake that produced it has completed."
+rationale = "The peer might never record a path secret whose handshake didn't complete, and every flow sealed with it would then fail."
+
+[[requirement]]
+id = "DC-0002-009"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "An endpoint MUST NOT send a datagram under a path secret that is larger than the smaller of the peer's advertised maximum datagram size and the endpoint's own maximum datagram size."
+rationale = "A datagram larger than either side's maximum is dropped on the path or by the peer."
+
+[[requirement]]
+id = "DC-0002-010"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint SHOULD raise the maximum datagram size of a path secret to the size that path MTU discovery during the handshake confirms."
+rationale = "Larger datagrams carry the same data in fewer packets where the path takes them."
+
+[[requirement]]
+id = "DC-0002-011"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint SHOULD fail a handshake whose confirmation hasn't finished 10 seconds after its connection is established."
+rationale = "A bound on the wait keeps a slow or unresponsive peer from holding the endpoint's handshake resources without end."
+
+[[requirement]]
+id = "DC-0002-012"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A server MUST keep a handshake connection open until the client closes it or the bound of DC-0002-011 passes."
+rationale = "The client closes the connection once it has recorded the path secret, so a server that closed it earlier could end the handshake before the client can use the secret."

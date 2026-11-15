@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/01-receive.md#DC-0010-003"
+
+[[spec]]
+level = "MUST"
+quote = "A read that returns zero bytes MUST NOT reach a packet handler as a datagram."

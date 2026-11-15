@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/06-pipeline.md#DC-0010-042"
+
+[[spec]]
+level = "SHOULD"
+quote = "A stage that spreads items across several outputs SHOULD give each item to the next output in turn after the one it used last."

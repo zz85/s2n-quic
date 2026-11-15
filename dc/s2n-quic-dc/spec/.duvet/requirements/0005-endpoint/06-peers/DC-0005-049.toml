@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/06-peers.md#DC-0005-049"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST NOT declare a peer dead because its receive state went idle."

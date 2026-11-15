@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/06-handling.md#DC-0003-047"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver whose replay check refuses an opened packet MUST overwrite the packet's decrypted payload with zeros."

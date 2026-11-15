@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/05-handshake-requests.md#DC-0002-043"
+
+[[spec]]
+level = "SHOULD"
+quote = "An endpoint SHOULD refuse new flows under a path secret marked dead until the dead-peer cooldown since the mark has passed."

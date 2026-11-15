@@ -1,0 +1,94 @@
+[section]
+anchor = "handshake-requests"
+title = "Requesting handshakes"
+problem = "Many flows, timers and control packets can each ask for a handshake with the same peer at once, and a handshake costs the endpoint far more processing than a packet."
+motivation = "Joining concurrent requests, bounding concurrent handshakes and holding recent results keeps the handshake rate low enough not to stall the endpoint's other work, and handshaking again with a peer that stopped answering recovers its path."
+prose = "An endpoint asks for a handshake with a peer when it has no path secret for a flow to the peer, when the periodic rehandshake reaches the peer, when it accepts an unknown path secret or replay detected packet from the peer, and when a path secret is dead and silent. A path secret is dead when flows opened under it go unanswered, and silent when the peer hasn't sent an authenticated packet under it for one idle timeout."
+
+[[requirement]]
+id = "DC-0002-036"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST join each request for a handshake with a peer address to the handshake with that address that is already running, where one runs."
+rationale = "One handshake per peer address at a time gives every requester the same path secret and keeps duplicate handshakes from piling up."
+
+[[requirement]]
+id = "DC-0002-037"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint SHOULD bound the number of handshakes it starts concurrently, to 5."
+rationale = "Each handshake takes about a millisecond of processing, so unbounded concurrent handshakes raise the latency of the endpoint's other work in step."
+
+[[requirement]]
+id = "DC-0002-038"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint SHOULD bound the number of handshake connections it holds open at once, to 750."
+rationale = "Open handshake connections keep sending and receiving packets, so a bound on them bounds that work."
+
+[[requirement]]
+id = "DC-0002-039"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "After a successful handshake with a peer address, an endpoint SHOULD answer the requests for a handshake with that address with that success, without handshaking, for a random period of up to 1 minute."
+rationale = "Handshaking with a peer more than about once a minute doesn't improve its path secret, and a hold cuts the volume that repeated control packets would cause."
+
+[[requirement]]
+id = "DC-0002-040"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "After a failed handshake with a peer address, an endpoint SHOULD answer the requests for a handshake with that address with that failure, without handshaking, for a random period between 1 second and 2 minutes."
+rationale = "Holding the failure backs off from a peer that can't handshake now instead of retrying it on every request."
+
+[[requirement]]
+id = "DC-0002-041"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST mark a path secret dead when a flow it opens under that path secret goes unanswered by the peer."
+rationale = "An unanswered flow is the sign that the peer no longer holds the path secret, such as after the peer restarted."
+
+[[requirement]]
+id = "DC-0002-042"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST clear the dead mark of a path secret when it receives an authenticated packet under that path secret."
+rationale = "An authenticated packet proves the peer still holds the path secret, so a mark left in place would refuse a working path after a transient failure."
+
+[[requirement]]
+id = "DC-0002-043"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint SHOULD refuse new flows under a path secret marked dead until the dead-peer cooldown since the mark has passed."
+rationale = "Refusing flows for a short time keeps the endpoint from sending traffic that the peer can't open."
+
+[[requirement]]
+id = "DC-0002-044"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint SHOULD evict a path secret that is marked dead, whose dead-peer cooldown has passed, and that is silent."
+rationale = "A path secret that is dead and silent no longer carries the peer's traffic, and keeping it would keep flows opening under a secret the peer doesn't hold."
+
+[[requirement]]
+id = "DC-0002-073"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint SHOULD handshake again with the peer of a path secret it evicts for being dead and silent."
+rationale = "A new handshake builds fresh keys and state for a peer whose path secret stopped working, which no amount of waiting would repair."
+
+[[requirement]]
+id = "DC-0002-045"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST take a path secret's idle timeout as the maximum idle timeout the peer advertised in the handshake, or as 60 seconds where the peer advertised none."
+rationale = "Both endpoints read silence against the same timeout only where they agree on it."

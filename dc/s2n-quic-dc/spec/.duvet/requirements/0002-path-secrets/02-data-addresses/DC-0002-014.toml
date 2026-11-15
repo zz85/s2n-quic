@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/02-data-addresses.md#DC-0002-014"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST write each IPv4 data address it advertises in its IPv4-mapped IPv6 form."

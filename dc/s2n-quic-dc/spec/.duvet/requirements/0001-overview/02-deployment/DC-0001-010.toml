@@ -1,0 +1,5 @@
+target = "rendered/0001-overview/02-deployment.md#DC-0001-010"
+
+[[spec]]
+level = "MUST"
+quote = "A peer MUST carry the addresses it advertises in the transport parameter 0xdc0004."

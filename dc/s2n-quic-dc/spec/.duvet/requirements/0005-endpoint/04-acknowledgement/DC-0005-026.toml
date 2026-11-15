@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/04-acknowledgement.md#DC-0005-026"
+
+[[spec]]
+level = "MUST"
+quote = "An acknowledgement MUST carry the sender identifier of the packets it acknowledges."

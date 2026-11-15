@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/02-admission.md#DC-0011-006"
+
+[[spec]]
+level = "MUST"
+quote = "A submitter waiting for credit MUST NOT hold a thread or an execution slot while it waits."

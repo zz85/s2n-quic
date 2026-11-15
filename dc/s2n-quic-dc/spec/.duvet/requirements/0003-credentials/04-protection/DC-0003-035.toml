@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/04-protection.md#DC-0003-035"
+
+[[spec]]
+level = "MAY"
+quote = "An endpoint MAY run a stream without control keys over a transport that delivers packets reliably and in order."

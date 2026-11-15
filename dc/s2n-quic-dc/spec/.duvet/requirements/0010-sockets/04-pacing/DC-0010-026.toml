@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/04-pacing.md#DC-0010-026"
+
+[[spec]]
+level = "MUST"
+quote = "A paced sender's credit MUST grow with elapsed time at its configured rate, up to its burst."

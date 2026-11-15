@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/04-opening.md#DC-0006-034"
+
+[[spec]]
+level = "MUST"
+quote = "Until the server confirms a stream, each write of the client MUST carry the stream's acceptor identifier."

@@ -1,0 +1,70 @@
+[section]
+anchor = "deployment"
+title = "Deployment model"
+problem = "An implementer who doesn't know where the system runs, which host opens a path and which addresses carry which traffic can't connect two peers that each follow this specification."
+motivation = "Stating the roles of the two hosts, the handshake that joins them and the addresses that carry their data lets two independent implementations reach each other."
+prose = "Each host runs an endpoint that accepts handshakes and an endpoint that carries data. The host that opens a path is its client, and the host that accepts it is its server; one host can be both, toward different peers. The handshake runs between the two hosts' handshake addresses. During it, each peer can describe itself and advertise the addresses on which it receives data packets, and once it completes, the peers exchange data on those addresses. A peer that doesn't send either description is treated as an older peer that didn't send it."
+
+[[requirement]]
+id = "DC-0001-006"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The system MUST run each handshake as a QUIC connection over UDP whose cryptographic handshake is TLS 1.3."
+rationale = "A standard, reviewed handshake authenticates the peers and yields the session from which the path secret is derived."
+
+[[requirement]]
+id = "DC-0001-007"
+level = "MAY"
+polarity = "required"
+binds_to = "system"
+statement = "A peer MAY advertise in the handshake the addresses on which it receives data packets, which can differ from its handshake address."
+rationale = "A host can serve its handshakes and its data on different sockets."
+
+[[requirement]]
+id = "DC-0001-008"
+level = "MAY"
+polarity = "required"
+binds_to = "system"
+statement = "A peer MAY send data packets of the dc protocol to the addresses the other peer advertised as soon as the QUIC handshake completes."
+rationale = "The advertised addresses are known once the QUIC handshake completes, so data doesn't need to wait for another exchange."
+
+[[requirement]]
+id = "DC-0001-009"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A peer MUST carry its peer information in the transport parameter 0xdc0003."
+rationale = "Two implementations read each other's description only where both use the same parameter."
+
+[[requirement]]
+id = "DC-0001-010"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A peer MUST carry the addresses it advertises in the transport parameter 0xdc0004."
+rationale = "Two implementations read each other's data addresses only where both use the same parameter."
+
+[[requirement]]
+id = "DC-0001-011"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A peer MUST complete a handshake with a peer that sends neither its peer information nor its data addresses."
+rationale = "Older peers don't send either parameter, and they still need to reach newer ones."
+
+[[requirement]]
+id = "DC-0001-012"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint that runs the dc protocol MUST pass each short-header packet that no connection accepts to its handling of path secret control packets."
+rationale = "Path secret control packets arrive on the handshake's addresses, where they read as short-header packets of no connection."
+
+[[requirement]]
+id = "DC-0001-013"
+level = "MAY"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MAY decline to use the dc protocol on a path after the dc version is negotiated."
+rationale = "A deployment can keep some peers on the plain handshake connection alone."

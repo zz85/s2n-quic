@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/05-refill.md#DC-0008-032"
+
+[[spec]]
+level = "MUST"
+quote = "Where a holder turns the refill off, the endpoint MUST keep it off."

@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/04-operations.md#DC-0011-019"
+
+[[spec]]
+level = "MUST"
+quote = "The device MUST keep the file of an operation open from its submission until its completion, even when the submitter closes its own handle to the file."

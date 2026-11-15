@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/01-devices.md#DC-0011-001"
+
+[[spec]]
+level = "MUST"
+quote = "Each device MUST admit, order and run its operations by itself, without a scheduler shared with other devices."

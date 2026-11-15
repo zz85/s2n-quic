@@ -1,0 +1,5 @@
+target = "rendered/0013-events/07-logging.md#DC-0013-045"
+
+[[spec]]
+level = "MUST"
+quote = "The system MUST write error and warning log lines in every build."

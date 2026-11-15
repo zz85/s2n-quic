@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/06-peers.md#DC-0005-044"
+
+[[spec]]
+level = "MUST"
+quote = "A sender MUST NOT discard or retransmit the frames of a send state whose key is newer than the key a stale key or replay notice rejects."

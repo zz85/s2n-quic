@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/04-opening.md#DC-0006-031"
+
+[[spec]]
+level = "MUST"
+quote = "Opens of several streams toward one server that needs a handshake MUST share a single handshake."

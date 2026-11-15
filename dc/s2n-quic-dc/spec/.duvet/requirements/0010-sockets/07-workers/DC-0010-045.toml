@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/07-workers.md#DC-0010-045"
+
+[[spec]]
+level = "SHOULD"
+quote = "A busy-poll worker SHOULD yield its processor after each batch of cycles, so that other threads on it run."

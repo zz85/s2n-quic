@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/07-workers.md#DC-0010-044"
+
+[[spec]]
+level = "MUST"
+quote = "A busy-poll worker with no tasks MUST sleep until a task is given to it."

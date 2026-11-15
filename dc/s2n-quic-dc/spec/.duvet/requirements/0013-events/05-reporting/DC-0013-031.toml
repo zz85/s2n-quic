@@ -1,0 +1,5 @@
+target = "rendered/0013-events/05-reporting.md#DC-0013-031"
+
+[[spec]]
+level = "MUST"
+quote = "A report MUST visit the registered metrics in the same order every time."

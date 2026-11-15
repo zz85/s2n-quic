@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/03-distribution.md#DC-0008-016"
+
+[[spec]]
+level = "MUST"
+quote = "Exactly one distribution MUST grant credit to the waiting requests of a pool."

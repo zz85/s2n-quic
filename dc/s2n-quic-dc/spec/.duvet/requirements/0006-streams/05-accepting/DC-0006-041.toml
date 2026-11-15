@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/05-accepting.md#DC-0006-041"
+
+[[spec]]
+level = "MUST"
+quote = "A server MUST reject a stream whose acceptor identifier doesn't name a registered acceptor."

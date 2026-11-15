@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/01-receive.md#DC-0010-005"
+
+[[spec]]
+level = "MUST"
+quote = "The mechanism a receiver uses to read its socket MUST NOT change which packets reach a handler, or the payload, the sender address or the congestion marking of each one."

@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/03-writing.md#DC-0006-017"
+
+[[spec]]
+level = "MUST"
+quote = "The write half MUST NOT send stream data past the limit the peer most recently granted."

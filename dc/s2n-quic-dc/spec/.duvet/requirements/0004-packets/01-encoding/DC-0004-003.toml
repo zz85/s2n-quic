@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/01-encoding.md#DC-0004-003"
+
+[[spec]]
+level = "MUST"
+quote = "The first byte of every packet MUST be its tag, which names the packet's kind: 0x00 to 0x3F a stream packet, 0x40 to 0x4F a datagram packet, 0x50 to 0x5F a control packet, and 0x60, 0x61, 0x62, 0x64, 0x65, 0x66 and 0x67 a secret control packet."

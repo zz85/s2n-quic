@@ -1,0 +1,5 @@
+target = "rendered/0009-tunneled-datagrams/02-packet.md#DC-0009-007"
+
+[[spec]]
+level = "MUST"
+quote = "The first byte of a tunneled datagram packet MUST hold 0100 in its high four bits, and in its low four bits, from the highest, the routing information bit, the packet number bit, the application header bit and the key phase bit."

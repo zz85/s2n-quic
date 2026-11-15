@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/05-assembly.md#DC-0005-039"
+
+[[spec]]
+level = "MAY"
+quote = "A sender MAY spread one peer's frames across several of its senders, each with its own sender identifier and packet number space."

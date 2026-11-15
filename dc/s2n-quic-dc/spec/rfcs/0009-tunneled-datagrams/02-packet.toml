@@ -1,0 +1,94 @@
+[section]
+anchor = "packet"
+title = "Packet form"
+problem = "A receiver that can't tell a tunneled datagram from another packet of the protocol, or can't find the key that sealed it, can't open it."
+motivation = "A fixed layout behind a typed first byte lets one receiver sort the packets that reach a socket, and carrying the credentials and the sender's control port lets the receiver find the key and reach the sender's control path without other state."
+prose = "A tunneled datagram packet starts with a byte whose high four bits, 0100, mark a datagram packet, and whose low four bits, from the highest, say whether the packet carries routing information, whether it carries a packet number, whether it carries an application header, and the phase of the key that sealed it. A tunneled datagram carries a packet number, and carries neither routing information nor an application header. After the first byte come the credentials that identify the path secret and the key, the wire version, the sender's control port as a 16-bit number, the packet number and the payload's length as variable-length integers, the encrypted payload, and the authentication tag. Everything before the payload is the packet's header, which the tag authenticates and which isn't encrypted."
+
+[[requirement]]
+id = "DC-0009-007"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The first byte of a tunneled datagram packet MUST hold 0100 in its high four bits, and in its low four bits, from the highest, the routing information bit, the packet number bit, the application header bit and the key phase bit."
+rationale = "The high four bits tell a datagram packet from the protocol's other packets, and the flag bits say which fields follow."
+
+[[requirement]]
+id = "DC-0009-008"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A tunneled datagram packet MUST NOT carry routing information, and its routing information bit is clear."
+rationale = "A tunneled datagram goes from one peer straight to the other over the path, so a receiver doesn't need to route it on."
+
+[[requirement]]
+id = "DC-0009-009"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A tunneled datagram packet MUST carry its packet number, and its packet number bit is set."
+rationale = "The receiver needs the number as the nonce to open the payload and as the key of its replay check."
+
+[[requirement]]
+id = "DC-0009-010"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A tunneled datagram packet MUST NOT carry an application header, and its application header bit is clear."
+rationale = "A tunneled datagram encrypts its whole payload, so it doesn't have a part that is sent authenticated but not encrypted."
+
+[[requirement]]
+id = "DC-0009-011"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A tunneled datagram packet MUST carry, after its first byte and in this order, the credentials of the key that sealed it, the wire version, the sender's control port, the packet number, the payload's length, the payload and the authentication tag."
+rationale = "A fixed order lets a receiver find each field from the one before it."
+
+[[requirement]]
+id = "DC-0009-012"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A sender MUST write wire version zero in each tunneled datagram packet it sends."
+rationale = "A receiver reads the version to know the layout of the fields after it, and zero is the only layout this RFC defines."
+
+[[requirement]]
+id = "DC-0009-013"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A sender MUST write as the packet's control port the source port of the control path its caller passes to the send."
+rationale = "The receiver answers on that port, so a control message about the datagrams reaches the sender's control path."
+
+[[requirement]]
+id = "DC-0009-014"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A sender MUST encrypt the whole payload of each packet."
+rationale = "The payload belongs to the application, and only a holder of the path secret may read it."
+
+[[requirement]]
+id = "DC-0009-028"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A sender MUST authenticate the whole header of each packet together with its payload."
+rationale = "An attacker who changed any header field, the credentials or the packet number among them, would then fail the receiver's check of the tag."
+
+[[requirement]]
+id = "DC-0009-029"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A sender MUST use the packet's packet number as the nonce of its encryption."
+rationale = "The packet number is unique under the key, so each nonce is too, and the receiver reads it from the packet."
+
+[[requirement]]
+id = "DC-0009-030"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A sender MUST write the phase of the key that seals a packet in the packet's key phase bit."
+rationale = "The receiver reads the bit to choose the key that opens the packet."

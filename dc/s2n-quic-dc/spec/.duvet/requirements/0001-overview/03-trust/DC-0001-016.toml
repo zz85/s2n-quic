@@ -1,0 +1,5 @@
+target = "rendered/0001-overview/03-trust.md#DC-0001-016"
+
+[[spec]]
+level = "MUST"
+quote = "The system MUST NOT accept the data of a packet of the dc protocol that doesn't authenticate under a key, or against a stateless reset token, derived from a path secret it holds."

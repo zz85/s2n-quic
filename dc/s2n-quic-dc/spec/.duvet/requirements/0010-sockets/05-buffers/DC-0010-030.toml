@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/05-buffers.md#DC-0010-030"
+
+[[spec]]
+level = "MUST"
+quote = "Each packet buffer MUST hold the payload, the remote address and the congestion marking of one datagram."

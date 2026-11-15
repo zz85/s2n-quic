@@ -1,0 +1,5 @@
+target = "rendered/0013-events/06-endpoint-counters.md#DC-0013-042"
+
+[[spec]]
+level = "MUST"
+quote = "The receive path MUST count each frame it receives by the frame's type."

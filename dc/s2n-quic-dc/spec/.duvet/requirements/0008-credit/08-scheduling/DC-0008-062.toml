@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/08-scheduling.md#DC-0008-062"
+
+[[spec]]
+level = "MUST"
+quote = "A priority select MUST take an item from its fallback source only while its priority source has none."

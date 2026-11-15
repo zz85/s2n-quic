@@ -1,0 +1,94 @@
+[section]
+anchor = "peers"
+title = "Rejected keys and silent peers"
+problem = "A peer can lose a path secret, reject a key as stale or replayed, or stop answering, and a sender that goes on sending under the old state wastes the path and leaves its streams hanging."
+motivation = "Acting on each validated rejection and on prolonged silence lets the endpoint send again under a fresh key where the peer is still there, and fail and reset the streams of a peer that is gone, so that no stream waits forever."
+prose = "A peer tells the endpoint that it doesn't know a path secret, that a key is stale, or that it detected a replay, through the notices RFC 0002 defines. The endpoint acts on such a notice only once it has validated it against its path secrets. A send state that receives nothing from its peer for the idle timeout is discarded; where it still held packets the peer never acknowledged, the peer is declared dead, unless the cooldown of an earlier declaration is still running."
+
+[[requirement]]
+id = "DC-0005-040"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "The endpoint MUST NOT change any send or receive state on a notice from a peer that fails validation against its path secrets."
+rationale = "An unauthenticated notice would otherwise let anyone on the path fail or stall another peer's streams."
+
+[[requirement]]
+id = "DC-0005-041"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "On a validated unknown path secret notice, the endpoint MUST fail every pending and unacknowledged frame sent under that credential with the unknown path secret reason."
+rationale = "The peer can't read anything under that secret, so the frames can't be delivered under it, and their writers have to learn that at once rather than at their transmission bound."
+
+[[requirement]]
+id = "DC-0005-042"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "On a validated unknown path secret notice, the endpoint MUST discard its receive state for that credential."
+rationale = "The secret is gone at the peer, so receive state derived from it only holds memory and accepts nothing new."
+
+[[requirement]]
+id = "DC-0005-043"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "On a validated stale key or replay notice, the sender MUST queue for retransmission the pending and unacknowledged frames of the send state that used the rejected key."
+rationale = "The peer is still there and still holds the path secret, so the frames are delivered once they are sent again under a newer key."
+
+[[requirement]]
+id = "DC-0005-044"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A sender MUST NOT discard or retransmit the frames of a send state whose key is newer than the key a stale key or replay notice rejects."
+rationale = "A notice can arrive after the sender has already moved to a newer key, and acting on it then would discard packets the peer accepts."
+
+[[requirement]]
+id = "DC-0005-045"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A sender MUST discard a send state once neither an acknowledgement nor any other packet has arrived from its peer for the idle timeout."
+rationale = "State for a peer that has gone silent holds memory and frames that will never be acknowledged."
+
+[[requirement]]
+id = "DC-0005-046"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "When a sender discards a send state for idleness, it MUST fail each of its pending and unacknowledged frames with the peer dead reason."
+rationale = "The writers of those frames have to learn that their data didn't arrive."
+
+[[requirement]]
+id = "DC-0005-047"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "When a send state discarded for idleness still held packets its peer never acknowledged, and the cooldown of an earlier declaration of the peer as dead isn't running, the endpoint MUST reset every stream with that peer."
+rationale = "Unacknowledged packets after a full idle timeout show that the peer is unreachable, and a stream with it would otherwise wait forever."
+
+[[requirement]]
+id = "DC-0005-048"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "When the peer of a client path is declared dead, the client MUST request a new handshake with that peer."
+rationale = "A new handshake builds a fresh path secret, so the next stream to the peer doesn't reuse the silent one."
+
+[[requirement]]
+id = "DC-0005-049"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A receiver MUST NOT declare a peer dead because its receive state went idle."
+rationale = "A quiet receive direction only shows that the peer has nothing to send, not that it is unreachable."
+
+[[requirement]]
+id = "DC-0005-050"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "The endpoint MUST NOT open a new stream to a peer during the cooldown that follows the peer being declared dead."
+rationale = "A stream opened at once would most likely meet the same unreachable peer and fail again after a full timeout."

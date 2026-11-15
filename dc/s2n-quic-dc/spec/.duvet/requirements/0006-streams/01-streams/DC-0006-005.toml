@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/01-streams.md#DC-0006-005"
+
+[[spec]]
+level = "MUST"
+quote = "A reset of a stream MUST end both of its halves at once."

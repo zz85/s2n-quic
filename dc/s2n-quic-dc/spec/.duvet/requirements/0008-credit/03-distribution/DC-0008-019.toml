@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/03-distribution.md#DC-0008-019"
+
+[[spec]]
+level = "MUST"
+quote = "At the start of each level, a pass MUST compute one share for all the level's waiters: the credit it has left to distribute divided by the count of requests waiting at the level, cancelled ones not yet reclaimed included, and at least the level's smallest grant."

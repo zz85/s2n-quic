@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/06-peers.md#DC-0005-043"
+
+[[spec]]
+level = "MUST"
+quote = "On a validated stale key or replay notice, the sender MUST queue for retransmission the pending and unacknowledged frames of the send state that used the rejected key."

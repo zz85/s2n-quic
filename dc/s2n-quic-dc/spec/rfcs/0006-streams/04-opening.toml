@@ -1,0 +1,70 @@
+[section]
+anchor = "opening"
+title = "Opening a stream"
+problem = "A client needs to open a stream to a server's acceptor with one call, whether or not it already shares a path secret with that server, and to learn of a failure without waiting on a host that is down."
+motivation = "Opening through a cached path secret avoids a handshake for each stream, sharing one handshake among concurrent opens avoids a burst of handshakes, and failing fast toward a server known to be down keeps callers from waiting."
+prose = "A client opens a stream by naming the server's address and the acceptor identifier that the server routes the stream by. Where it holds a usable path secret for that server, the stream uses it; otherwise the client first runs a handshake. Opening doesn't send anything to the server: the stream is established with the server by its first write."
+
+[[requirement]]
+id = "DC-0006-029"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A client MUST open each stream toward a server address and an acceptor identifier."
+rationale = "The address picks the server, and the acceptor identifier picks which of the server's acceptors receives the stream."
+
+[[requirement]]
+id = "DC-0006-030"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Where the client doesn't hold a path secret for the server, opening a stream MUST run a handshake with the server before the stream is returned."
+rationale = "A stream needs the keys that only a handshake establishes."
+
+[[requirement]]
+id = "DC-0006-031"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Opens of several streams toward one server that needs a handshake MUST share a single handshake."
+rationale = "One handshake for a burst of opens keeps a cold start from multiplying the handshake work on both hosts."
+
+[[requirement]]
+id = "DC-0006-032"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "While the client holds the server as unreachable and its cooldown hasn't passed, opening a stream toward that server MUST fail with a timeout."
+rationale = "Callers learn at once that the server is down, instead of each waiting for its own attempt to time out."
+
+[[requirement]]
+id = "DC-0006-033"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Where the client's path secret for a server was marked unreachable, its cooldown has passed and the server has stayed silent past the idle timeout, opening a stream MUST discard that path secret and run a new handshake."
+rationale = "A server that restarted doesn't hold the old path secret any longer, so only a new handshake reaches it again."
+
+[[requirement]]
+id = "DC-0006-034"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Until the server confirms a stream, each write of the client MUST carry the stream's acceptor identifier."
+rationale = "The server routes the stream by the first frame that reaches it, and frames can arrive in any order or be lost."
+
+[[requirement]]
+id = "DC-0006-035"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The client MUST report the server's rejection of a stream as an error of a later read or write on that stream."
+rationale = "Opening doesn't wait for the server, so the rejection can only reach the application through the stream itself."
+
+[[requirement]]
+id = "DC-0006-036"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Where the local resources a stream needs are closed, opening the stream MUST fail with an error."
+rationale = "A client whose endpoint is shutting down can't carry a new stream, and the caller needs to know at once."

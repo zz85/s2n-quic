@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/02-dispatch.md#DC-0010-050"
+
+[[spec]]
+level = "MUST"
+quote = "Each stale key, replay detected and unknown path secret packet passed to its handler MUST carry the sender address of the datagram that held it."

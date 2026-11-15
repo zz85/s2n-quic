@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/01-receive.md#DC-0010-006"
+
+[[spec]]
+level = "SHOULD"
+quote = "A receiver SHOULD deliver each payload in the buffer the operating system wrote it into, without copying it into another buffer."

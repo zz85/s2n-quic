@@ -1,0 +1,5 @@
+target = "rendered/0009-tunneled-datagrams/04-replay.md#DC-0009-023"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST accept, in its replay check, a packet whose packet number is newer than every number it accepted before."

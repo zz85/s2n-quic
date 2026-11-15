@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/06-rehandshake.md#DC-0002-046"
+
+[[spec]]
+level = "SHOULD"
+quote = "An endpoint SHOULD handshake again with each peer it holds a path secret for about once per rehandshake period, 24 hours by default."

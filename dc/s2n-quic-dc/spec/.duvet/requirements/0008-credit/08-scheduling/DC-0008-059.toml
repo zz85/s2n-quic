@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/08-scheduling.md#DC-0008-059"
+
+[[spec]]
+level = "MUST"
+quote = "A priority merge MUST start each turn at its highest-priority source."

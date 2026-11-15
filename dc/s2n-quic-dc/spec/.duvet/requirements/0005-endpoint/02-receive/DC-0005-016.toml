@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/02-receive.md#DC-0005-016"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST count each packet it accepts as activity from the packet's peer."

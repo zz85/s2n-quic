@@ -1,0 +1,70 @@
+[section]
+anchor = "refill"
+title = "The liveness refill"
+problem = "Where every holder waits for credit and every byte of credit is held by holders that wait for others, no release comes, and since a waiting request doesn't wake the distribution, the pool wedges."
+motivation = "A refill that adds credit at a steady rate breaks such a wedge, and charging it only for the releases that didn't come keeps it idle under healthy load."
+prose = "The refill runs beside the distribution at a rate in bytes per second. Each tick it adds one quantum, the largest single acquire of any level, less the bytes released since the previous tick, so that under healthy load it adds nothing. Its ticks come at the interval in which the rate delivers one quantum, so it adds at most the rate on average. It never fills the pool past its capacity, counting the credit a pass holds back and the credit already added and not yet distributed. Credit it adds goes to waiting requests by the same rules as released credit. An endpoint turns the refill on by default at its send rate, and a holder can turn it off."
+
+[[requirement]]
+id = "DC-0008-030"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Where its holder sets a rate in bytes per second, a pool MUST run a liveness refill at that rate."
+rationale = "The refill is the one source of credit that doesn't wait on a release."
+
+[[requirement]]
+id = "DC-0008-031"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint SHOULD turn on the liveness refill of each pool it makes, at the endpoint's send rate."
+rationale = "The send rate is the rate at which credit comes back under healthy load, so the refill matches it in a wedge."
+
+[[requirement]]
+id = "DC-0008-032"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Where a holder turns the refill off, the endpoint MUST keep it off."
+rationale = "A holder can need the strict balance of the pool, such as in a test, and the endpoint's default can't override that choice."
+
+[[requirement]]
+id = "DC-0008-033"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The refill's quantum MUST be the largest single acquire of any priority level."
+rationale = "One quantum then covers the smallest grant of every level, so one tick can serve the head waiter of any level."
+
+[[requirement]]
+id = "DC-0008-034"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The refill MUST tick once in each interval in which its rate delivers one quantum."
+rationale = "One quantum per interval adds credit at the rate on average."
+
+[[requirement]]
+id = "DC-0008-035"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "At each tick, the refill MUST add the quantum less the bytes released since the previous tick, and at most the capacity less the pool's free credit, counting the credit held back or added and not yet distributed."
+rationale = "Charging releases makes the refill add nothing when releases meet the rate, and the bound keeps an idle pool from filling past its capacity."
+
+[[requirement]]
+id = "DC-0008-036"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A wake of the distribution by a release or by its budget MUST NOT delay the refill's next tick."
+rationale = "In a wedge the tick is the only wake, and a deadline that each other wake pushed out would never come."
+
+[[requirement]]
+id = "DC-0008-037"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Credit the refill adds MUST reach waiting requests by the same rules as credit a release returns."
+rationale = "The refill then can't let a new request take credit ahead of a waiting one."

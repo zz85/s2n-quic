@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/01-pool.md#DC-0008-008"
+
+[[spec]]
+level = "SHOULD"
+quote = "Where a holder doesn't set it, the smallest grant of each level SHOULD be 64 KiB, or the level's largest single acquire where that is smaller."

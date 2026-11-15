@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/01-devices.md#DC-0011-004"
+
+[[spec]]
+level = "MUST"
+quote = "The scheduler MUST NOT use a device's label for anything other than naming the device in diagnostics and metrics."

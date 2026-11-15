@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/08-scheduling.md#DC-0008-065"
+
+[[spec]]
+level = "MUST"
+quote = "A paced source MUST charge an item's cost to its token bucket only once its consumer confirms it processed the item."

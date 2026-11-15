@@ -1,0 +1,5 @@
+number = 3
+title = "Credentials and key derivation"
+area = "dc"
+abstract = "How a packet names the path secret and the key that protect it, which algorithms each ciphersuite sets, how every key of a path is derived from its path secret, how packets are sealed and authenticated, how keys are updated, and how keys and opened data are handled."
+retired = []

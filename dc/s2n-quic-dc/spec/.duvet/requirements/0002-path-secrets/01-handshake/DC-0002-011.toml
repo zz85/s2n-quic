@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/01-handshake.md#DC-0002-011"
+
+[[spec]]
+level = "SHOULD"
+quote = "An endpoint SHOULD fail a handshake whose confirmation hasn't finished 10 seconds after its connection is established."

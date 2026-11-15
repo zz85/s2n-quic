@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/06-secret-transfer.md#DC-0004-074"
+
+[[spec]]
+level = "MUST"
+quote = "A secret transfer message's ciphersuite byte MUST be 0 for AES-128-GCM with SHA-256 and 1 for AES-256-GCM with SHA-384."

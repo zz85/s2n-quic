@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/04-protection.md#DC-0003-026"
+
+[[spec]]
+level = "MUST"
+quote = "The AEAD nonce of a packet MUST be its key's 12-byte IV with the last 8 bytes combined by exclusive-or with the packet number as an 8-byte big-endian integer."

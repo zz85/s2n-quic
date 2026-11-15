@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/04-pacing.md#DC-0010-028"
+
+[[spec]]
+level = "MUST"
+quote = "A paced sender whose credit is below zero MUST wait until elapsed time restores its credit before it sends the next item."

@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/07-signals.md#DC-0008-052"
+
+[[spec]]
+level = "MUST"
+quote = "A pool MUST count the bytes requested: each request's amount, lowered to its level's largest single acquire, when it is granted at once or begins to wait."

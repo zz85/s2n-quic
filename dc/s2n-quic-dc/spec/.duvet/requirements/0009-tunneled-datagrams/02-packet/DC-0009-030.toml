@@ -1,0 +1,5 @@
+target = "rendered/0009-tunneled-datagrams/02-packet.md#DC-0009-030"
+
+[[spec]]
+level = "MUST"
+quote = "A sender MUST write the phase of the key that seals a packet in the packet's key phase bit."

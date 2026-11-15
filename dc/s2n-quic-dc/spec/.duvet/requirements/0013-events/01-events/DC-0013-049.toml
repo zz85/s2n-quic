@@ -1,0 +1,5 @@
+target = "rendered/0013-events/01-events.md#DC-0013-049"
+
+[[spec]]
+level = "MUST"
+quote = "An event of a stream's key update MUST carry the connection identifier 0, which the system assigns to no connection."

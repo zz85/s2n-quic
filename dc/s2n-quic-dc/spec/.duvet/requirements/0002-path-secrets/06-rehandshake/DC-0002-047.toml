@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/06-rehandshake.md#DC-0002-047"
+
+[[spec]]
+level = "SHOULD"
+quote = "An endpoint SHOULD schedule periodic rehandshakes by going through its peers in turn, scheduling each peer once in each pass through them."

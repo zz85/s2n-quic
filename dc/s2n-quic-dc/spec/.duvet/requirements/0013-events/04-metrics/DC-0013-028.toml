@@ -1,0 +1,5 @@
+target = "rendered/0013-events/04-metrics.md#DC-0013-028"
+
+[[spec]]
+level = "MAY"
+quote = "A handle to the registry MAY add a prefix to the name of each metric registered through it, leaving the variant as it is."

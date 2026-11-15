@@ -1,0 +1,70 @@
+[section]
+anchor = "dispatch"
+title = "Dispatching received packets"
+problem = "A packet that reaches the wrong handler, or a malformed datagram that stops the receiver, would stall or break every flow that shares the socket."
+motivation = "One socket carries packets of many flows and kinds, so the receiver sorts them by kind, and a bad datagram costs only itself."
+prose = "The receiver decodes each datagram as one packet and passes it to the handler of its kind. A control, stream, application datagram or queue reset packet reaches its handler with the sender address and the congestion marking of its datagram, and a stale key, replay detected or unknown path secret packet reaches its handler with the sender address alone. Datagrams that don't decode, and packets that no handler accepts, are dropped and logged. Where the receiver holds the path secret map, the secret control packets that report a stale key, a detected replay or an unknown path secret also reach that map, and they reach their handler whether or not the map authenticated them."
+
+[[requirement]]
+id = "DC-0010-009"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The receiver MUST decode each datagram as one packet and pass it to the handler of its kind: control, stream, application datagram, queue reset, stale key, replay detected or unknown path secret."
+rationale = "Each kind of packet has its own processing, and its handler is the stage that does it."
+
+[[requirement]]
+id = "DC-0010-010"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Each control, stream, application datagram and queue reset packet passed to its handler MUST carry the sender address and the congestion marking of the datagram that held it."
+rationale = "These handlers answer the sender and feed the marking to congestion control, and they can't read either from the packet."
+
+[[requirement]]
+id = "DC-0010-050"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Each stale key, replay detected and unknown path secret packet passed to its handler MUST carry the sender address of the datagram that held it."
+rationale = "The handler of a secret control packet acts on the path to the peer at that address, and the marking doesn't bear on that processing."
+
+[[requirement]]
+id = "DC-0010-011"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A datagram that doesn't decode as a packet MUST be dropped without stopping the receipt of later datagrams."
+rationale = "Anyone on the network can send a malformed datagram, and it can't be allowed to stop the flows that share the socket."
+
+[[requirement]]
+id = "DC-0010-012"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A packet of a kind that no handler accepts MUST be dropped without stopping the receipt of later datagrams."
+rationale = "A receiver that serves only some kinds of packet still serves those kinds while other kinds arrive."
+
+[[requirement]]
+id = "DC-0010-013"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The receiver MUST ignore bytes of value zero that follow a packet up to the end of its datagram."
+rationale = "A sender that pads a short last segment to the segment size leaves zero bytes after the packet, and they aren't a second packet."
+
+[[requirement]]
+id = "DC-0010-014"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A receiver that holds a path secret map MUST give each stale key, replay detected and unknown path secret packet to that map before its handler."
+rationale = "These packets report the state of a path secret, and the map is the record that acts on them."
+
+[[requirement]]
+id = "DC-0010-015"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "A receiver SHOULD log each packet it drops, with the reason it dropped it, at a level that is off by default."
+rationale = "A log of drops is how an operator finds a peer that sends packets this endpoint can't use, and since any sender chooses how many of its packets are dropped, the log stays off until an operator turns it on."

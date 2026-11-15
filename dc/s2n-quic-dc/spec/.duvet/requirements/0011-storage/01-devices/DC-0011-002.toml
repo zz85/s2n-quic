@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/01-devices.md#DC-0011-002"
+
+[[spec]]
+level = "MUST"
+quote = "The registry MUST accept the registration of a new device from any thread at any time after the registry is created."

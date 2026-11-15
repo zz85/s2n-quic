@@ -1,0 +1,54 @@
+[section]
+anchor = "key-identifiers"
+title = "Key identifiers"
+problem = "A receiver can only detect a replayed packet where each packet key a sender uses under a path secret is new, and it has to tell the sender where to resume when it can no longer accept old keys."
+motivation = "A counter that only grows, and that the receiver's control packets can only raise, gives each key a unique identifier and lets sender and receiver agree again after a gap."
+prose = "A sender gives each packet key it derives from a path secret a key identifier, which the packets sealed under that key carry. The receiver's stale key and replay detected packets tell the sender which key identifiers it can no longer accept."
+
+[[requirement]]
+id = "DC-0002-052"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST give each sending key it derives from a path secret the key identifier one greater than the last one it gave under that path secret, starting at 0, except where DC-0002-055 or DC-0002-056 raises it."
+rationale = "A counter gives every key a distinct identifier that the receiver can track in order."
+
+[[requirement]]
+id = "DC-0002-053"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "An endpoint MUST NOT use one key identifier for two sending keys under one path secret."
+rationale = "The receiver rejects a repeated key identifier as a replay."
+
+[[requirement]]
+id = "DC-0002-054"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "An endpoint MUST NOT use a key identifier of 2^62 - 1 or greater."
+rationale = "A stale key packet carries the lowest key identifier its sender would accept, which is one more than a key identifier it saw, and that value has to fit in a variable-length integer."
+
+[[requirement]]
+id = "DC-0002-055"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "On an authenticated stale key packet, an endpoint MUST raise the next key identifier it uses under the path secret the packet names to at least the minimum key identifier the packet carries."
+rationale = "The receiver no longer accepts the lower key identifiers, and raising the counter, without ever lowering it, stays correct where an attacker replays an old stale key packet."
+
+[[requirement]]
+id = "DC-0002-056"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "On an authenticated replay detected packet, an endpoint MUST raise the next key identifier it uses under the path secret the packet names to at least one more than the rejected key identifier the packet carries."
+rationale = "Retransmissions then use a key identifier the receiver hasn't seen."
+
+[[requirement]]
+id = "DC-0002-057"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST request a handshake with the peer when it accepts a replay detected packet."
+rationale = "A replay report means the path secret's key identifiers are out of step, and a new path secret puts both sides in step again."

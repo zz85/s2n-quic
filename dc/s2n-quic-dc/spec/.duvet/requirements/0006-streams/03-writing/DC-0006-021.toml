@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/03-writing.md#DC-0006-021"
+
+[[spec]]
+level = "MUST"
+quote = "Shutting down the write half MUST succeed when the application repeats it."

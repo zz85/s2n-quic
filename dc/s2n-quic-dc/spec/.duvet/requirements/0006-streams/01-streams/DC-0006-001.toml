@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/01-streams.md#DC-0006-001"
+
+[[spec]]
+level = "MUST"
+quote = "A stream MUST carry two ordered byte sequences, one from the client to the server and one from the server to the client, through a read half and a write half."

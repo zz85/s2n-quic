@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/01-pool.md#DC-0008-005"
+
+[[spec]]
+level = "MUST"
+quote = "A pool MUST bring each largest single acquire and each smallest grant that a holder sets outside its bounds to the nearest bound."

@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/03-binding.md#DC-0005-021"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST authenticate a packet whose frames it rejects for their routing before it acknowledges that packet."

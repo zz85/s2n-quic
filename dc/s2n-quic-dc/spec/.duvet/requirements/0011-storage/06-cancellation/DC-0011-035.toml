@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/06-cancellation.md#DC-0011-035"
+
+[[spec]]
+level = "MUST"
+quote = "The backend MUST NOT skip an operation submitted without a request for its completion."

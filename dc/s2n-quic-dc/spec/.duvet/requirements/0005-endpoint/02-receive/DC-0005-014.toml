@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/02-receive.md#DC-0005-014"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST dispatch the frames of an accepted packet in the order the packet carries them."

@@ -1,0 +1,118 @@
+[section]
+anchor = "derivation"
+title = "Key derivation"
+problem = "Keys derived without a fixed layout of inputs, or several uses served by one derived value, would let two implementations disagree on a key, or let a key made for one purpose be used for another."
+motivation = "One expansion with a labeled, length-prefixed input for each purpose makes every key a deterministic function of the path secret, the purpose, the roles and the key identifier, so both endpoints derive the same keys and no two purposes share one."
+prose = "Every key of a path is derived with the HKDF-Expand function of the path's ciphersuite, with the export secret as the pseudorandom key and no extract step. The info input of each expansion is a sequence of fields. A space-prefixed label is the byte 0x20 followed by the ASCII letters of its word, and every label below is space-prefixed. A role label is the label `client` or the label `server`. A key identifier in an info input is written as 8 bytes, most significant byte first. Where an expansion yields several values, they are read from its output in the order listed, with the key-update secrets, whose disclosure would expose every later key, first."
+
+[[requirement]]
+id = "DC-0003-012"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Each key derivation MUST use the HKDF-Expand function of the path's ciphersuite with the export secret as its pseudorandom key, without an HKDF-Extract step."
+rationale = "The export secret is already uniformly random key material from the handshake, so an extract step adds nothing, and both endpoints expand the same input."
+
+[[requirement]]
+id = "DC-0003-013"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The info input of each derivation other than the path secret identifier's MUST begin with the length of the derivation's output in bytes, as a 2-byte big-endian integer."
+rationale = "Binding the output length into the input keeps a derivation of one length from yielding a prefix of a derivation of another length."
+
+[[requirement]]
+id = "DC-0003-014"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A path secret identifier MUST be the 16-byte output of an expansion whose info input is the single byte 16 followed by the label `pid`, with its role bit then set as the credentials section states."
+rationale = "Every other derivation's info input starts with a 2-byte length, so the one-byte length and the identifier's own label keep the identifier apart from every key."
+
+[[requirement]]
+id = "DC-0003-015"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The info input of a bidirectional stream's application keys MUST be the output length, the label `bidi`, the role label of the endpoint that initiated the stream, the label `app` and the key identifier, in that order."
+rationale = "Each field separates these keys from the keys of another purpose, another initiator or another key identifier."
+
+[[requirement]]
+id = "DC-0003-016"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The output of a bidirectional stream's application key derivation MUST be read, in order, as the client's key-update secret, the server's key-update secret, the client's key, the server's key, the client's 12-byte IV and the server's 12-byte IV, each secret and key of the ciphersuite's key length."
+rationale = "Both endpoints split one output the same way, and the key-update secrets come first because they protect every later key."
+
+[[requirement]]
+id = "DC-0003-017"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Where a derivation yields a client's value and a server's value, the client MUST seal with the client's value and open with the server's value."
+rationale = "Each direction has its own key, so a packet one endpoint seals can't be opened as if the other endpoint had sealed it."
+
+[[requirement]]
+id = "DC-0003-018"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Where a derivation yields a client's value and a server's value, the server MUST seal with the server's value and open with the client's value."
+rationale = "The server's choice mirrors the client's, so each endpoint opens what the other seals."
+
+[[requirement]]
+id = "DC-0003-019"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The info input of a bidirectional stream's control keys MUST be the output length, the label `bidi`, the role label of the endpoint that initiated the stream, the label `ctl` and the key identifier, in that order."
+rationale = "The label `ctl` keeps a stream's control keys apart from its application keys under the same key identifier."
+
+[[requirement]]
+id = "DC-0003-020"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The output of a bidirectional stream's control key derivation MUST be read as the client's HMAC key followed by the server's HMAC key, each as long as the block length of the ciphersuite's hash function."
+rationale = "A key of the hash's block length, 64 bytes for SHA-256 and 128 bytes for SHA-384, is the longest key HMAC uses without hashing it first, and needs no padding."
+
+[[requirement]]
+id = "DC-0003-021"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The info input of a unidirectional application key MUST be the output length, the label `uni`, the role label of the sending endpoint and the key identifier, in that order."
+rationale = "The sender's role separates the keys of the two directions, and the key identifier separates the keys of one direction."
+
+[[requirement]]
+id = "DC-0003-022"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The output of a unidirectional application key derivation MUST be read as the key, of the ciphersuite's key length, followed by a 12-byte IV."
+rationale = "Both endpoints split the output the same way, with the key first."
+
+[[requirement]]
+id = "DC-0003-023"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The info input of a secret-control key MUST be the output length, the label `ctl` and the role label of the sending endpoint, without a key identifier."
+rationale = "Control messages about the path secret itself are sent where no key identifier applies, so their key depends on the secret and the sender alone."
+
+[[requirement]]
+id = "DC-0003-024"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The output of a secret-control key derivation MUST be one HMAC key as long as the block length of the ciphersuite's hash function."
+rationale = "As for stream control keys, a key of the block length is the longest HMAC key that needs neither hashing nor padding."
+
+[[requirement]]
+id = "DC-0003-025"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "Two derivations for different purposes, roles or key identifiers MUST NOT use the same info input."
+rationale = "A shared info input would yield the same key for two uses, so a packet of one kind could be taken for a packet of another."

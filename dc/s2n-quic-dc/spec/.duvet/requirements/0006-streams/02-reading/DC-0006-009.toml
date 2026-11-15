@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/02-reading.md#DC-0006-009"
+
+[[spec]]
+level = "MUST"
+quote = "The read half MUST report the end of the stream only once it has received the peer's end-of-stream signal and the application has consumed every byte before it."

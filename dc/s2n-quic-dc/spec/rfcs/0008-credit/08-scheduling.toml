@@ -1,0 +1,118 @@
+[section]
+anchor = "scheduling"
+title = "Scheduling work from several sources"
+problem = "Schedulers other than the network's, such as the storage scheduler, need the same bounds of work, priority and rate, and a copy of these rules for each scheduler would drift."
+motivation = "Rules stated over abstract units of cost hold for any scheduler that uses them."
+prose = "A scheduler pulls items from a pipeline of sources. Each turn has a budget of items. A priority merge of several sources starts each turn at its highest source and polls them in turn. A priority select serves a priority source ahead of a fallback source and tells its consumer whether more priority items wait, so that the consumer can hold back work of low urgency. A paced source spaces its items by their cost at a rate, with a token bucket that allows a short burst after an idle time and can go into debt."
+
+[[requirement]]
+id = "DC-0008-056"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The credit pool and the rules of this section MUST count cost in abstract units, without reference to a network protocol."
+rationale = "A scheduler of other work, such as storage, then uses the same rules."
+
+[[requirement]]
+id = "DC-0008-057"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A scheduler MUST process at most its budget of items in one turn."
+rationale = "A bound on a turn keeps one scheduler from holding its task away from other work."
+
+[[requirement]]
+id = "DC-0008-058"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Where a turn ends on its budget with items left, the scheduler MUST run again without waiting for a new item."
+rationale = "Otherwise items that already wait would sit until another item arrived."
+
+[[requirement]]
+id = "DC-0008-059"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A priority merge MUST start each turn at its highest-priority source."
+rationale = "Each turn then gives the most urgent source the first chance."
+
+[[requirement]]
+id = "DC-0008-060"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Within a turn, a priority merge MUST poll its sources in turn, starting after the source it last served."
+rationale = "Rotating within a turn keeps a busy high source from starving the others for the whole turn."
+
+[[requirement]]
+id = "DC-0008-061"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A priority merge MUST close once each of its sources is closed."
+rationale = "A merge with an open source can still yield items."
+
+[[requirement]]
+id = "DC-0008-062"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A priority select MUST take an item from its fallback source only while its priority source has none."
+rationale = "Priority items, such as acknowledgements, then never wait behind fallback items."
+
+[[requirement]]
+id = "DC-0008-063"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A priority select MUST close when its priority source closes."
+rationale = "The priority source carries the work that defines the pipeline's life, so the pipeline ends with it."
+
+[[requirement]]
+id = "DC-0008-064"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "With each item, a priority select MUST tell its consumer whether its priority source holds another item, or that its budget ran out before it could look."
+rationale = "A consumer that knows more priority items wait can hold back work of low urgency so that it doesn't delay them."
+
+[[requirement]]
+id = "DC-0008-065"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A paced source MUST charge an item's cost to its token bucket only once its consumer confirms it processed the item."
+rationale = "An item the consumer skipped or cancelled then costs no rate."
+
+[[requirement]]
+id = "DC-0008-066"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A paced source MUST hold its next item while its token bucket is in debt, until the rate repays the debt."
+rationale = "Spacing items by their cost keeps the source at its rate."
+
+[[requirement]]
+id = "DC-0008-067"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A token bucket MUST refill at its rate over the time since its last use, up to its burst."
+rationale = "The bucket earns credit as time passes, and the bound keeps an idle source from saving an unbounded burst."
+
+[[requirement]]
+id = "DC-0008-068"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "A token bucket's burst SHOULD be 65535 bytes of cost at its rate."
+rationale = "A burst of one batch of segments lets a source that was idle send at once without flooding the device's queue."
+
+[[requirement]]
+id = "DC-0008-083"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A priority select MUST close when its fallback source closes while its priority source holds no item."
+rationale = "The fallback carries the pipeline's bulk work, so a select whose fallback ended and whose priority source is empty has no more work to yield; a pipeline that sends priority items later keeps its fallback open."

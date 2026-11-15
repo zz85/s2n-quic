@@ -1,0 +1,94 @@
+[section]
+anchor = "encoding"
+title = "Common encoding"
+problem = "Two endpoints that disagree on how a field is laid out, or on which first byte names which packet, can't read each other's packets, and a receiver that guesses at an unknown packet kind can be led to misread it."
+motivation = "One set of encoding rules shared by every packet lets each packet's section give only its own fields, and a closed table of tags lets a receiver drop every packet it can't read."
+prose = "Every packet starts with a one-byte tag, whose value names the packet's kind and whose low bits carry that kind's flags. Integers of fixed width are sent most significant byte first, and every other integer is a variable-length integer. Most packets then carry the credentials that select the keys of the path, and a one-byte wire version."
+
+[[requirement]]
+id = "DC-0004-001"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Each fixed-width integer field MUST be encoded most significant byte first."
+rationale = "Network byte order is the order every field of the wire format uses, so a reader doesn't guess it field by field."
+
+[[requirement]]
+id = "DC-0004-002"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Each field that this RFC calls a variable-length integer MUST be encoded as a QUIC variable-length integer, whose first byte's two most significant bits give its length of 1, 2, 4 or 8 bytes."
+rationale = "The encoding is the one QUIC uses, so a value takes no more bytes than its size needs."
+
+[[requirement]]
+id = "DC-0004-003"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The first byte of every packet MUST be its tag, which names the packet's kind: 0x00 to 0x3F a stream packet, 0x40 to 0x4F a datagram packet, 0x50 to 0x5F a control packet, and 0x60, 0x61, 0x62, 0x64, 0x65, 0x66 and 0x67 a secret control packet."
+rationale = "A receiver chooses how to read the rest of a packet from its first byte alone."
+
+[[requirement]]
+id = "DC-0004-004"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A receiver MUST NOT accept a packet whose tag has its most significant bit set."
+rationale = "Only short packets are defined, and the high bit is kept for packets of another form."
+
+[[requirement]]
+id = "DC-0004-005"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A receiver MUST NOT accept a packet whose tag is 0x63 or lies between 0x68 and 0x7F."
+rationale = "Those tags are reserved for packet kinds that a later version defines."
+
+[[requirement]]
+id = "DC-0004-006"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The wire version field of a packet MUST be one byte holding 0."
+rationale = "Version 0 is the only version defined, and one byte leaves room for later versions."
+
+[[requirement]]
+id = "DC-0004-007"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A receiver MUST NOT accept a packet whose wire version is other than 0."
+rationale = "A receiver can't know the layout of a version it doesn't implement."
+
+[[requirement]]
+id = "DC-0004-008"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A credential identifier MUST be 16 bytes long."
+rationale = "The identifier names one path secret among every peer's, so it holds enough bytes not to collide."
+
+[[requirement]]
+id = "DC-0004-009"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The most significant bit of a credential identifier's first byte MUST be set where the identifier names the server endpoint's side of a path, and clear where it names the client endpoint's side."
+rationale = "The two sides of one path secret then use identifiers that differ in one bit, so neither is mistaken for the other."
+
+[[requirement]]
+id = "DC-0004-010"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The credentials field MUST be the 16-byte credential identifier followed by the key identifier as a variable-length integer."
+rationale = "The key identifier selects which key derived from the path secret sealed the packet."
+
+[[requirement]]
+id = "DC-0004-011"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Each stream, datagram and control packet MUST end with an authentication tag at least 16 bytes long, of the length the path's cipher produces."
+rationale = "A tag shorter than 16 bytes would be too easy to forge."

@@ -1,0 +1,5 @@
+target = "rendered/0013-events/06-endpoint-counters.md#DC-0013-040"
+
+[[spec]]
+level = "MUST"
+quote = "The receive path MUST count each processing failure by its cause: an unknown peer, a decryption failure, a duplicate packet, a stale key or a missing sender identifier."

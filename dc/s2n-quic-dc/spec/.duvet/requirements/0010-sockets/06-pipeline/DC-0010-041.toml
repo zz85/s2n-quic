@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/06-pipeline.md#DC-0010-041"
+
+[[spec]]
+level = "MUST"
+quote = "A socket sender stage that fails to send an item MUST return the item with the error, so that the caller releases it."

@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/03-datagram.md#DC-0004-034"
+
+[[spec]]
+level = "MUST"
+quote = "A datagram packet's fields MUST appear in this order: the tag, the credentials, the wire version, a 2-byte source control port, the packet number, the routing information, the payload length, the application header length, the application header, the payload and the authentication tag, each optional field only where its condition holds."

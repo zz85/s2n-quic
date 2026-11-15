@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/01-receive.md#DC-0010-008"
+
+[[spec]]
+level = "SHOULD"
+quote = "A socket SHOULD be read by the worker that registered it for readiness, so that its wake-ups run on that worker."

@@ -1,0 +1,5 @@
+target = "rendered/0013-events/03-privacy.md#DC-0013-019"
+
+[[spec]]
+level = "MUST"
+quote = "An event, a metric or a log line MUST NOT carry the bytes of a key or of a path secret."

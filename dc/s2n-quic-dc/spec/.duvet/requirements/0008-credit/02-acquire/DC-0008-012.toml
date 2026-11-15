@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/02-acquire.md#DC-0008-012"
+
+[[spec]]
+level = "MUST"
+quote = "A request the pool can't grant at once MUST wait at its priority level behind the requests already waiting there."

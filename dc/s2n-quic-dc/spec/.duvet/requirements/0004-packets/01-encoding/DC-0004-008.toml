@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/01-encoding.md#DC-0004-008"
+
+[[spec]]
+level = "MUST"
+quote = "A credential identifier MUST be 16 bytes long."

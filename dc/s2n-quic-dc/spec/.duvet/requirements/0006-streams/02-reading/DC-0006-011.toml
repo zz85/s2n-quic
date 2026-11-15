@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/02-reading.md#DC-0006-011"
+
+[[spec]]
+level = "MUST"
+quote = "The read half MUST raise the limit on how much the peer can send as the application consumes the data it received."

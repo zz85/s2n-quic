@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/06-secret-transfer.md#DC-0004-073"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST NOT accept a secret transfer message whose version byte or application parameters version byte is other than 0."

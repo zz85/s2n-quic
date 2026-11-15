@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/06-peers.md#DC-0005-042"
+
+[[spec]]
+level = "MUST"
+quote = "On a validated unknown path secret notice, the endpoint MUST discard its receive state for that credential."

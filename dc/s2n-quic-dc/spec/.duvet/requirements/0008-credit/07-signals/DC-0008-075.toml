@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/07-signals.md#DC-0008-075"
+
+[[spec]]
+level = "MUST"
+quote = "A pool MUST count the races of a cancel and a grant."

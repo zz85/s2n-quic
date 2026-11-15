@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/06-secret-transfer.md#DC-0004-076"
+
+[[spec]]
+level = "MUST"
+quote = "The application parameters MUST hold, in this order, the maximum datagram size as a 2-byte integer, then the remote maximum data, the local send maximum data, the local receive maximum data, the maximum idle timeout in milliseconds with 0 for none, and the maximum number of queues, each a variable-length integer."

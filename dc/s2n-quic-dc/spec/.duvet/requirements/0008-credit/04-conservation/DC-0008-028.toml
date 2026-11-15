@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/04-conservation.md#DC-0008-028"
+
+[[spec]]
+level = "MUST"
+quote = "A pass MUST NOT raise the pool's free credit above zero while requests it owes credit to still wait."

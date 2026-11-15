@@ -1,0 +1,5 @@
+target = "rendered/0013-events/02-catalog.md#DC-0013-011"
+
+[[spec]]
+level = "MUST"
+quote = "The path secret map MUST report an event for each entry it inserts, makes ready, replaces or evicts, with the age of each evicted entry."

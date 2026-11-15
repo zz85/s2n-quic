@@ -1,0 +1,5 @@
+target = "rendered/0001-overview/04-versions.md#DC-0001-027"
+
+[[spec]]
+level = "MUST"
+quote = "A server that selects a dc version MUST send that version alone in the transport parameter 0xdc0000."

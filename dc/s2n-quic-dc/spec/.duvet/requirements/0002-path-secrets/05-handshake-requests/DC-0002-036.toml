@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/05-handshake-requests.md#DC-0002-036"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST join each request for a handshake with a peer address to the handshake with that address that is already running, where one runs."

@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/06-pipeline.md#DC-0010-052"
+
+[[spec]]
+level = "MAY"
+quote = "A stage that spreads items across several outputs MAY move every item its input holds in one poll, until its input or every output is pending."

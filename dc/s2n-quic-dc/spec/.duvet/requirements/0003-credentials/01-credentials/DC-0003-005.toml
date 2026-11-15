@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/01-credentials.md#DC-0003-005"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST compute its peer's identifier of a shared path secret by inverting the most significant bit of the first byte of its own identifier."

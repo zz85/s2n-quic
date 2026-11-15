@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/01-pool.md#DC-0008-003"
+
+[[spec]]
+level = "MUST"
+quote = "Each priority level MUST have a largest single acquire of at least one byte and at most the capacity."

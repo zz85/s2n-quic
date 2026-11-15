@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/02-dispatch.md#DC-0010-014"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver that holds a path secret map MUST give each stale key, replay detected and unknown path secret packet to that map before its handler."

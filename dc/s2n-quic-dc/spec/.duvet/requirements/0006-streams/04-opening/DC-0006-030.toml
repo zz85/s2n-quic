@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/04-opening.md#DC-0006-030"
+
+[[spec]]
+level = "MUST"
+quote = "Where the client doesn't hold a path secret for the server, opening a stream MUST run a handshake with the server before the stream is returned."

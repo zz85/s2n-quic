@@ -1,0 +1,70 @@
+[section]
+anchor = "acquire"
+title = "Acquiring and releasing credit"
+problem = "A holder that waits for credit it could have at once loses throughput, and a holder that takes credit ahead of one already waiting can starve it."
+motivation = "An immediate grant when the pool can cover a request keeps the common case fast, and a queue for every other request keeps the order fair."
+prose = "A holder asks for a number of bytes at a priority level. Where the pool's free credit covers the request and no request waits, the pool grants it at once. Otherwise the request waits at its level until the distribution grants it or the pool closes. A grant may be smaller than the request, and the holder then asks again for the rest. A holder releases each byte of credit it was granted once it is done with it."
+
+[[requirement]]
+id = "DC-0008-009"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A pool MUST lower each request above its level's largest single acquire to that amount."
+rationale = "The bound of each level then holds for every request, whatever its holder asks."
+
+[[requirement]]
+id = "DC-0008-010"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Where the pool's free credit covers a request and no other request waits, the pool MUST grant the whole request at once, without the request waiting."
+rationale = "The common case of a pool with headroom then costs its holder no wait."
+
+[[requirement]]
+id = "DC-0008-011"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A pool MUST NOT grant a new request at once while another request waits for credit."
+rationale = "Otherwise credit returned for a waiting request could go to a request that came later, and a waiting request could wait forever."
+
+[[requirement]]
+id = "DC-0008-012"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A request the pool can't grant at once MUST wait at its priority level behind the requests already waiting there."
+rationale = "Waiting in arrival order at each level lets the distribution serve every waiter in turn."
+
+[[requirement]]
+id = "DC-0008-013"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A pool MUST answer each waiting request with either a grant of a number of bytes or the pool's close."
+rationale = "A holder needs to know whether it may commit bytes or has to stop."
+
+[[requirement]]
+id = "DC-0008-014"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A wake of a waiting request that carries neither a grant nor the close MUST NOT end its wait."
+rationale = "A holder can be woken for other reasons, and it keeps its place until the pool answers it."
+
+[[requirement]]
+id = "DC-0008-015"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A release MUST return its bytes to the pool."
+rationale = "Returned credit is what lets waiting requests go on."
+
+[[requirement]]
+id = "DC-0008-069"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A release MUST wake the distribution."
+rationale = "The distribution then runs once credit comes back, so waiting requests are granted without waiting for the refill."

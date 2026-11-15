@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/05-key-update.md#DC-0003-041"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver that opens a packet of the phase it doesn't expect MUST replace the key of the phase it expected with the next key of its chain."

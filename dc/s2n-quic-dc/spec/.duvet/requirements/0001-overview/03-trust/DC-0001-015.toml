@@ -1,0 +1,5 @@
+target = "rendered/0001-overview/03-trust.md#DC-0001-015"
+
+[[spec]]
+level = "SHOULD"
+quote = "A deployment SHOULD configure the handshake to authenticate both peers."

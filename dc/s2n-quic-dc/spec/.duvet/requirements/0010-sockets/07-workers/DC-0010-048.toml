@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/07-workers.md#DC-0010-048"
+
+[[spec]]
+level = "MUST"
+quote = "The watchdog MUST NOT treat a worker that sleeps for lack of tasks as stuck."

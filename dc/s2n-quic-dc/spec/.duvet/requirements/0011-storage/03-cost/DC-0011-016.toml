@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/03-cost.md#DC-0011-016"
+
+[[spec]]
+level = "SHOULD"
+quote = "When an operator does not configure the weights, the device SHOULD weight a read at one and a write at two."

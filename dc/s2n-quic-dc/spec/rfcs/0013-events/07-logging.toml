@@ -1,0 +1,30 @@
+[section]
+anchor = "logging"
+title = "Diagnostic logging"
+problem = "Detailed logging on the data path costs time on every packet, while an error that isn't logged leaves an operator without its cause."
+motivation = "Keeping errors and warnings in every build and the detailed levels out of production builds keeps the data path fast without hiding failures."
+prose = "The endpoint writes log lines of its own at five levels: error, warning, info, debug and trace. Error and warning lines are present in every build. Info, debug and trace lines are present only in a build that asks for them, such as a test build. The integration that writes events as log lines is separate: it writes each event at the debug level wherever an application installs it."
+
+[[requirement]]
+id = "DC-0013-045"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The system MUST write error and warning log lines in every build."
+rationale = "Errors and warnings are rare and are the first thing an operator reads after a failure."
+
+[[requirement]]
+id = "DC-0013-046"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "Info, debug and trace log lines that the endpoint writes directly MUST NOT be present in a production build that doesn't ask for them."
+rationale = "Even a log line that is filtered out at run time costs a check on every packet, and production builds pay none of it."
+
+[[requirement]]
+id = "DC-0013-047"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "Writing or leaving out a log line MUST NOT change the endpoint's protocol behavior."
+rationale = "A failure that disappears when logging is turned on can't be diagnosed."

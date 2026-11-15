@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/02-acquire.md#DC-0008-010"
+
+[[spec]]
+level = "MUST"
+quote = "Where the pool's free credit covers a request and no other request waits, the pool MUST grant the whole request at once, without the request waiting."

@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/02-admission.md#DC-0011-007"
+
+[[spec]]
+level = "MUST"
+quote = "The device MUST grant an operation its whole cost in one grant, and never a part of it."

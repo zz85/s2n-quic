@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/03-datagram.md#DC-0004-041"
+
+[[spec]]
+level = "MUST"
+quote = "The routing information of a datagram packet MUST be a routing type of 11 followed by the source sender identifier, each a variable-length integer."

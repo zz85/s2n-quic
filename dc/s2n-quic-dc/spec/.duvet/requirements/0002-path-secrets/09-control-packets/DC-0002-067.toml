@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/09-control-packets.md#DC-0002-067"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST NOT act on a secret control packet that fails authentication."

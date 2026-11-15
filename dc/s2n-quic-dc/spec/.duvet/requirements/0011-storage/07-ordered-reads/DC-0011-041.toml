@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/07-ordered-reads.md#DC-0011-041"
+
+[[spec]]
+level = "MUST"
+quote = "An ordered read MUST bound the number of blocks it has taken from the sequence and not yet delivered."

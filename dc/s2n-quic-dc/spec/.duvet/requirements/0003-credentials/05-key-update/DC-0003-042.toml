@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/05-key-update.md#DC-0003-042"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST NOT open a packet of key phase 1 with a key that has no key-update secret."

@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/01-encoding.md#DC-0004-006"
+
+[[spec]]
+level = "MUST"
+quote = "The wire version field of a packet MUST be one byte holding 0."

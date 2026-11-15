@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/07-ordered-reads.md#DC-0011-036"
+
+[[spec]]
+level = "MUST"
+quote = "An ordered read MUST deliver the blocks' bytes in the order of the block sequence, whatever order their reads complete in."

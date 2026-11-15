@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/02-receive.md#DC-0005-007"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST keep separate packet number and acknowledgement state for each pair of peer credential and sender identifier."

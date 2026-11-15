@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/04-acknowledgement.md#DC-0005-027"
+
+[[spec]]
+level = "MUST"
+quote = "An acknowledgement MUST carry the counts of explicit congestion notification marks on the packets received from its sender."

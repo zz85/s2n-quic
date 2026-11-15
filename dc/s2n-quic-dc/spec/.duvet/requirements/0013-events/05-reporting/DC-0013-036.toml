@@ -1,0 +1,5 @@
+target = "rendered/0013-events/05-reporting.md#DC-0013-036"
+
+[[spec]]
+level = "MUST"
+quote = "A metadata tag attached to a metric at registration MUST NOT add to the dimensions an exporter emits, unless that exporter chooses to emit it."

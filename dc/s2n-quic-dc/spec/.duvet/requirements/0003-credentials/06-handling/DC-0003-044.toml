@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/06-handling.md#DC-0003-044"
+
+[[spec]]
+level = "MUST"
+quote = "A single-use key MUST NOT seal more than one packet."

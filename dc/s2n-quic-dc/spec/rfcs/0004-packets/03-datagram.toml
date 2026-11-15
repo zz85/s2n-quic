@@ -1,0 +1,118 @@
+[section]
+anchor = "datagram"
+title = "Datagram packets"
+problem = "An application that sends single messages, without a stream's order or retransmission, needs a packet that carries one message and says how to route it."
+motivation = "Flags in the tag make the packet number, the routing information and the application header optional, so a datagram carries only the fields its use needs."
+prose = "A datagram packet carries one application message: its tag's flags, its credentials and wire version, the port at which its sender receives secret control packets, an optional packet number, optional routing information, the payload length, an optional application header with its length, the payload, and the authentication tag. Every byte before the payload is authenticated, and the payload is encrypted."
+
+[[requirement]]
+id = "DC-0004-030"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "In a datagram packet's tag, bit 0x08 MUST be set exactly when the packet carries routing information."
+rationale = "A receiver learns from the tag alone whether routing information follows."
+
+[[requirement]]
+id = "DC-0004-031"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "In a datagram packet's tag, bit 0x04 MUST be set exactly when the packet carries a packet number."
+rationale = "A receiver learns from the tag alone whether a packet number follows."
+
+[[requirement]]
+id = "DC-0004-032"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "In a datagram packet's tag, bit 0x02 MUST be set exactly when the packet carries an application header length."
+rationale = "A receiver learns from the tag alone whether the application header length and the application header follow."
+
+[[requirement]]
+id = "DC-0004-033"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Bit 0x01 of a datagram packet's tag MUST hold the key phase of the key that sealed the packet."
+rationale = "The receiver chooses between the current and the next key from this bit."
+
+[[requirement]]
+id = "DC-0004-034"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A datagram packet's fields MUST appear in this order: the tag, the credentials, the wire version, a 2-byte source control port, the packet number, the routing information, the payload length, the application header length, the application header, the payload and the authentication tag, each optional field only where its condition holds."
+rationale = "A fixed order lets a receiver read each field without a marker for it."
+
+[[requirement]]
+id = "DC-0004-035"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The packet number, the payload length and the application header length of a datagram packet MUST be variable-length integers."
+rationale = "The integers take only the bytes their values need."
+
+[[requirement]]
+id = "DC-0004-036"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Every datagram packet's payload MUST be encrypted."
+rationale = "The payload is the application's message, and only the header travels in the clear."
+
+[[requirement]]
+id = "DC-0004-037"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A receiver MUST read a datagram packet that doesn't carry an application header length as having an empty application header."
+rationale = "The application header is optional, and its absence has one meaning."
+
+[[requirement]]
+id = "DC-0004-038"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The nonce of a datagram packet's seal MUST be its packet number, or zero where the packet carries none."
+rationale = "A datagram without a packet number is still sealed with a defined nonce."
+
+[[requirement]]
+id = "DC-0004-039"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A sender MUST NOT seal another packet with a key that sealed a datagram packet without a packet number."
+rationale = "Such a datagram is sealed with nonce zero, and two seals under one key with one nonce expose the combination of their plaintexts and let an on-path observer forge packets under that key."
+
+[[requirement]]
+id = "DC-0004-040"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The associated data of a datagram packet's seal MUST be every byte from its tag to the end of its application header."
+rationale = "Every header field and the application header are authenticated, while the payload is encrypted."
+
+[[requirement]]
+id = "DC-0004-041"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The routing information of a datagram packet MUST be a routing type of 11 followed by the source sender identifier, each a variable-length integer."
+rationale = "The type names the routing scheme, and type 11 routes the packet by its sender's identity."
+
+[[requirement]]
+id = "DC-0004-042"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A receiver MUST NOT accept a datagram packet whose routing type is other than 11."
+rationale = "A receiver can't route a packet by a scheme it doesn't know."
+
+[[requirement]]
+id = "DC-0004-043"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The source control port of a datagram packet MUST be the port at which its sender receives secret control packets."
+rationale = "A receiver that can't use the packet knows where to send its secret control reply."

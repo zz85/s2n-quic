@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/03-distribution.md#DC-0008-023"
+
+[[spec]]
+level = "MUST"
+quote = "A pass MUST wake the holder of each request it grants."

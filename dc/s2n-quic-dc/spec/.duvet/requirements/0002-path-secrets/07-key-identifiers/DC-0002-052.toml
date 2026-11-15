@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/07-key-identifiers.md#DC-0002-052"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST give each sending key it derives from a path secret the key identifier one greater than the last one it gave under that path secret, starting at 0, except where DC-0002-055 or DC-0002-056 raises it."

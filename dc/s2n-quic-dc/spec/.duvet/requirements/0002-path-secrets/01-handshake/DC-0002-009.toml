@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/01-handshake.md#DC-0002-009"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST NOT send a datagram under a path secret that is larger than the smaller of the peer's advertised maximum datagram size and the endpoint's own maximum datagram size."

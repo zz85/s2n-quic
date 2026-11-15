@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/06-close.md#DC-0008-039"
+
+[[spec]]
+level = "MUST"
+quote = "Where a cancel and a grant of the same request race, the pool MUST let exactly one of them take effect."

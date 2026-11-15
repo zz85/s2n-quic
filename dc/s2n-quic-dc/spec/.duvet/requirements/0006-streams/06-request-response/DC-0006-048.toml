@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/06-request-response.md#DC-0006-048"
+
+[[spec]]
+level = "MUST"
+quote = "A request-response exchange MUST write the whole request followed by the end-of-stream signal."

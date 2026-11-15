@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/06-pipeline.md#DC-0010-040"
+
+[[spec]]
+level = "MUST"
+quote = "An item a priority merge reads ahead MUST be delivered by its next receive."

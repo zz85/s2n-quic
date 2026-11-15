@@ -1,0 +1,5 @@
+target = "rendered/0013-events/06-endpoint-counters.md#DC-0013-048"
+
+[[spec]]
+level = "MUST"
+quote = "The receive path MUST record the size and the frame count of each datagram it receives."

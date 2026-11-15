@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/02-acquire.md#DC-0008-014"
+
+[[spec]]
+level = "MUST"
+quote = "A wake of a waiting request that carries neither a grant nor the close MUST NOT end its wait."

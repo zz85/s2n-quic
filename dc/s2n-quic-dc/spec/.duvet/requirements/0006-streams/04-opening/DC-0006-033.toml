@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/04-opening.md#DC-0006-033"
+
+[[spec]]
+level = "MUST"
+quote = "Where the client's path secret for a server was marked unreachable, its cooldown has passed and the server has stayed silent past the idle timeout, opening a stream MUST discard that path secret and run a new handshake."

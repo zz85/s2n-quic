@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/02-data-addresses.md#DC-0002-020"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST fail a handshake with a transport parameter error where a peer whose handshake address isn't a loopback address advertises a loopback data address."

@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/08-scheduling.md#DC-0008-067"
+
+[[spec]]
+level = "MUST"
+quote = "A token bucket MUST refill at its rate over the time since its last use, up to its burst."

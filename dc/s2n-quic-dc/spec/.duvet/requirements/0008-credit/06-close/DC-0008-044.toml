@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/06-close.md#DC-0008-044"
+
+[[spec]]
+level = "MUST"
+quote = "A closed pool MUST NOT grant credit."

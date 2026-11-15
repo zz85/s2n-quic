@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/02-stream.md#DC-0004-019"
+
+[[spec]]
+level = "MUST"
+quote = "A sender MUST set the two reserved bytes that follow a stream packet's wire version to zero."

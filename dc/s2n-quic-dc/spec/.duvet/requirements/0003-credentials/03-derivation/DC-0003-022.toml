@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/03-derivation.md#DC-0003-022"
+
+[[spec]]
+level = "MUST"
+quote = "The output of a unidirectional application key derivation MUST be read as the key, of the ciphersuite's key length, followed by a 12-byte IV."

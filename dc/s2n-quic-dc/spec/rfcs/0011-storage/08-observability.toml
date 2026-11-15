@@ -1,0 +1,30 @@
+[section]
+anchor = "observability"
+title = "Load and observability"
+problem = "Placing new work across drives needs a measure of how loaded each device is, and operators need to see each device's traffic, failures and rejections."
+motivation = "Committed credit counts both running and waiting work, so it rises as a device falls behind, and counters kept for each device let an operator tell one device's trouble from another's."
+prose = "Each device reports its load as committed credit. It counts operations and bytes for each kind of operation, and counts failures, rejections and cancellations for the device as a whole."
+
+[[requirement]]
+id = "DC-0011-042"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The device MUST report its load as its pool capacity less its available credit, counting the credit that waiting submitters ask for, and never less than zero."
+rationale = "A load that counts waiting demand keeps rising past capacity, so a placement choice between two devices sees which one is further behind."
+
+[[requirement]]
+id = "DC-0011-043"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The device MUST count, for each kind of operation, the operations submitted and the bytes moved."
+rationale = "An operator needs each device's traffic, by kind, to find an overloaded device."
+
+[[requirement]]
+id = "DC-0011-044"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The device MUST count each operation that fails, each operation it rejects at admission and each reservation cancelled before submission."
+rationale = "Failures, rejections and cancellations are invisible in the device's traffic, and a rising count points at a failing device or a caller bug."

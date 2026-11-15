@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/04-acknowledgement.md#DC-0005-030"
+
+[[spec]]
+level = "MAY"
+quote = "When a sender has no packet that carries data awaiting acknowledgement, it MAY mark one acknowledgement it sends as ack-eliciting to measure the round-trip time."

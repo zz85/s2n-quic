@@ -1,0 +1,5 @@
+target = "rendered/0001-overview/02-deployment.md#DC-0001-008"
+
+[[spec]]
+level = "MAY"
+quote = "A peer MAY send data packets of the dc protocol to the addresses the other peer advertised as soon as the QUIC handshake completes."

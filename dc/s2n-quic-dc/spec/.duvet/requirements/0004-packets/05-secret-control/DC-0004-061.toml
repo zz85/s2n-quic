@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/05-secret-control.md#DC-0004-061"
+
+[[spec]]
+level = "MUST"
+quote = "A secret control packet MUST NOT be longer than 64 bytes."

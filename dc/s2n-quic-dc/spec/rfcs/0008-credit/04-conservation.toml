@@ -1,0 +1,38 @@
+[section]
+anchor = "conservation"
+title = "Conserving credit"
+problem = "A pool that loses credit stops serving holders, and a pool that creates credit stops bounding the bytes in flight."
+motivation = "A balance that holds at every quiet point lets the pool be checked, and lets an operator tell a leak from load."
+prose = "The credit of a pool is in five places: free, which a new request can take at once; owed to waiting requests; returned by a release and not yet distributed; held back by a pass for its next pass; and held by holders. Free credit reads below zero while requests wait, by the amount they wait for. A pass that can't hand all returned credit to waiters without letting a new request take it holds the rest for its next pass. The liveness refill can add credit beyond the capacity for a time, so the pool clamps its free credit to the capacity."
+
+[[requirement]]
+id = "DC-0008-026"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Where the liveness refill hasn't added credit, a pool's free, owed, returned and held credit and the credit a pass held back for its next pass MUST sum to its capacity at every point where no request or release is in progress."
+rationale = "The balance defines a pool that neither loses nor creates credit, and it lets a test check the pool at any quiet point."
+
+[[requirement]]
+id = "DC-0008-027"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A pass MUST NOT grant more credit than it has left to distribute."
+rationale = "A grant past the credit the pass distributes would put more bytes in flight than the capacity allows."
+
+[[requirement]]
+id = "DC-0008-028"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A pass MUST NOT raise the pool's free credit above zero while requests it owes credit to still wait."
+rationale = "Credit above zero is open to a new request, which would then take credit that a waiting request was owed."
+
+[[requirement]]
+id = "DC-0008-029"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A pool's free credit MUST NOT stay above its capacity after a pass."
+rationale = "Credit the refill added and real releases returned later can add up past the capacity, and a pool whose free credit exceeds its capacity stops bounding the bytes in flight."

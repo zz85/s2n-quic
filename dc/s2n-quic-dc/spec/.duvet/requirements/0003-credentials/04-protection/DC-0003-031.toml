@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/04-protection.md#DC-0003-031"
+
+[[spec]]
+level = "MUST"
+quote = "The tag length of a stream control packet MUST be 16 bytes."

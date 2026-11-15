@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/03-writing.md#DC-0006-020"
+
+[[spec]]
+level = "MUST"
+quote = "Shutting down the write half MUST close the stream's write direction and leave its read half open."

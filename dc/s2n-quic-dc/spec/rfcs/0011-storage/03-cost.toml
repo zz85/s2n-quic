@@ -1,0 +1,54 @@
+[section]
+anchor = "cost"
+title = "Cost and pools"
+problem = "Operations differ in how much of a device they use: a large read uses more bandwidth than a small one, while on a device limited by operations per second every operation costs about the same. Writes also tend to cost a device more than reads."
+motivation = "A configurable cost model lets one admission budget fit a device limited by bandwidth or by operations, and the read and write weights and split pools let an operator protect reads from writes."
+prose = "Each device has a cost model, a read weight and a write weight. Under the bytes model, an operation's base cost is its length in bytes. Under the operations model, it is its length divided by the configured operation unit, rounded up, and a control operation such as a flush costs one. The base cost is multiplied by the read weight for a read and by the write weight for every other kind of operation. A device holds either one shared pool for all operations, or two pools: one for reads and one for every other kind of operation."
+
+[[requirement]]
+id = "DC-0011-013"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Under the bytes cost model, the device MUST compute an operation's base cost as its length in bytes, and as one for an operation of length zero."
+rationale = "Bytes measure the bandwidth an operation uses, and a floor of one keeps an empty operation from being free."
+
+[[requirement]]
+id = "DC-0011-014"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Under the operations cost model, the device MUST compute an operation's base cost as its length divided by the configured operation unit, rounded up, and as one for a control operation or an operation of length zero."
+rationale = "A device limited by operations per second pays about the same for each operation unit, whatever its bytes."
+
+[[requirement]]
+id = "DC-0011-015"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The device MUST multiply an operation's base cost by the read weight for a read, or by the write weight for every other kind, round the result down to a whole number of credits, and charge at least one credit."
+rationale = "Rounding down keeps two implementations from charging different costs for one operation, and a cost of zero would let an unbounded number of operations be admitted at once."
+
+[[requirement]]
+id = "DC-0011-016"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "When an operator does not configure the weights, the device SHOULD weight a read at one and a write at two."
+rationale = "A write usually costs a device more than a read of the same length, and the default protects reads from a burst of writes."
+
+[[requirement]]
+id = "DC-0011-017"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "In split pool mode, the device MUST draw a read's credit from the read pool and the credit of every other kind of operation from the write pool."
+rationale = "Separate budgets keep a burst of writes from taking the credit that reads need."
+
+[[requirement]]
+id = "DC-0011-018"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "In shared pool mode, the device MUST draw the credit of every operation from one pool."
+rationale = "One combined budget bounds the device's total queue depth when reads and writes compete for the same device."

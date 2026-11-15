@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/03-writing.md#DC-0006-018"
+
+[[spec]]
+level = "MUST"
+quote = "The write half MUST report a write as successful once its bytes are queued for sending, whether or not the peer has received them."

@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/03-writing.md#DC-0006-023"
+
+[[spec]]
+level = "MUST"
+quote = "The write half MUST let the application learn, without writing, that the peer has stopped reading, has reset the stream, or can't be reached."

@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/05-key-update.md#DC-0003-039"
+
+[[spec]]
+level = "MUST"
+quote = "A sender MUST mark each packet with the key phase, 0 or 1, of the key that sealed it."

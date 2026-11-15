@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/02-data-addresses.md#DC-0002-013"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST encode the data addresses it advertises in the format this section describes, each with address type 1."

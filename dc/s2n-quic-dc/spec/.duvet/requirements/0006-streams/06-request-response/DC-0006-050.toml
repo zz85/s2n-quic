@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/06-request-response.md#DC-0006-050"
+
+[[spec]]
+level = "MUST"
+quote = "A request-response exchange MUST fail with an error where the storage for the response can't take more bytes before the response ends."

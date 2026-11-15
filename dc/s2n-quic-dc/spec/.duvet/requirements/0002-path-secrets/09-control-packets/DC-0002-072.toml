@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/09-control-packets.md#DC-0002-072"
+
+[[spec]]
+level = "SHOULD"
+quote = "An endpoint SHOULD keep at most one secret control packet waiting to be sent for each path secret and sender it answers, and drop the others."

@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/02-stream.md#DC-0004-023"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST NOT accept a stream packet whose packet number plus retransmission offset is larger than the largest value a variable-length integer holds."

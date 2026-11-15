@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/08-scheduling.md#DC-0008-068"
+
+[[spec]]
+level = "SHOULD"
+quote = "A token bucket's burst SHOULD be 65535 bytes of cost at its rate."

@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/06-pipeline.md#DC-0010-051"
+
+[[spec]]
+level = "MUST"
+quote = "A priority merge over a list of inputs MUST start each poll cycle at its highest-priority input, and start each later take in that cycle at the input after the one it took last."

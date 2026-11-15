@@ -1,0 +1,5 @@
+target = "rendered/0010-sockets/05-buffers.md#DC-0010-033"
+
+[[spec]]
+level = "SHOULD"
+quote = "A released buffer SHOULD return to the pool of the worker that allocated it, to be reused instead of freed."

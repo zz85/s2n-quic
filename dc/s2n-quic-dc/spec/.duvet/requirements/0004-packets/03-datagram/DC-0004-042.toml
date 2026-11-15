@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/03-datagram.md#DC-0004-042"
+
+[[spec]]
+level = "MUST"
+quote = "A receiver MUST NOT accept a datagram packet whose routing type is other than 11."

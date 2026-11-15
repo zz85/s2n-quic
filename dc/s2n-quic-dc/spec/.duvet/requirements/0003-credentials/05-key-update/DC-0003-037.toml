@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/05-key-update.md#DC-0003-037"
+
+[[spec]]
+level = "MUST"
+quote = "The output of a key update MUST be read, in order, as the next key-update secret and the next key, each of the ciphersuite's key length, and the next 12-byte IV."

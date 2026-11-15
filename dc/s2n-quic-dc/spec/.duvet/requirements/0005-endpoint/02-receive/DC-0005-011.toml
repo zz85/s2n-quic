@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/02-receive.md#DC-0005-011"
+
+[[spec]]
+level = "MUST"
+quote = "When a receiver doesn't hold the path secret that a packet's credential names, it MUST send the packet's sender an unknown path secret notice at the sender's control port."

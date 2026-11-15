@@ -1,0 +1,54 @@
+[section]
+anchor = "handling"
+title = "Handling keys and opened data"
+problem = "Key material left in memory, a key used twice where the protocol expects one use, or a payload released before its replay check would let an attacker recover secrets or replay data."
+motivation = "Clearing key material, enforcing single use and releasing a payload only after its checks keep a successful attack on one packet from becoming an attack on the path."
+prose = "Some keys protect one packet alone, such as the key of a single datagram. The replay check that RFC 0002 states runs once for each key, on the first packet the key opens, and the payload of that packet is released only after the check accepts it."
+
+[[requirement]]
+id = "DC-0003-043"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST overwrite a path secret's export secret with zeros when it drops the path secret."
+rationale = "Every key of a path is derived from its export secret, so an export secret left in released memory could expose every key of the path through a later memory disclosure."
+
+[[requirement]]
+id = "DC-0003-044"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A single-use key MUST NOT seal more than one packet."
+rationale = "A key meant for one packet keeps its nonce from repeating only where it seals one packet."
+
+[[requirement]]
+id = "DC-0003-045"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A single-use key MUST NOT open more than one packet."
+rationale = "A second packet opened with a single-use key would be a replay of the first."
+
+[[requirement]]
+id = "DC-0003-046"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A receiver MUST run a key's replay check on the first packet the key opens, after the AEAD verifies that packet's tag and before it releases the payload."
+rationale = "A forged packet checked for replay before its tag could mark a key identifier as used, and a payload released before the check could be a replay."
+
+[[requirement]]
+id = "DC-0003-047"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A receiver whose replay check refuses an opened packet MUST overwrite the packet's decrypted payload with zeros."
+rationale = "The plaintext of a replayed packet then stays out of the buffers a later reader could see."
+
+[[requirement]]
+id = "DC-0003-048"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "An endpoint MUST NOT run the replay check on the opening key of a bidirectional stream that it initiated."
+rationale = "The endpoint chose that stream's key identifier itself and opens the peer's packets only within that stream, so the key identifier is known to be fresh and a check of it would only add work."

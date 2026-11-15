@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/02-stream.md#DC-0004-024"
+
+[[spec]]
+level = "MUST"
+quote = "The nonce of a stream packet's seal MUST be its packet number."

@@ -1,0 +1,5 @@
+target = "rendered/0013-events/01-events.md#DC-0013-003"
+
+[[spec]]
+level = "MUST"
+quote = "Each identifier the system assigns to a connection MUST differ from every identifier it assigned earlier in the same process, counting up from 1."

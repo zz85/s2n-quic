@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/03-derivation.md#DC-0003-021"
+
+[[spec]]
+level = "MUST"
+quote = "The info input of a unidirectional application key MUST be the output length, the label `uni`, the role label of the sending endpoint and the key identifier, in that order."

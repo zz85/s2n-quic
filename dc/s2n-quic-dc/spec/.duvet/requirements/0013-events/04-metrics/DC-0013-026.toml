@@ -1,0 +1,5 @@
+target = "rendered/0013-events/04-metrics.md#DC-0013-026"
+
+[[spec]]
+level = "MUST"
+quote = "The counters registered for the variants of one enumerated outcome MUST share one metric name and differ by variant, with one variant that counts each value the enumeration doesn't list."

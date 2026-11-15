@@ -1,0 +1,5 @@
+target = "rendered/0009-tunneled-datagrams/02-packet.md#DC-0009-009"
+
+[[spec]]
+level = "MUST"
+quote = "A tunneled datagram packet MUST carry its packet number, and its packet number bit is set."

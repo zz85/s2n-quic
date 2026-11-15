@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/03-distribution.md#DC-0008-025"
+
+[[spec]]
+level = "MUST"
+quote = "Where a turn ends on its budget while requests it could grant still wait, the distribution MUST run again without waiting for a release."

@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/05-assembly.md#DC-0005-034"
+
+[[spec]]
+level = "MUST"
+quote = "A sender MUST encrypt the frame payloads of each packet."

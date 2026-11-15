@@ -1,0 +1,78 @@
+[section]
+anchor = "reporting"
+title = "Reporting metrics"
+problem = "A metric reported twice, or skipped, misleads every reader of its time series, and exporters that each read the metrics apart would see different values."
+motivation = "One report reads each metric once and passes the same snapshot to every exporter, so that each exporter emits the same values in its own format."
+prose = "A report reads every registered metric, resets what it read, and passes each value with its name, variant, kind and unit to the exporters. An exporter writes the values in one format, such as a text line, a datagram pushed to a collector, a page that a collector scrapes, a structured telemetry protocol or a columnar file. A metric with no recorded value in an interval reports as a zero, which the report's setting emits or drops."
+
+[[requirement]]
+id = "DC-0013-030"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A report MUST read each metric's values recorded since the previous report and reset them, so that each recorded value is reported exactly once."
+rationale = "Each report then covers one interval, and a sum of reports equals what was recorded."
+
+[[requirement]]
+id = "DC-0013-031"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A report MUST visit the registered metrics in the same order every time."
+rationale = "A stable order lets a person or a script compare two reports line by line."
+
+[[requirement]]
+id = "DC-0013-032"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A report MUST pass one snapshot to every exporter it feeds, so that each exporter receives the same values."
+rationale = "Reading resets the metrics, so a second read for a second exporter would find them empty."
+
+[[requirement]]
+id = "DC-0013-033"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A report MUST pass each exporter the value of each metric as a number rather than as text, with its name, its variant, its kind and its unit."
+rationale = "Each exporter formats values in its own way, and parsing them back out of another exporter's text loses precision and structure."
+
+[[requirement]]
+id = "DC-0013-034"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Whether a report emits a metric with no recorded value as a zero MUST follow the report's setting, unless the metric was registered to always emit a zero or to always drop one."
+rationale = "Some readers expect a value every interval while others treat a zero as noise, and a few metrics need one behavior whatever the report asks."
+
+[[requirement]]
+id = "DC-0013-035"
+level = "MAY"
+polarity = "required"
+binds_to = "system"
+statement = "An application MAY turn an exporter off and on while the endpoint runs."
+rationale = "An operator can stop an exporter whose collector is down without restarting the endpoint."
+
+[[requirement]]
+id = "DC-0013-036"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A metadata tag attached to a metric at registration MUST NOT add to the dimensions an exporter emits, unless that exporter chooses to emit it."
+rationale = "Tags exist to route and filter metrics, and adding them to every exporter's output would multiply the series each collector stores."
+
+[[requirement]]
+id = "DC-0013-037"
+level = "MAY"
+polarity = "required"
+binds_to = "system"
+statement = "The system MAY fold recorded values into the aggregate between reports, as long as a later report still includes every value recorded."
+rationale = "Folding bounds the memory that recorded values take between reports without losing any of them."
+
+[[requirement]]
+id = "DC-0013-038"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A registry that is closed MUST stop reporting its metrics."
+rationale = "An endpoint that has shut down would otherwise go on reporting stale or empty values."

@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/01-frames.md#DC-0005-001"
+
+[[spec]]
+level = "MAY"
+quote = "A sender MAY carry several frames, of one or more streams to the same peer, in one packet."

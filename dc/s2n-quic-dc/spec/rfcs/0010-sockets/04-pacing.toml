@@ -1,0 +1,54 @@
+[section]
+anchor = "pacing"
+title = "Pacing"
+problem = "A sender that writes as fast as it can fills the queues of the network and of its peer, and the losses that follow cost more than the speed gained."
+motivation = "A rate with a short burst spreads a sender's datagrams over time, so queues stay short while the sender keeps to its configured rate."
+prose = "This section states the socket's send-rate pacer; RFC 0007 states the pacing that congestion control sets. A paced sender keeps a credit, measured in time, that grows with elapsed time at its configured rate up to a burst of one largest send. Each item it sends takes its cost out of the credit. An item may take the credit below zero, and the sender then waits until the credit is restored. Credit is charged only for items that are sent."
+
+[[requirement]]
+id = "DC-0010-024"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A paced sender MUST hold its average sending rate to the rate it is configured with, in bits per second."
+rationale = "The configured rate is what the network and the peer can take."
+
+[[requirement]]
+id = "DC-0010-025"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A paced sender's burst MUST NOT exceed the time its configured rate takes to send 65535 bytes."
+rationale = "A burst of one largest send lets the sender use segmentation offload while keeping queues short."
+
+[[requirement]]
+id = "DC-0010-026"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A paced sender's credit MUST grow with elapsed time at its configured rate, up to its burst."
+rationale = "Credit that grows without a cap would let an idle sender send a long burst."
+
+[[requirement]]
+id = "DC-0010-027"
+level = "MAY"
+polarity = "required"
+binds_to = "system"
+statement = "A paced sender MAY send an item that takes its credit below zero."
+rationale = "An item larger than the remaining credit would otherwise have to wait for credit the burst can't hold, or be cut."
+
+[[requirement]]
+id = "DC-0010-028"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A paced sender whose credit is below zero MUST wait until elapsed time restores its credit before it sends the next item."
+rationale = "The wait repays the debt, so the average rate holds."
+
+[[requirement]]
+id = "DC-0010-029"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "An item that is cancelled or skipped before it is sent MUST NOT consume a paced sender's credit."
+rationale = "Credit charged for an item that wasn't sent would lower the sender's rate below the configured one."

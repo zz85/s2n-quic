@@ -1,0 +1,5 @@
+target = "rendered/0003-credentials/04-protection.md#DC-0003-028"
+
+[[spec]]
+level = "MUST"
+quote = "The AEAD tag of a packet MUST be 16 bytes."

@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/04-conservation.md#DC-0008-027"
+
+[[spec]]
+level = "MUST"
+quote = "A pass MUST NOT grant more credit than it has left to distribute."

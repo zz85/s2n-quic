@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/05-accepting.md#DC-0006-038"
+
+[[spec]]
+level = "MUST"
+quote = "A server MUST deliver each incoming stream to the acceptor registered under the stream's acceptor identifier."

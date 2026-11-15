@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/03-cost.md#DC-0011-014"
+
+[[spec]]
+level = "MUST"
+quote = "Under the operations cost model, the device MUST compute an operation's base cost as its length divided by the configured operation unit, rounded up, and as one for a control operation or an operation of length zero."

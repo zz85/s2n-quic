@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/07-key-identifiers.md#DC-0002-054"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST NOT use a key identifier of 2^62 - 1 or greater."

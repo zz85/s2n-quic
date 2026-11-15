@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/05-execution.md#DC-0011-027"
+
+[[spec]]
+level = "MUST"
+quote = "The lane that finishes an operation MUST return its credit and notify its submitter without passing the operation to a central completion task."

@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/03-secret-map.md#DC-0002-031"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST NOT remove a newer path secret from the address index when it evicts an earlier path secret for the same peer address."

@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/05-execution.md#DC-0011-028"
+
+[[spec]]
+level = "MUST"
+quote = "When a lane has closed, the device MUST fail each operation routed to that lane with a broken-pipe error."

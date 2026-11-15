@@ -1,0 +1,38 @@
+[section]
+anchor = "replay"
+title = "Replay protection"
+problem = "An attacker who records a sealed datagram can send it again, and its authentication tag still verifies."
+motivation = "A window of the packet numbers a receiver has accepted lets it drop a repeated datagram with fixed memory, at the cost of dropping a datagram that arrives older than the window."
+prose = "A receiver keeps one sliding window of the packet numbers it has accepted from a sender, across every key phase it can still open. Once a packet's tag verifies, the receiver checks its number against the window and records it there in one step. A number in the window that the receiver accepted before is a repeat, and a number older than the window's oldest is too old: the receiver rejects both. A number newer than the window's newest moves the window on."
+
+[[requirement]]
+id = "DC-0009-021"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A receiver MUST, once a packet's authentication tag verifies, check its packet number against its replay window and record it there in one step, and reject the packet where that step finds the number accepted before."
+rationale = "Two workers that checked and recorded in separate steps could each accept a copy of one packet, and recording only packets whose tag verified keeps forged packets from moving the window past the sender's numbers."
+
+[[requirement]]
+id = "DC-0009-022"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A receiver MUST reject a packet whose packet number is older than the oldest number its replay window holds."
+rationale = "The receiver no longer knows whether it accepted a number that old, so it can't tell a late datagram from a replayed one."
+
+[[requirement]]
+id = "DC-0009-023"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A receiver MUST accept, in its replay check, a packet whose packet number is newer than every number it accepted before."
+rationale = "A number that new can't be a repeat, and accepting it moves the window on with the sender."
+
+[[requirement]]
+id = "DC-0009-024"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A receiver MUST keep one replay window for each sender's packet numbers, holding the numbers accepted under every key phase it can still open."
+rationale = "The sender counts across key phases, so a window kept for each phase, or cleared on a key update, would accept a replay of an older phase's packet that the receiver's key still opens."

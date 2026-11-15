@@ -1,0 +1,5 @@
+number = 11
+title = "Storage IO scheduler"
+area = "dc"
+abstract = "How the storage IO scheduler admits operations to each device by credit, prices them, runs them on a bounded set of lanes, completes and cancels them, and reads in order an object whose blocks are spread over several devices."
+retired = []

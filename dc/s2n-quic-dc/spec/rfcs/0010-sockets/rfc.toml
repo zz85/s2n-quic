@@ -1,0 +1,5 @@
+number = 10
+title = "Sockets and IO"
+area = "dc"
+abstract = "How s2n-quic-dc reads datagrams from its sockets and dispatches each packet to its handler, how it sends and paces datagrams, how it keeps its packet buffers, and how its pipeline stages and busy-poll workers run."
+retired = []

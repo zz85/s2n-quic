@@ -1,0 +1,62 @@
+[section]
+anchor = "workers"
+title = "Busy-poll workers"
+problem = "A thread that waits on the operating system for every socket event adds a wake-up's delay to every datagram, and a worker that hangs stops every task on it without a sign."
+motivation = "A worker that polls its tasks in a loop answers a datagram as soon as it arrives, and a watchdog that stops the process on a hang makes the hang visible."
+prose = "A busy-poll worker is a thread that polls its tasks in a loop, in order of priority, and sleeps only while it has no tasks. A watchdog checks each worker's progress, and stops the process when a worker's cycle doesn't complete within the configured timeout."
+
+[[requirement]]
+id = "DC-0010-043"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A busy-poll worker MUST poll each of its tasks in order of priority, highest first, in every cycle."
+rationale = "Polling in priority order lets urgent tasks run first in each cycle."
+
+[[requirement]]
+id = "DC-0010-044"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A busy-poll worker with no tasks MUST sleep until a task is given to it."
+rationale = "Polling an empty task list would spend a processor on nothing."
+
+[[requirement]]
+id = "DC-0010-045"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "A busy-poll worker SHOULD yield its processor after each batch of cycles, so that other threads on it run."
+rationale = "A worker at a high scheduling priority would otherwise keep other threads off its processor."
+
+[[requirement]]
+id = "DC-0010-046"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A busy-poll worker MUST stop once every handle that can give it tasks is dropped."
+rationale = "A worker that nothing can reach doesn't serve anyone, and stopping it frees its thread."
+
+[[requirement]]
+id = "DC-0010-047"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A watchdog MUST stop the process when a worker's cycle doesn't complete within the configured timeout, after reporting the worker and the task it is stuck in."
+rationale = "A stuck worker stops every task on it, and a report with the stuck task tells an operator where to look."
+
+[[requirement]]
+id = "DC-0010-048"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "The watchdog MUST NOT treat a worker that sleeps for lack of tasks as stuck."
+rationale = "A sleeping worker doesn't make progress because it has no work, not because it hangs."
+
+[[requirement]]
+id = "DC-0010-049"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A worker task that fails with an unrecovered fault MUST stop the process."
+rationale = "A worker whose task failed partway may leave state that other tasks would read wrongly."

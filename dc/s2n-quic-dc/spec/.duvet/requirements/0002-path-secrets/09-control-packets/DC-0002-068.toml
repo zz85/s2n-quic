@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/09-control-packets.md#DC-0002-068"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST find the path secret a received control packet names by the identifier of its own side of that path secret, derived from the identifier the packet carries."

@@ -1,0 +1,5 @@
+target = "rendered/0001-overview/04-versions.md#DC-0001-030"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint that doesn't run the dc protocol MUST close the connection with an error when it receives a dc-specific frame."

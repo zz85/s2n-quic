@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/03-datagram.md#DC-0004-038"
+
+[[spec]]
+level = "MUST"
+quote = "The nonce of a datagram packet's seal MUST be its packet number, or zero where the packet carries none."

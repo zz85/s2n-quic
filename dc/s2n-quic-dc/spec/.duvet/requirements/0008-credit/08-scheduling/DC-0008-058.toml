@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/08-scheduling.md#DC-0008-058"
+
+[[spec]]
+level = "MUST"
+quote = "Where a turn ends on its budget with items left, the scheduler MUST run again without waiting for a new item."

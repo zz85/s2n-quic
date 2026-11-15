@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/01-pool.md#DC-0008-007"
+
+[[spec]]
+level = "SHOULD"
+quote = "Where a holder doesn't set it, the largest single acquire SHOULD be the capacity divided by 256 at the four highest levels and the capacity divided by 64 at the four lowest."

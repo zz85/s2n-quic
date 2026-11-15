@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/06-request-response.md#DC-0006-049"
+
+[[spec]]
+level = "MUST"
+quote = "A request-response exchange MUST write the request and read the response at the same time."

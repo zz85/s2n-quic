@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/05-accepting.md#DC-0006-037"
+
+[[spec]]
+level = "MUST"
+quote = "A server MUST refuse to start where its endpoint and its handshake provider don't share one map of path secrets."

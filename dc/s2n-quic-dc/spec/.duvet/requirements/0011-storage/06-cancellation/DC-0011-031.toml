@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/06-cancellation.md#DC-0011-031"
+
+[[spec]]
+level = "MUST"
+quote = "When a submitter drops a reservation, or abandons its wait for credit, the device MUST return any credit held for the operation."

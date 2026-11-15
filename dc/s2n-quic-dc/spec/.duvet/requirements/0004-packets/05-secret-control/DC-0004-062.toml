@@ -1,0 +1,5 @@
+target = "rendered/0004-packets/05-secret-control.md#DC-0004-062"
+
+[[spec]]
+level = "MUST"
+quote = "The queue identifier, minimum key identifier, rejected key identifier, code and trigger of a secret control packet MUST be variable-length integers."

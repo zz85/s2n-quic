@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/01-handshake.md#DC-0002-005"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST keep with each path secret the stateless reset token its peer gave for it."

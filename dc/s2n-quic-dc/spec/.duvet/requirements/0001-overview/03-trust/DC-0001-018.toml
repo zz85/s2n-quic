@@ -1,0 +1,5 @@
+target = "rendered/0001-overview/03-trust.md#DC-0001-018"
+
+[[spec]]
+level = "MUST"
+quote = "A server MUST send the client the stateless reset tokens it derives from the path secret once it has received the client's tokens."

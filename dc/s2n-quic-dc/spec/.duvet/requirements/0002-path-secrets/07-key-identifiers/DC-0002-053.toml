@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/07-key-identifiers.md#DC-0002-053"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST NOT use one key identifier for two sending keys under one path secret."

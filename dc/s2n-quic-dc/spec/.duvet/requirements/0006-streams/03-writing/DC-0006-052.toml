@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/03-writing.md#DC-0006-052"
+
+[[spec]]
+level = "MUST"
+quote = "A change of the write half's priority MUST apply only to the credit the write half asks for after the change."

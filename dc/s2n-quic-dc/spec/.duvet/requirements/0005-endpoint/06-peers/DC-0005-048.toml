@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/06-peers.md#DC-0005-048"
+
+[[spec]]
+level = "MUST"
+quote = "When the peer of a client path is declared dead, the client MUST request a new handshake with that peer."
