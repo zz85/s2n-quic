@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/02-reading.md#DC-0006-012"
+
+[[spec]]
+level = "SHOULD"
+quote = "While the peer's write half keeps reporting that it is blocked on credit, the read half SHOULD grow its extra credit beyond the peer's stated demand, doubling it each time the peer stays blocked after a window drains, up to the most credit it can take at once."

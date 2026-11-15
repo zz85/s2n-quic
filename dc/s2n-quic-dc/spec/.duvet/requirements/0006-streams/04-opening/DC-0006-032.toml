@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/04-opening.md#DC-0006-032"
+
+[[spec]]
+level = "MUST"
+quote = "While the client holds the server as unreachable and its cooldown hasn't passed, opening a stream toward that server MUST fail with a timeout."

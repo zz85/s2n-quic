@@ -1,0 +1,46 @@
+[section]
+anchor = "request-response"
+title = "Request and response"
+problem = "Most exchanges over a stream are one request and one response, and each application would otherwise write the same steps to send the request, end it and collect the response."
+motivation = "One operation for the exchange keeps every caller from repeating those steps, and from the mistakes of ending the request late or reading the response before it ends."
+prose = "A request-response exchange opens a stream, writes the whole request with the end-of-stream signal, and reads the response until its end. It writes and reads at the same time, and it returns once the response is complete."
+
+[[requirement]]
+id = "DC-0006-048"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A request-response exchange MUST write the whole request followed by the end-of-stream signal."
+rationale = "The server knows the request is whole once its end arrives."
+
+[[requirement]]
+id = "DC-0006-053"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A request-response exchange MUST read the response until its end before it returns."
+rationale = "The caller knows the response is whole once its end arrives."
+
+[[requirement]]
+id = "DC-0006-049"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A request-response exchange MUST write the request and read the response at the same time."
+rationale = "A server that responds before it has read the whole request, or a request larger than the peer's credit, would otherwise stall the exchange."
+
+[[requirement]]
+id = "DC-0006-050"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A request-response exchange MUST fail with an error where the storage for the response can't take more bytes before the response ends."
+rationale = "A response cut short by full storage would otherwise be returned as if it were whole."
+
+[[requirement]]
+id = "DC-0006-051"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A request-response exchange MUST fail as soon as one of its reads or writes fails."
+rationale = "A failed half can't complete the exchange, so the caller learns of the failure at once."

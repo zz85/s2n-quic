@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/01-streams.md#DC-0006-004"
+
+[[spec]]
+level = "MUST"
+quote = "Each half of a stream MUST give the application the data that the handshake of its path secret recorded for that peer."

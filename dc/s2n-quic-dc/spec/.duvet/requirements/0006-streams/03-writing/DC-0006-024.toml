@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/03-writing.md#DC-0006-024"
+
+[[spec]]
+level = "MUST"
+quote = "Where a write that asked for the end of the stream, or a message the receiver assembles whole, is torn down before all of its bytes are sent, the write half MUST reset the stream instead of ending it cleanly."

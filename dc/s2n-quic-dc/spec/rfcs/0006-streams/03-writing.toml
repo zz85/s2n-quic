@@ -1,0 +1,118 @@
+[section]
+anchor = "writing"
+title = "Writing a stream"
+problem = "An application that writes a stream needs its bytes sent in order without overrunning the peer, a way to end its direction, and a way to learn that the peer doesn't want its data any longer."
+motivation = "Ordered writes within the peer's credit keep the receiver's memory bounded, and an explicit end or reset tells the peer whether the data it received is whole."
+prose = "The write half splits what the application writes into frames that fit a packet, and sends them within the credit the peer granted and the local limit on data that is sent and not yet acknowledged. A write may queue only part of what the application offers. The application ends its direction by attaching the end-of-stream signal to its last write, or by shutting the write half down."
+
+[[requirement]]
+id = "DC-0006-016"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The write half MUST send bytes in the order the application writes them."
+rationale = "The peer's read half rebuilds the stream in that order."
+
+[[requirement]]
+id = "DC-0006-017"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "The write half MUST NOT send stream data past the limit the peer most recently granted."
+rationale = "The limit protects the receiver's memory, and data past it would force the receiver to hold more than it offered."
+
+[[requirement]]
+id = "DC-0006-018"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The write half MUST report a write as successful once its bytes are queued for sending, whether or not the peer has received them."
+rationale = "An application that needs to know the peer has the data reads the peer's response, so the write half doesn't hold the application until the peer acknowledges each byte."
+
+[[requirement]]
+id = "DC-0006-019"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The write half MUST let the application attach the end-of-stream signal to the last bytes it writes."
+rationale = "A request that ends with its last write reaches the peer complete in the fewest frames."
+
+[[requirement]]
+id = "DC-0006-020"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Shutting down the write half MUST close the stream's write direction and leave its read half open."
+rationale = "A client that has sent its whole request still needs to read the response."
+
+[[requirement]]
+id = "DC-0006-021"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Shutting down the write half MUST succeed when the application repeats it."
+rationale = "An application can shut the write half down from more than one place, such as an explicit close and a cleanup path, without an error."
+
+[[requirement]]
+id = "DC-0006-022"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "After the write half has sent the end-of-stream signal or has been shut down, it MUST refuse further writes with an error."
+rationale = "Bytes after the end would corrupt a stream the peer already holds as whole."
+
+[[requirement]]
+id = "DC-0006-023"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The write half MUST let the application learn, without writing, that the peer has stopped reading, has reset the stream, or can't be reached."
+rationale = "A producer that is still gathering data can stop as soon as the peer is gone, instead of finding out at its next write."
+
+[[requirement]]
+id = "DC-0006-024"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Where a write that asked for the end of the stream, or a message the receiver assembles whole, is torn down before all of its bytes are sent, the write half MUST reset the stream instead of ending it cleanly."
+rationale = "A clean end after a partial message would make the receiver accept a short message as whole, or leave it waiting on a message it can't complete, while a reset makes it report an error."
+
+[[requirement]]
+id = "DC-0006-025"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "When the application drops the write half without shutting it down, the write half SHOULD end the stream as a shutdown does."
+rationale = "An application that forgets to shut the write half down still sends the peer a clean end of its data."
+
+[[requirement]]
+id = "DC-0006-026"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Where the write half is dropped while the application is failing abnormally, it MUST reset the stream instead of ending it cleanly."
+rationale = "Data written before an abnormal failure may be incomplete, so the peer needs to learn that it isn't whole."
+
+[[requirement]]
+id = "DC-0006-027"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The write half MUST let the application send a whole message that the receiver assembles completely before it delivers any of it to the application."
+rationale = "A large message then costs the receiver one buffer and one wake-up, instead of one for each frame."
+
+[[requirement]]
+id = "DC-0006-028"
+level = "MAY"
+polarity = "required"
+binds_to = "system"
+statement = "The application MAY change the priority at which the write half asks for send credit."
+rationale = "An application whose work changes in urgency can favor one stream over others without opening a new one."
+
+[[requirement]]
+id = "DC-0006-052"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A change of the write half's priority MUST apply only to the credit the write half asks for after the change."
+rationale = "Credit already asked for waits under the priority it was asked at, so a change doesn't reorder the streams that wait for credit."

@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/05-accepting.md#DC-0006-042"
+
+[[spec]]
+level = "MUST"
+quote = "Each receiver of an acceptor MUST hold its waiting streams in a queue whose capacity the application configures."

@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/02-reading.md#DC-0006-013"
+
+[[spec]]
+level = "MUST"
+quote = "Where the application drops the read half before the end of the stream, the read half MUST ask the peer's write half to stop sending."

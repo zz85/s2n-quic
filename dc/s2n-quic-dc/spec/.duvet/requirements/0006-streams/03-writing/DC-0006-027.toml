@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/03-writing.md#DC-0006-027"
+
+[[spec]]
+level = "MUST"
+quote = "The write half MUST let the application send a whole message that the receiver assembles completely before it delivers any of it to the application."

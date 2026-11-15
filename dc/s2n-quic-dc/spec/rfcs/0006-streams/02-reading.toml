@@ -1,0 +1,78 @@
+[section]
+anchor = "reading"
+title = "Reading a stream"
+problem = "An application that reads a stream needs whole, ordered data and a clear end, though the network delivers packets out of order and the peer may fail or stop at any time."
+motivation = "Reading in order with an explicit end lets the application parse the data as the peer wrote it, and flow control keeps a fast sender from filling the receiver's memory."
+prose = "The read half reassembles what arrives into the order the peer wrote it, and delivers only contiguous bytes. It reports the end of the stream once the peer's end-of-stream signal and every byte before it are consumed. It limits how much the peer may send, and raises that limit as the application reads."
+
+[[requirement]]
+id = "DC-0006-008"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The read half MUST deliver bytes to the application in the order the peer wrote them, and hold data that arrives early until every byte before it has arrived."
+rationale = "The application reads the stream as the peer wrote it, whatever order the network delivered it in."
+
+[[requirement]]
+id = "DC-0006-009"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The read half MUST report the end of the stream only once it has received the peer's end-of-stream signal and the application has consumed every byte before it."
+rationale = "An end reported earlier would make the application treat a partial stream as whole."
+
+[[requirement]]
+id = "DC-0006-010"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Where the peer resets a stream after the read half has buffered some of its bytes, the read half MUST deliver those buffered bytes before it reports the reset."
+rationale = "Bytes that arrived in order before the reset are part of the stream, and the application may need them to act on the failure."
+
+[[requirement]]
+id = "DC-0006-011"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The read half MUST raise the limit on how much the peer can send as the application consumes the data it received."
+rationale = "Credit that follows what the application reads keeps a fast sender from filling the receiver's memory, and lets a sender that keeps up go on sending."
+
+[[requirement]]
+id = "DC-0006-012"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "While the peer's write half keeps reporting that it is blocked on credit, the read half SHOULD grow its extra credit beyond the peer's stated demand, doubling it each time the peer stays blocked after a window drains, up to the most credit it can take at once."
+rationale = "A limit equal to the last stated demand would leave a continuously sending peer blocked every round trip, so its throughput would fall to one window for each round trip."
+
+[[requirement]]
+id = "DC-0006-013"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Where the application drops the read half before the end of the stream, the read half MUST ask the peer's write half to stop sending."
+rationale = "The peer then learns that nobody reads its data, and stops spending credit and bandwidth on it."
+
+[[requirement]]
+id = "DC-0006-055"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Where the read half is dropped while the application is failing abnormally, it MUST reset the stream in both directions."
+rationale = "Data the application handled before an abnormal failure may be incomplete, so the peer needs to learn that the whole exchange failed."
+
+[[requirement]]
+id = "DC-0006-014"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The read half MUST let the application learn that the peer's write half has ended or failed without consuming the data the read half holds."
+rationale = "An application that is still handling a request can watch for the peer to disappear, and read the remaining data later."
+
+[[requirement]]
+id = "DC-0006-015"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Where the peer's end-of-stream signal arrives after the server's stream is created, the read half of a server's stream MUST keep raising the limit as the application consumes data, until the limit covers the end of the stream."
+rationale = "A server that has read part of a request keeps the client's data moving until the whole request is in."

@@ -1,0 +1,62 @@
+[section]
+anchor = "streams"
+title = "Streams"
+problem = "An application that talks to a peer needs to send bytes and receive bytes over one exchange, and to end or abandon that exchange, without managing packets, keys or paths itself."
+motivation = "A stream with two independent halves lets an application write a request and read a response at the same time, close its own direction while it still reads, and abandon the whole exchange at once when something fails."
+prose = "A stream carries two ordered byte sequences between a client and a server, one in each direction. Its read half receives what the peer writes, and its write half sends what the application writes. The application uses both halves through one stream, or separates them and uses each in its own task. Every stream is carried under a path secret that a handshake between the two hosts established, and it reports the identity and the data that handshake recorded."
+
+[[requirement]]
+id = "DC-0006-001"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A stream MUST carry two ordered byte sequences, one from the client to the server and one from the server to the client, through a read half and a write half."
+rationale = "Each direction of an exchange needs its own order and its own end, so a request and its response don't interfere."
+
+[[requirement]]
+id = "DC-0006-002"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A stream MUST let the application separate its read half from its write half and use each one independently of the other."
+rationale = "An application that writes and reads at the same time, such as one that streams a request while it reads the response, needs each half in its own task."
+
+[[requirement]]
+id = "DC-0006-003"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Each half of a stream MUST report as the peer's address the address that the handshake of its path secret used, even where data travels over other paths."
+rationale = "An application that identifies its peer by address needs one stable answer for the whole stream."
+
+[[requirement]]
+id = "DC-0006-004"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Each half of a stream MUST give the application the data that the handshake of its path secret recorded for that peer."
+rationale = "State negotiated once at the handshake, such as an authorization context, then reaches every stream on that path secret without a separate lookup."
+
+[[requirement]]
+id = "DC-0006-005"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A reset of a stream MUST end both of its halves at once."
+rationale = "An application that abandons an exchange needs both directions to stop, so neither half waits on the other."
+
+[[requirement]]
+id = "DC-0006-006"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "A stream that is reset SHOULD tell the peer about the reset."
+rationale = "The peer can then stop sending and report the failure, instead of waiting for data that won't come. The notice stays local where the stream isn't established with the peer yet."
+
+[[requirement]]
+id = "DC-0006-007"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "A stream SHOULD yield to other tasks after it has handled a bounded number of frames in one turn, and resume in a later turn."
+rationale = "A busy stream that never yields would keep every other task on the same thread from running."

@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/06-request-response.md#DC-0006-051"
+
+[[spec]]
+level = "MUST"
+quote = "A request-response exchange MUST fail as soon as one of its reads or writes fails."

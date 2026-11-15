@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/01-streams.md#DC-0006-003"
+
+[[spec]]
+level = "MUST"
+quote = "Each half of a stream MUST report as the peer's address the address that the handshake of its path secret used, even where data travels over other paths."

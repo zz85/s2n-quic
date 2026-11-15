@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/03-writing.md#DC-0006-028"
+
+[[spec]]
+level = "MAY"
+quote = "The application MAY change the priority at which the write half asks for send credit."

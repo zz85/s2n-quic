@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/06-request-response.md#DC-0006-053"
+
+[[spec]]
+level = "MUST"
+quote = "A request-response exchange MUST read the response until its end before it returns."

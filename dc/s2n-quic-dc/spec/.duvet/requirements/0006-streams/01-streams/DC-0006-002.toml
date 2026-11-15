@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/01-streams.md#DC-0006-002"
+
+[[spec]]
+level = "MUST"
+quote = "A stream MUST let the application separate its read half from its write half and use each one independently of the other."

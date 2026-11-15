@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/03-writing.md#DC-0006-025"
+
+[[spec]]
+level = "SHOULD"
+quote = "When the application drops the write half without shutting it down, the write half SHOULD end the stream as a shutdown does."
