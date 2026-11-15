@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/07-signals.md#DC-0008-048"
+
+[[spec]]
+level = "MUST"
+quote = "A pool MUST report the credit that waiting requests are owed and haven't been granted."

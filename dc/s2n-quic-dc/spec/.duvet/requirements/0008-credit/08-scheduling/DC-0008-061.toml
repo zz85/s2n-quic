@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/08-scheduling.md#DC-0008-061"
+
+[[spec]]
+level = "MUST"
+quote = "A priority merge MUST close once each of its sources is closed."

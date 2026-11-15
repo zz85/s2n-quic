@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/06-close.md#DC-0008-038"
+
+[[spec]]
+level = "MUST"
+quote = "A holder MUST be able to cancel its waiting request."

@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/03-distribution.md#DC-0008-017"
+
+[[spec]]
+level = "MUST"
+quote = "A pass MUST serve a lower priority level only once it has served every waiter of each higher level."

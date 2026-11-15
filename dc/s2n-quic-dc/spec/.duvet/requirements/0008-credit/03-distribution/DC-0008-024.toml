@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/03-distribution.md#DC-0008-024"
+
+[[spec]]
+level = "MUST"
+quote = "The distribution MUST grant at most a set budget of requests in one turn."

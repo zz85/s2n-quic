@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/01-pool.md#DC-0008-002"
+
+[[spec]]
+level = "MUST"
+quote = "A credit pool MUST order its requests by eight priority levels, from highest to background."

@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/05-refill.md#DC-0008-035"
+
+[[spec]]
+level = "MUST"
+quote = "At each tick, the refill MUST add the quantum less the bytes released since the previous tick, and at most the capacity less the pool's free credit, counting the credit held back or added and not yet distributed."

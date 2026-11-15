@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/06-close.md#DC-0008-041"
+
+[[spec]]
+level = "MUST"
+quote = "A cancelled wait at the head of a level MUST NOT hold back the waiters behind it."

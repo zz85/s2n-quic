@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/02-acquire.md#DC-0008-013"
+
+[[spec]]
+level = "MUST"
+quote = "A pool MUST answer each waiting request with either a grant of a number of bytes or the pool's close."

@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/03-distribution.md#DC-0008-021"
+
+[[spec]]
+level = "MUST"
+quote = "Where the credit a pass has left to distribute can't cover what the head waiter is due, the pass MUST stop, leaving that waiter and every waiter after it waiting."

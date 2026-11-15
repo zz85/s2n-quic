@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/05-refill.md#DC-0008-034"
+
+[[spec]]
+level = "MUST"
+quote = "The refill MUST tick once in each interval in which its rate delivers one quantum."

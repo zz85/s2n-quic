@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/08-scheduling.md#DC-0008-066"
+
+[[spec]]
+level = "MUST"
+quote = "A paced source MUST hold its next item while its token bucket is in debt, until the rate repays the debt."

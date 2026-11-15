@@ -1,0 +1,5 @@
+number = 8
+title = "Credit and fair scheduling"
+area = "dc"
+abstract = "How an endpoint bounds the bytes its streams hold with a shared pool of byte credit, serves waiting requests by priority and in equal shares, keeps the pool live when every holder waits, and schedules work from several sources within a budget, by priority and at a rate."
+retired = []

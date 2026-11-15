@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/07-signals.md#DC-0008-054"
+
+[[spec]]
+level = "MUST"
+quote = "A pool MUST report the credit a pass held back for the next pass."

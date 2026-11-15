@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/08-scheduling.md#DC-0008-057"
+
+[[spec]]
+level = "MUST"
+quote = "A scheduler MUST process at most its budget of items in one turn."

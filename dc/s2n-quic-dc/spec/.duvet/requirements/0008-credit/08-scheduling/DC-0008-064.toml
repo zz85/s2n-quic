@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/08-scheduling.md#DC-0008-064"
+
+[[spec]]
+level = "MUST"
+quote = "With each item, a priority select MUST tell its consumer whether its priority source holds another item, or that its budget ran out before it could look."

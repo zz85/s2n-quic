@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/08-scheduling.md#DC-0008-060"
+
+[[spec]]
+level = "MUST"
+quote = "Within a turn, a priority merge MUST poll its sources in turn, starting after the source it last served."

@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/05-refill.md#DC-0008-030"
+
+[[spec]]
+level = "MUST"
+quote = "Where its holder sets a rate in bytes per second, a pool MUST run a liveness refill at that rate."

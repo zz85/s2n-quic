@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/05-refill.md#DC-0008-037"
+
+[[spec]]
+level = "MUST"
+quote = "Credit the refill adds MUST reach waiting requests by the same rules as credit a release returns."

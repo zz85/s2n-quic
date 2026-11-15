@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/03-distribution.md#DC-0008-081"
+
+[[spec]]
+level = "MUST"
+quote = "A pass MUST NOT count against the budget of its turn a cancelled wait it reclaims before it tries to grant it."

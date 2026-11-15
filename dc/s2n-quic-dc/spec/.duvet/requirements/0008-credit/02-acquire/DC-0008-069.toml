@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/02-acquire.md#DC-0008-069"
+
+[[spec]]
+level = "MUST"
+quote = "A release MUST wake the distribution."

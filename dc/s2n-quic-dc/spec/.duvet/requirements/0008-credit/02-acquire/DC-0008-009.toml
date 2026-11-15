@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/02-acquire.md#DC-0008-009"
+
+[[spec]]
+level = "MUST"
+quote = "A pool MUST lower each request above its level's largest single acquire to that amount."

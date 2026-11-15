@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/04-conservation.md#DC-0008-026"
+
+[[spec]]
+level = "MUST"
+quote = "Where the liveness refill hasn't added credit, a pool's free, owed, returned and held credit and the credit a pass held back for its next pass MUST sum to its capacity at every point where no request or release is in progress."

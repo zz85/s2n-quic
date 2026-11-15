@@ -1,0 +1,70 @@
+[section]
+anchor = "pool"
+title = "The credit pool"
+problem = "Many streams of one endpoint send and receive at once, and without a shared bound the bytes they hold in flight can grow past what the endpoint's memory and its network can carry."
+motivation = "One pool of byte credit that every stream draws from bounds the endpoint's bytes in flight, and priority levels let urgent streams go ahead of bulk ones."
+prose = "A credit pool holds a capacity of credit, counted in bytes. A holder acquires credit before it commits bytes, such as bytes it sends or buffers, and releases the credit once those bytes leave its care. Each request has one of eight priority levels: highest, high, medium-high, medium, medium-low, low, lowest and background. Each level has a largest single acquire, which bounds one request, and a smallest grant, which bounds how little a waiting request is given at once."
+
+[[requirement]]
+id = "DC-0008-001"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A credit pool MUST have a capacity in bytes, set when the pool is made."
+rationale = "The capacity bounds the credit the pool's holders hold at once, so every other rule of the pool is measured against it."
+
+[[requirement]]
+id = "DC-0008-002"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A credit pool MUST order its requests by eight priority levels, from highest to background."
+rationale = "Fixed levels let a holder state how urgent its bytes are, and let the pool serve urgent bytes first."
+
+[[requirement]]
+id = "DC-0008-003"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Each priority level MUST have a largest single acquire of at least one byte and at most the capacity."
+rationale = "A bound on one request keeps one holder from taking the whole pool at once, and bounds how far a request the pool can't cover drives its free credit below zero."
+
+[[requirement]]
+id = "DC-0008-004"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Each priority level MUST have a smallest grant of at least one byte and at most that level's largest single acquire."
+rationale = "A floor on a grant keeps a crowded level from giving each waiter too little to send a frame, and a floor above the largest single acquire could never be met."
+
+[[requirement]]
+id = "DC-0008-005"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A pool MUST bring each largest single acquire and each smallest grant that a holder sets outside its bounds to the nearest bound."
+rationale = "A pool that corrects a value out of bounds keeps working with a configuration a holder got wrong, instead of failing or serving no one."
+
+[[requirement]]
+id = "DC-0008-006"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "Where a holder doesn't set the capacity, a pool SHOULD have a capacity of 256 MiB."
+rationale = "A default lets a holder use a pool without tuning it, and 256 MiB covers the bytes in flight of a busy endpoint."
+
+[[requirement]]
+id = "DC-0008-007"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "Where a holder doesn't set it, the largest single acquire SHOULD be the capacity divided by 256 at the four highest levels and the capacity divided by 64 at the four lowest."
+rationale = "Small requests at urgent levels keep their latency low, and larger requests at bulk levels keep throughput high with fewer requests."
+
+[[requirement]]
+id = "DC-0008-008"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "Where a holder doesn't set it, the smallest grant of each level SHOULD be 64 KiB, or the level's largest single acquire where that is smaller."
+rationale = "64 KiB covers a few frames, so each grant lets its holder make progress."

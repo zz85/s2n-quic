@@ -1,0 +1,5 @@
+target = "rendered/0008-credit/05-refill.md#DC-0008-036"
+
+[[spec]]
+level = "MUST"
+quote = "A wake of the distribution by a release or by its budget MUST NOT delay the refill's next tick."
