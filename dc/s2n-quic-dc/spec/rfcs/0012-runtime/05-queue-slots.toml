@@ -35,7 +35,7 @@ level = "MUST"
 polarity = "forbidden"
 binds_to = "system"
 statement = "A slot MUST NOT move while the table that holds it exists."
-rationale = "Dispatch reaches a slot by its location without holding the table's lock, so a slot that moved would leave dispatch reading released memory."
+rationale = "Dispatch reaches a slot by its location, and a lookup of a slot within the range it has cached doesn't take the table's lock, so a slot that moved would leave dispatch reading released memory. A lookup past that range takes the table's read lock to learn of the pages added since."
 
 [[requirement]]
 id = "DC-0012-040"
