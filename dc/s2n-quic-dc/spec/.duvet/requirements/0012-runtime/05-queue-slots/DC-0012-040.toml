@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/05-queue-slots.md#DC-0012-040"
+
+[[spec]]
+level = "MUST"
+quote = "A half's sender, once closed, MUST NOT be opened again."

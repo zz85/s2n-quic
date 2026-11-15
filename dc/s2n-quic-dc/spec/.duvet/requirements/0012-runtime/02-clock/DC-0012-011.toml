@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/02-clock.md#DC-0012-011"
+
+[[spec]]
+level = "MUST"
+quote = "A clock MUST report time as a count of nanoseconds since its start that never decreases."

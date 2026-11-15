@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/08-randomness.md#DC-0012-058"
+
+[[spec]]
+level = "SHOULD"
+quote = "A component that balances load SHOULD sample two candidates at random and choose the less loaded one."

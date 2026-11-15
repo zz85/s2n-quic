@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/01-executor.md#DC-0012-009"
+
+[[spec]]
+level = "MUST"
+quote = "An inspector executor MUST NOT drop a task it recorded while the inspector exists."

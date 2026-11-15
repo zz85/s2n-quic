@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/01-executor.md#DC-0012-008"
+
+[[spec]]
+level = "MUST"
+quote = "An inspector executor MUST record each task started on it, with its name and its worker, without running the task."

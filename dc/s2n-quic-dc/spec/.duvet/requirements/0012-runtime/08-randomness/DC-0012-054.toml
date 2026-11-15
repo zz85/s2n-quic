@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/08-randomness.md#DC-0012-054"
+
+[[spec]]
+level = "MUST"
+quote = "The fast generator MUST NOT be used for a key, a nonce or any other value whose unpredictability the system's security depends on."

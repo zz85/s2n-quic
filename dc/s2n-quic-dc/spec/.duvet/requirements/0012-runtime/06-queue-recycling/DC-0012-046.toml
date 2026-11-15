@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/06-queue-recycling.md#DC-0012-046"
+
+[[spec]]
+level = "MUST"
+quote = "A client MUST allocate a fresh identifier below the agreed limit, while one remains, before it reuses a freed one."

@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/04-wakeups.md#DC-0012-030"
+
+[[spec]]
+level = "MUST"
+quote = "Waking a registered source MUST record the source's identifier in the serving task's ready set and wake the serving task."

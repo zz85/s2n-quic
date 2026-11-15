@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/03-timer-wheel.md#DC-0012-028"
+
+[[spec]]
+level = "MUST"
+quote = "A component that receives an entry from a timing wheel MUST check the entry's current target, and either act on the entry or send it back to the wheel."

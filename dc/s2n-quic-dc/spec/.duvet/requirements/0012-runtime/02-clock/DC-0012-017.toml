@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/02-clock.md#DC-0012-017"
+
+[[spec]]
+level = "MUST"
+quote = "A cancelled timer MUST report that it isn't armed."

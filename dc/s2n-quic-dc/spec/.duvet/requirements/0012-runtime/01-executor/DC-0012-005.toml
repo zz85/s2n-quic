@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/01-executor.md#DC-0012-005"
+
+[[spec]]
+level = "MUST"
+quote = "A worker of an event-loop executor MUST keep running the tasks started on it after every handle to the executor is dropped."

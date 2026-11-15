@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/05-queue-slots.md#DC-0012-039"
+
+[[spec]]
+level = "MUST"
+quote = "A slot MUST NOT move while the table that holds it exists."

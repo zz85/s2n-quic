@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/05-queue-slots.md#DC-0012-041"
+
+[[spec]]
+level = "MUST"
+quote = "Delivering a frame to a half that has a receiver MUST wake the receiver's task."

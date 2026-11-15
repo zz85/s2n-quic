@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/01-executor.md#DC-0012-007"
+
+[[spec]]
+level = "MUST"
+quote = "A simulation executor MUST run its tasks on one thread, in an order set by its seed and its inputs alone."

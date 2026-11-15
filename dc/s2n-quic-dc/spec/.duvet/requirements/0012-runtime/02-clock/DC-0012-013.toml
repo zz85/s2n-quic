@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/02-clock.md#DC-0012-013"
+
+[[spec]]
+level = "MUST"
+quote = "The duration from a time to an earlier time MUST be reported as zero."

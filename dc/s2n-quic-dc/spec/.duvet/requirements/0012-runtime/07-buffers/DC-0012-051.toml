@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/07-buffers.md#DC-0012-051"
+
+[[spec]]
+level = "MUST"
+quote = "A builder MUST turn each completed buffer into a chunk through its policy."

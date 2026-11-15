@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/06-queue-recycling.md#DC-0012-042"
+
+[[spec]]
+level = "MUST"
+quote = "A server MUST tell the client each queue identifier whose receivers it has dropped."

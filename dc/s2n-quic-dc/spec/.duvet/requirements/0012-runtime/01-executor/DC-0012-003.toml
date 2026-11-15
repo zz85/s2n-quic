@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/01-executor.md#DC-0012-003"
+
+[[spec]]
+level = "MUST"
+quote = "An executor MUST let a component start a task whose state can't move between threads on a chosen worker, by running a setup step on that worker that creates the task there."

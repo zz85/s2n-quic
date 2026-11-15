@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/03-timer-wheel.md#DC-0012-026"
+
+[[spec]]
+level = "MUST"
+quote = "A timing wheel that is empty MUST cancel its timer."

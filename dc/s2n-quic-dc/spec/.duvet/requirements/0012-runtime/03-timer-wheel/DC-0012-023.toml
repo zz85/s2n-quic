@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/03-timer-wheel.md#DC-0012-023"
+
+[[spec]]
+level = "MUST"
+quote = "Entries from one sender that are due at the same tick MUST be released in the order the sender sent them."
