@@ -2,4 +2,4 @@ target = "rendered/0012-runtime/03-timer-wheel.md#DC-0012-019"
 
 [[spec]]
 level = "MUST"
-quote = "A timing wheel MUST hold an entry whose target lies up to 2^32 ticks after the wheel's current tick."
+quote = "A timing wheel MUST hold an entry whose target lies fewer than 2^32 ticks after the wheel's current tick."

@@ -4,7 +4,11 @@ A task that serves many sources registers a wake source for each of them, by an 
 
 ### DC-0012-030 {#DC-0012-030}
 
-Waking a registered source MUST record the source's identifier in the serving task's ready set and wake the serving task.
+Waking a registered source MUST record the source's identifier in the serving task's ready set.
+
+### DC-0012-060 {#DC-0012-060}
+
+Waking a registered source MUST wake the serving task.
 
 ### DC-0012-031 {#DC-0012-031}
 

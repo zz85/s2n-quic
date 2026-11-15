@@ -12,7 +12,7 @@ A task started on a chosen worker MUST run on that worker until it completes.
 
 ### DC-0012-003 {#DC-0012-003}
 
-An executor MUST let a component start a task whose state can't move between threads on a chosen worker, by running a setup step on that worker that creates the task there.
+An executor MUST let a component create a task on a chosen worker, so that a task whose state can't move between threads is never built on another thread.
 
 ### DC-0012-004 {#DC-0012-004}
 

@@ -26,7 +26,7 @@ id = "DC-0012-003"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "An executor MUST let a component start a task whose state can't move between threads on a chosen worker, by running a setup step on that worker that creates the task there."
+statement = "An executor MUST let a component create a task on a chosen worker, so that a task whose state can't move between threads is never built on another thread."
 rationale = "Such a task can't be built on one thread and sent to another, so it has to be created on the worker that runs it."
 
 [[requirement]]

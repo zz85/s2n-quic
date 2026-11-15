@@ -1,7 +1,7 @@
 [section]
 anchor = "buffers"
 title = "Byte buffers and allocation"
-problem = "Data moves through the stack in pieces of many sizes, and copying each piece into one contiguous buffer costs time and memory. Memory that held secret data and is reused without being cleared can leak it, and an operator who can't tell which component holds memory can't find a leak."
+problem = "Data moves through the stack in pieces of many sizes, and copying each piece into one contiguous buffer costs time and memory. An operator who can't tell which component holds memory can't find a leak."
 motivation = "A chunked buffer shares its chunks instead of copying them, a builder's policy can clear a buffer's memory once the last chunk in it is released, and a tagged buffer counts its bytes against an owner."
 prose = "Data the stack holds is kept in chunked byte buffers: an ordered list of byte chunks that are shared rather than copied. A builder fills a head buffer and turns each completed buffer into a chunk, and the policy it follows sets the head buffer's size and how a completed buffer becomes a chunk, such as a chunk that clears its memory once the last chunk that points into it is released. A tagged buffer counts the bytes it holds against an owner, so that an operator can read how many bytes each owner holds. Allocations are drawn from named sub-heaps."
 

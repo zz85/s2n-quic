@@ -1,0 +1,5 @@
+target = "rendered/0012-runtime/05-queue-slots.md#DC-0012-061"
+
+[[spec]]
+level = "MUST"
+quote = "Dispatch MUST report the reason it rejected a frame."

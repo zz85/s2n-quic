@@ -10,8 +10,16 @@ id = "DC-0012-030"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "Waking a registered source MUST record the source's identifier in the serving task's ready set and wake the serving task."
-rationale = "The serving task learns which source to poll from the set, and a source that only recorded its identifier would wait for some other wake."
+statement = "Waking a registered source MUST record the source's identifier in the serving task's ready set."
+rationale = "The serving task learns which source to poll from the set, so a source whose identifier isn't recorded wouldn't be polled."
+
+[[requirement]]
+id = "DC-0012-060"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Waking a registered source MUST wake the serving task."
+rationale = "A source that only recorded its identifier would wait for some other wake before the serving task polled it."
 
 [[requirement]]
 id = "DC-0012-031"

@@ -2,4 +2,4 @@ target = "rendered/0012-runtime/03-timer-wheel.md#DC-0012-025"
 
 [[spec]]
 level = "MUST"
-quote = "While a timing wheel holds an entry, it MUST keep its timer armed for the earliest held target."
+quote = "While a timing wheel holds an entry, it MUST keep its timer armed for a tick no later than the earliest held target."

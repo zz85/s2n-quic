@@ -8,7 +8,11 @@ Dispatch MUST deliver a frame to a slot only where the frame's binding identifie
 
 ### DC-0012-037 {#DC-0012-037}
 
-Dispatch MUST reject a frame, and report the reason, where its slot isn't allocated, its binding is older or newer than the slot's, the half it targets has no receiver, or that half's sender is closed.
+Dispatch MUST reject a frame where its slot isn't allocated, its binding is older or newer than the slot's, the half it targets has no receiver, or that half's sender is closed.
+
+### DC-0012-061 {#DC-0012-061}
+
+Dispatch MUST report the reason it rejected a frame.
 
 ### DC-0012-038 {#DC-0012-038}
 

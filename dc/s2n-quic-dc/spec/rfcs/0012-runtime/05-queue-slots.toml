@@ -18,7 +18,15 @@ id = "DC-0012-037"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "Dispatch MUST reject a frame, and report the reason, where its slot isn't allocated, its binding is older or newer than the slot's, the half it targets has no receiver, or that half's sender is closed."
+statement = "Dispatch MUST reject a frame where its slot isn't allocated, its binding is older or newer than the slot's, the half it targets has no receiver, or that half's sender is closed."
+rationale = "Each of these frames has no live stream to go to, and delivering it would put it in front of a handler it doesn't belong to."
+
+[[requirement]]
+id = "DC-0012-061"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Dispatch MUST report the reason it rejected a frame."
 rationale = "The caller decides what to do with a rejected frame, such as dropping it or ending a stream, from the reason."
 
 [[requirement]]
@@ -35,7 +43,7 @@ level = "MUST"
 polarity = "forbidden"
 binds_to = "system"
 statement = "A slot MUST NOT move while the table that holds it exists."
-rationale = "Dispatch reaches a slot by its location, and a lookup of a slot within the range it has cached doesn't take the table's lock, so a slot that moved would leave dispatch reading released memory. A lookup past that range takes the table's read lock to learn of the pages added since."
+rationale = "Dispatch reaches a slot within the range it has cached by its location, without taking the table's lock, so a slot that moved would leave dispatch reading released memory."
 
 [[requirement]]
 id = "DC-0012-040"

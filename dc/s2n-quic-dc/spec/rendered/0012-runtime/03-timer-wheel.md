@@ -1,10 +1,10 @@
 ## Timing wheel {#timer-wheel}
 
-A timing wheel holds pending entries, each with an optional target time, and releases each entry once its target has passed. It counts time in ticks of a fixed base length, which a component chooses for its use: a fine tick, such as a microsecond, for pacing and loss detection, and a coarse tick, such as a second, for idle timeouts. Entries arrive from a sender in order, and the wheel keeps that order among entries due at the same tick. An entry's target can be removed while the wheel holds it, which makes the entry due at once, but it can't move to a later time.
+A timing wheel holds pending entries, each with an optional target time, and releases each entry once its target has passed. It counts time in ticks of a fixed base length, which a component chooses for its use: a fine tick, such as a microsecond, for pacing and loss detection, and a coarse tick, such as a second, for idle timeouts. Entries arrive from a sender in order, and the wheel keeps that order among entries due at the same tick. An entry's target can be removed while the wheel holds it, which makes the entry due at once, but it can't move to a later time. The wheel keeps its entries in levels of growing span, and moves an entry to a finer level as its target comes near.
 
 ### DC-0012-019 {#DC-0012-019}
 
-A timing wheel MUST hold an entry whose target lies up to 2^32 ticks after the wheel's current tick.
+A timing wheel MUST hold an entry whose target lies fewer than 2^32 ticks after the wheel's current tick.
 
 ### DC-0012-020 {#DC-0012-020}
 
@@ -28,7 +28,7 @@ A timing wheel's current tick MUST NOT move backward, even where the clock repor
 
 ### DC-0012-025 {#DC-0012-025}
 
-While a timing wheel holds an entry, it MUST keep its timer armed for the earliest held target.
+While a timing wheel holds an entry, it MUST keep its timer armed for a tick no later than the earliest held target.
 
 ### DC-0012-026 {#DC-0012-026}
 
@@ -44,4 +44,8 @@ A component that receives an entry from a timing wheel MUST check the entry's cu
 
 ### DC-0012-029 {#DC-0012-029}
 
-When a timing wheel's input closes, the wheel MUST release every entry it holds and every entry still waiting in its input, and then end.
+When a timing wheel's input closes, the wheel MUST release every entry it holds and every entry still waiting in its input.
+
+### DC-0012-059 {#DC-0012-059}
+
+A timing wheel MUST end once its input has closed and it has released every entry.
