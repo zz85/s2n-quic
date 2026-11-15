@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/05-execution.md#DC-0011-026"
+
+[[spec]]
+level = "MUST"
+quote = "The dispatcher MUST choose the lane for each operation from two candidate lanes, by comparing their queued work in credits."

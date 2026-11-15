@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/04-operations.md#DC-0011-024"
+
+[[spec]]
+level = "MUST"
+quote = "A direct operation MUST transfer its data into or out of the caller's buffer in place, and return that buffer to the caller on completion."

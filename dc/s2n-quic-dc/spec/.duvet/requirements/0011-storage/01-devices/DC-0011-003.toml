@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/01-devices.md#DC-0011-003"
+
+[[spec]]
+level = "MUST"
+quote = "A registration MUST fail with a broken-pipe error once the registry has been torn down."

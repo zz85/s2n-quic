@@ -1,0 +1,46 @@
+[section]
+anchor = "cancellation"
+title = "Cancellation"
+problem = "A submitter can stop waiting for an operation. When cancellation is allowed after an operation has been handed to the device, the submitter can reuse the operation's offset for new data while the old write still runs, and the two writes can tear each other."
+motivation = "Allowing cancellation only before an operation is handed over gives the caller one safe window to cancel in, and skipping an operation whose submitter has stopped waiting saves device work."
+prose = "Submission has two phases: a reservation acquires the operation's credit, and the submit hands the buffer over and enqueues the operation. Dropping a reservation, or abandoning the wait for one, cancels the operation. A producer can wait for a reservation before it starts the work that fills the buffer, which bounds its fan-out by the device's capacity."
+
+[[requirement]]
+id = "DC-0011-031"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "When a submitter drops a reservation, or abandons its wait for credit, the device MUST return any credit held for the operation."
+rationale = "Credit held for an operation that will never run would shrink the device's budget for good."
+
+[[requirement]]
+id = "DC-0011-032"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "The device MUST NOT issue any part of an operation whose reservation was dropped before submission."
+rationale = "A caller that cancels before submission is free to reuse the operation's offset, so the operation has to leave the file untouched."
+
+[[requirement]]
+id = "DC-0011-033"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "The device MUST NOT stop an operation once the backend has started to run it, even when its submitter stops waiting."
+rationale = "A write stopped part way would leave the file in a state no caller asked for."
+
+[[requirement]]
+id = "DC-0011-034"
+level = "MAY"
+polarity = "required"
+binds_to = "system"
+statement = "The backend MAY skip an operation whose submitter stopped waiting for its completion before the operation started to run, provided it returns the operation's credit."
+rationale = "Running an operation whose outcome no one waits for spends device work for nothing."
+
+[[requirement]]
+id = "DC-0011-035"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "The backend MUST NOT skip an operation submitted without a request for its completion."
+rationale = "Such an operation has no waiter by design, so the absence of a waiter says nothing about whether it is still wanted."

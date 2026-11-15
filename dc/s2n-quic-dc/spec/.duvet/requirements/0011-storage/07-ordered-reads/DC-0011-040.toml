@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/07-ordered-reads.md#DC-0011-040"
+
+[[spec]]
+level = "MUST"
+quote = "An ordered read MUST deliver a block's validation error in that block's place in the order."

@@ -1,0 +1,70 @@
+[section]
+anchor = "admission"
+title = "Admission by credit"
+problem = "Storage operations run on a bounded set of execution slots. When submitters take slots before they know that the device can accept their work, blocked slots can wait on work that never gets a slot, and the system deadlocks."
+motivation = "Gating each operation on credit from the device's budget before it takes any execution slot bounds admitted work by the budget, and a submitter that waits for credit holds no slot, so the hold-and-wait cycle cannot form. Priority tiers let latency-sensitive reads go ahead of background writes."
+prose = "Each device holds one or two credit pools whose capacity is the device's queue depth. An operation's cost, in credits, is taken from a pool before the operation enters the device's execution pipeline and is returned when the operation completes. A submitter that finds the pool short of credit waits without holding a thread or an execution slot. Each operation carries a priority tier. A device's configuration also holds a rate ceiling, in operations or in bytes per second, which this version stores and doesn't yet apply to admission."
+
+[[requirement]]
+id = "DC-0011-005"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The device MUST acquire an operation's whole cost in credit from its pool before the operation enters the execution pipeline."
+rationale = "Admitting work before its credit is held would let admitted work exceed the pool's capacity."
+
+[[requirement]]
+id = "DC-0011-006"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A submitter waiting for credit MUST NOT hold a thread or an execution slot while it waits."
+rationale = "A waiter that held a slot would recreate the deadlock that admission exists to prevent."
+
+[[requirement]]
+id = "DC-0011-007"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The device MUST grant an operation its whole cost in one grant, and never a part of it."
+rationale = "An operation cannot run on part of its cost, so two operations that each held a part would wait on each other forever."
+
+[[requirement]]
+id = "DC-0011-008"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "The device MUST NOT create execution lanes or threads in response to load after it registers."
+rationale = "Execution capacity that grows under load has no bound, which is the failure the scheduler replaces."
+
+[[requirement]]
+id = "DC-0011-009"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The device MUST grant credit to the waiting submitters of one priority tier in the order in which they began to wait."
+rationale = "Order of arrival within a tier keeps one submitter from starving another of the same tier."
+
+[[requirement]]
+id = "DC-0011-010"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "The device SHOULD grant credit to a waiting submitter of a higher priority tier before a waiting submitter of a lower tier."
+rationale = "Latency-sensitive reads need to go ahead of background writes when both wait on one device."
+
+[[requirement]]
+id = "DC-0011-011"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The device MUST return an operation's credit to the pool it came from exactly once, whether the operation succeeds, fails or is cancelled."
+rationale = "Credit returned twice would let admitted work exceed the capacity, and credit never returned would shrink the device until it stalls."
+
+[[requirement]]
+id = "DC-0011-012"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The device MUST keep its configured rate ceiling, in operations or in bytes per second, with its configuration."
+rationale = "The rate ceiling is part of a device's configuration, so a later version can pace admission by it without a change to how devices are configured."

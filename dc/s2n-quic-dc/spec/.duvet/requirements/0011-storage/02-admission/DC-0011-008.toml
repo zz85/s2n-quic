@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/02-admission.md#DC-0011-008"
+
+[[spec]]
+level = "MUST"
+quote = "The device MUST NOT create execution lanes or threads in response to load after it registers."

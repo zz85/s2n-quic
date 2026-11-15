@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/02-admission.md#DC-0011-009"
+
+[[spec]]
+level = "MUST"
+quote = "The device MUST grant credit to the waiting submitters of one priority tier in the order in which they began to wait."

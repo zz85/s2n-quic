@@ -1,0 +1,62 @@
+[section]
+anchor = "operations"
+title = "Operations and their validation"
+problem = "A submitter describes an operation by its device, its file, its offset, its length and its buffer. An operation that can never succeed, such as one whose cost is larger than the device's budget, would wait for credit forever if it were admitted."
+motivation = "Rejecting such operations before they wait for credit keeps them from contending for the pool, and keeping the file open for the whole operation keeps an operation from touching a file its caller has closed."
+prose = "The kinds of operation are read, write, full flush, data flush and trim. A buffered operation uses a buffer the scheduler fills or reads from; a direct operation uses a caller-owned buffer aligned to the direct alignment of 4096 bytes, in place, without a copy. Each operation carries an opaque token its caller chooses, which its completion returns."
+
+[[requirement]]
+id = "DC-0011-019"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The device MUST keep the file of an operation open from its submission until its completion, even when the submitter closes its own handle to the file."
+rationale = "An operation that ran on a closed file could read or write a file that has since taken its place."
+
+[[requirement]]
+id = "DC-0011-020"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The device MUST reject, with an invalid-input error and before it acquires any credit, an operation whose offset plus length exceeds the largest file offset the platform can address."
+rationale = "Such an operation can never succeed, and admitting it would only take credit from operations that can."
+
+[[requirement]]
+id = "DC-0011-021"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The device MUST reject, with an invalid-input error and before it acquires any credit, a direct operation whose offset or length is not a multiple of the direct alignment of 4096 bytes."
+rationale = "A direct transfer needs an aligned offset and length, and 4096 bytes covers every common page and sector size, so a misaligned operation would fail only after it held credit."
+
+[[requirement]]
+id = "DC-0011-022"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The device MUST reject, with an invalid-input error and before it acquires any credit, an operation whose cost exceeds the capacity of the pool it draws from."
+rationale = "Such an operation could never be granted its whole cost, so it would wait forever."
+
+[[requirement]]
+id = "DC-0011-023"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A buffered read that reaches the end of the file MUST complete with the number of bytes it read, which can be fewer than its length."
+rationale = "A short read at the end of a file is a success, and its caller needs to know how many bytes it holds."
+
+[[requirement]]
+id = "DC-0011-024"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A direct operation MUST transfer its data into or out of the caller's buffer in place, and return that buffer to the caller on completion."
+rationale = "Direct operations exist to move data without a copy, and the caller reuses its aligned buffer for the next operation."
+
+[[requirement]]
+id = "DC-0011-025"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The completion of an operation MUST carry the token its caller gave the operation."
+rationale = "A caller that waits on many operations through one completion channel matches each completion to its operation by the token."

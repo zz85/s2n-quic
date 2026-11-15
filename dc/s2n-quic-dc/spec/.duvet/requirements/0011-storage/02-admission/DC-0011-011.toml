@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/02-admission.md#DC-0011-011"
+
+[[spec]]
+level = "MUST"
+quote = "The device MUST return an operation's credit to the pool it came from exactly once, whether the operation succeeds, fails or is cancelled."

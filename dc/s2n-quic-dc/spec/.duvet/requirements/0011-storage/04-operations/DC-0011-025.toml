@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/04-operations.md#DC-0011-025"
+
+[[spec]]
+level = "MUST"
+quote = "The completion of an operation MUST carry the token its caller gave the operation."

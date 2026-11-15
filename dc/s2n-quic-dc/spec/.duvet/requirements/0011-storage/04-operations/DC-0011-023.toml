@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/04-operations.md#DC-0011-023"
+
+[[spec]]
+level = "MUST"
+quote = "A buffered read that reaches the end of the file MUST complete with the number of bytes it read, which can be fewer than its length."

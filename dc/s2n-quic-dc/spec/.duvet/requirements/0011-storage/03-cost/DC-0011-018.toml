@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/03-cost.md#DC-0011-018"
+
+[[spec]]
+level = "MUST"
+quote = "In shared pool mode, the device MUST draw the credit of every operation from one pool."

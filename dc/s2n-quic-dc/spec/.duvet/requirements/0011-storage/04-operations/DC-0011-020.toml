@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/04-operations.md#DC-0011-020"
+
+[[spec]]
+level = "MUST"
+quote = "The device MUST reject, with an invalid-input error and before it acquires any credit, an operation whose offset plus length exceeds the largest file offset the platform can address."

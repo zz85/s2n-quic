@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/06-cancellation.md#DC-0011-033"
+
+[[spec]]
+level = "MUST"
+quote = "The device MUST NOT stop an operation once the backend has started to run it, even when its submitter stops waiting."

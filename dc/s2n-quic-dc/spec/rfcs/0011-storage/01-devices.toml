@@ -1,0 +1,38 @@
+[section]
+anchor = "devices"
+title = "Devices and the registry"
+problem = "Storage traffic shares a small number of devices, and each device can serve only a limited amount of work at once. Work queued for one device has no reason to wait behind another device, and the code that opens devices does not know them all when it starts."
+motivation = "Making each device its own scheduler keeps one saturated device from stalling the others, and a registry that registers devices as they are opened, from any thread, fits how storage services discover their devices."
+prose = "A device is the limited resource that storage operations share, together with the scheduler that admits and runs them. A registry owns the execution backend and creates devices; each device it creates holds its own admission budget, cost model and execution lanes. A device's label names it in diagnostics alone."
+
+[[requirement]]
+id = "DC-0011-001"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "Each device MUST admit, order and run its operations by itself, without a scheduler shared with other devices."
+rationale = "A shared scheduler would let one saturated device delay operations bound for an idle one."
+
+[[requirement]]
+id = "DC-0011-002"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The registry MUST accept the registration of a new device from any thread at any time after the registry is created."
+rationale = "Devices are discovered as files are opened, often on threads other than the one that built the registry."
+
+[[requirement]]
+id = "DC-0011-003"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A registration MUST fail with a broken-pipe error once the registry has been torn down."
+rationale = "A device registered after teardown would have no backend to run its operations, so its submitters would wait forever."
+
+[[requirement]]
+id = "DC-0011-004"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "The scheduler MUST NOT use a device's label for anything other than naming the device in diagnostics and metrics."
+rationale = "A label that changed behavior would make two devices with equal configuration act differently."

@@ -1,0 +1,46 @@
+[section]
+anchor = "execution"
+title = "Execution and completion"
+problem = "Admitted operations have to be spread over a device's lanes so that no lane sits idle while another is backed up, and each submitter has to learn the outcome of its operation, including when a lane or the device has shut down."
+motivation = "Balancing lanes by work, not by count, keeps cheap and expensive operations from piling up on one lane, and completing each operation where it finishes avoids a central task that every completion passes through."
+prose = "A device's dispatcher assigns each admitted operation to one of the device's lanes. The number of lanes is configured for each device, is at least one, and is independent of the device's queue depth. For each operation the dispatcher takes a first candidate lane in turn and a second at random, and usually chooses the one with less queued work, in credits; it still chooses the busier one now and then, with a chance that falls as the gap between them grows, so that its estimate of every lane's load stays current. A lane runs operations through the execution backend and completes each operation where it finishes."
+
+[[requirement]]
+id = "DC-0011-026"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The dispatcher MUST choose the lane for each operation from two candidate lanes, by comparing their queued work in credits."
+rationale = "Comparing two lanes by their queued work balances load by work rather than by operation count, at a constant cost per operation."
+
+[[requirement]]
+id = "DC-0011-027"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The lane that finishes an operation MUST return its credit and notify its submitter without passing the operation to a central completion task."
+rationale = "A central completion task would add a hop to every operation and become a bottleneck shared by every device."
+
+[[requirement]]
+id = "DC-0011-028"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "When a lane has closed, the device MUST fail each operation routed to that lane with a broken-pipe error."
+rationale = "An operation routed to a closed lane would otherwise never complete, and its submitter would wait forever."
+
+[[requirement]]
+id = "DC-0011-029"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "When the device's submission channel has closed, the device MUST refuse a new operation with a broken-pipe error."
+rationale = "No completion can arrive for an operation that the torn-down device never received."
+
+[[requirement]]
+id = "DC-0011-030"
+level = "MAY"
+polarity = "required"
+binds_to = "system"
+statement = "A submitter MAY submit an operation without asking for its completion."
+rationale = "A background write whose outcome no one reads needs no completion."

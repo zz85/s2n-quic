@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/03-cost.md#DC-0011-017"
+
+[[spec]]
+level = "MUST"
+quote = "In split pool mode, the device MUST draw a read's credit from the read pool and the credit of every other kind of operation from the write pool."

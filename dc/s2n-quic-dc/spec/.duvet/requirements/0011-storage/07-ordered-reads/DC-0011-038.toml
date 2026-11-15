@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/07-ordered-reads.md#DC-0011-038"
+
+[[spec]]
+level = "MUST"
+quote = "An ordered read MUST deliver a block of in-memory bytes in its place in the order, without reading a device or acquiring credit."
