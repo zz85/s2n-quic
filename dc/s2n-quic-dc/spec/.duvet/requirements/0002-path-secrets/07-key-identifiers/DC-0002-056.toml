@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/07-key-identifiers.md#DC-0002-056"
+
+[[spec]]
+level = "MUST"
+quote = "On an authenticated replay detected packet, an endpoint MUST raise the next key identifier it uses under the path secret the packet names to at least one more than the rejected key identifier the packet carries."

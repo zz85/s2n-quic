@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/08-replay-protection.md#DC-0002-061"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST reject a packet as a possible replay where the packet's key identifier is below the window it tracks."

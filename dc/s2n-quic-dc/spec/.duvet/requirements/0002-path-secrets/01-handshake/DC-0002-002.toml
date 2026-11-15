@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/01-handshake.md#DC-0002-002"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST NOT complete a handshake whose negotiated cipher suite is neither TLS_AES_128_GCM_SHA256 nor TLS_AES_256_GCM_SHA384."

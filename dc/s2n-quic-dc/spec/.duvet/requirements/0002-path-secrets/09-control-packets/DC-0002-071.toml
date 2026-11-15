@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/09-control-packets.md#DC-0002-071"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST NOT treat an unknown path secret packet as proof that its peer holds the path secret."

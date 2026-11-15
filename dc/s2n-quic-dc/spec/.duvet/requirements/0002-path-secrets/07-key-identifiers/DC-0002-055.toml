@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/07-key-identifiers.md#DC-0002-055"
+
+[[spec]]
+level = "MUST"
+quote = "On an authenticated stale key packet, an endpoint MUST raise the next key identifier it uses under the path secret the packet names to at least the minimum key identifier the packet carries."

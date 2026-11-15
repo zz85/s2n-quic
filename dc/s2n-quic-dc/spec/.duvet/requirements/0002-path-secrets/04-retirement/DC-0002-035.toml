@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/04-retirement.md#DC-0002-035"
+
+[[spec]]
+level = "SHOULD"
+quote = "An endpoint SHOULD evict a retired path secret once 10 cleaning passes have run since it was retired."

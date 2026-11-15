@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/05-handshake-requests.md#DC-0002-073"
+
+[[spec]]
+level = "SHOULD"
+quote = "An endpoint SHOULD handshake again with the peer of a path secret it evicts for being dead and silent."

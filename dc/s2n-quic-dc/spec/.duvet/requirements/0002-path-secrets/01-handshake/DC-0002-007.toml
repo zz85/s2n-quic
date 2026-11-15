@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/01-handshake.md#DC-0002-007"
+
+[[spec]]
+level = "MAY"
+quote = "An endpoint MAY refuse a handshake where its application rejects the peer information the peer advertised, closing the handshake with an application error."

@@ -1,0 +1,5 @@
+number = 2
+title = "Path secrets: handshake, secret map, rehandshake, replay protection"
+area = "dc"
+abstract = "How two endpoints establish a path secret, how an endpoint keeps, retires and renews its path secrets, and how it protects the packets sealed under them against replay."
+retired = []

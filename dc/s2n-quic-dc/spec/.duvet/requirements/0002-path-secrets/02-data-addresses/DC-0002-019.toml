@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/02-data-addresses.md#DC-0002-019"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST replace an unspecified IP address in an advertised data address with the IP address its handshake reached the peer at."

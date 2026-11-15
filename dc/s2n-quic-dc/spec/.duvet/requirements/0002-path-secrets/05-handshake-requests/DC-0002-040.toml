@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/05-handshake-requests.md#DC-0002-040"
+
+[[spec]]
+level = "SHOULD"
+quote = "After a failed handshake with a peer address, an endpoint SHOULD answer the requests for a handshake with that address with that failure, without handshaking, for a random period between 1 second and 2 minutes."

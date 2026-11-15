@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/06-rehandshake.md#DC-0002-050"
+
+[[spec]]
+level = "SHOULD"
+quote = "An endpoint SHOULD leave at least 100 milliseconds between the starts of two periodic rehandshakes."

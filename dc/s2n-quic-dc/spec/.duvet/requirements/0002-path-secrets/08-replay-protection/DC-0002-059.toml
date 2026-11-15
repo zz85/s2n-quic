@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/08-replay-protection.md#DC-0002-059"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST track, for each path secret, which key identifiers it has seen in a window of 896 key identifiers that ends at the highest one it has seen."

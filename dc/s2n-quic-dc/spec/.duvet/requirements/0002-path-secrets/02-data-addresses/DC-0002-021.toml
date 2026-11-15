@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/02-data-addresses.md#DC-0002-021"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST map an advertised IPv4 data address to its IPv4-mapped IPv6 form where its handshake reached the peer at an IPv6 address."

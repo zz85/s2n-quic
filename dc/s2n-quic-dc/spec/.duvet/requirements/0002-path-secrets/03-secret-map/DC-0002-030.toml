@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/03-secret-map.md#DC-0002-030"
+
+[[spec]]
+level = "MUST"
+quote = "When a new path secret takes the count past the configured capacity, the endpoint MUST evict the path secret it recorded earliest."

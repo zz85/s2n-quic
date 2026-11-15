@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/03-secret-map.md#DC-0002-024"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST keep the path secrets for which it was the client apart from those for which it was the server, so that one peer address can hold a path secret in each role."

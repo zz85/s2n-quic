@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/02-data-addresses.md#DC-0002-015"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST NOT fail a handshake for a data address entry whose address type or length it doesn't recognize, and it skips that entry instead."

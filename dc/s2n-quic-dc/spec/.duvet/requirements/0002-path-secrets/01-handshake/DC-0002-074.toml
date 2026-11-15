@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/01-handshake.md#DC-0002-074"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST compute each stateless reset token as a keyed message authentication code over the path secret's identifier, with a key that only the endpoint holds."

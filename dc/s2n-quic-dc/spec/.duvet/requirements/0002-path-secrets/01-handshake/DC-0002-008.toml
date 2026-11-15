@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/01-handshake.md#DC-0002-008"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST NOT select a path secret for new flows to a peer before the handshake that produced it has completed."

@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/01-handshake.md#DC-0002-001"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST obtain each path secret from the exporter of its TLS 1.3 handshake with the peer, with the label `EXPERIMENTAL EXPORTER s2n-quic-dc` and an empty context."

@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/08-replay-protection.md#DC-0002-064"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST NOT deliver the payload of a packet it rejects as a replay or a possible replay."

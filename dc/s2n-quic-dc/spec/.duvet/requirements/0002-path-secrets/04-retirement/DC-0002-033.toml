@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/04-retirement.md#DC-0002-033"
+
+[[spec]]
+level = "SHOULD"
+quote = "An endpoint SHOULD run a cleaning pass over its secret map about once a minute."

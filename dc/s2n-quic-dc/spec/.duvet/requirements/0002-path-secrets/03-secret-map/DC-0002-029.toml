@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/03-secret-map.md#DC-0002-029"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST hold at most a configured number of path secrets."

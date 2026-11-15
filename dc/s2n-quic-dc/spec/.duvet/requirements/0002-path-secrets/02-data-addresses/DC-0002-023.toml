@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/02-data-addresses.md#DC-0002-023"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST check the peer's data addresses before it obtains the path secret of the handshake."

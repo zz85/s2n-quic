@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/09-control-packets.md#DC-0002-066"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST authenticate each stale key and replay detected packet it sends with the control key of the path secret the packet names."

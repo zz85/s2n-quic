@@ -1,0 +1,94 @@
+[section]
+anchor = "data-addresses"
+title = "Peer data addresses"
+problem = "A peer can receive data on addresses other than the one it handshakes on, and an address taken from a peer without checks could send traffic to a host the peer doesn't control."
+motivation = "Advertising data addresses in the handshake lets a sender spread traffic over a peer's sockets, and checking them before the path secret is recorded keeps a malformed or hostile list out of the secret map."
+prose = "Each endpoint can advertise the addresses it receives data on in a transport parameter of the handshake. The parameter holds a version byte of 1, a count byte, and that many entries. Each entry holds an address type byte, a two-byte big-endian length and a value of that length. Address type 1 holds an 18-byte value: a 16-byte IPv6 address followed by a two-byte big-endian port. The receiving endpoint checks and normalizes the list against the address its handshake reached the peer at."
+
+[[requirement]]
+id = "DC-0002-013"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST encode the data addresses it advertises in the format this section describes, each with address type 1."
+rationale = "Both endpoints read the parameter only where they agree on its layout."
+
+[[requirement]]
+id = "DC-0002-014"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST write each IPv4 data address it advertises in its IPv4-mapped IPv6 form."
+rationale = "Address type 1 holds an IPv6 address, and the mapped form carries an IPv4 address in it without loss."
+
+[[requirement]]
+id = "DC-0002-015"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "An endpoint MUST NOT fail a handshake for a data address entry whose address type or length it doesn't recognize, and it skips that entry instead."
+rationale = "Skipping unknown entries lets a later version add address types that older endpoints read past."
+
+[[requirement]]
+id = "DC-0002-016"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST treat a data address parameter that it can't decode, or whose version it doesn't support, as if the peer advertised an empty list."
+rationale = "A peer without usable data addresses is still reachable at its handshake address, so the handshake can go on."
+
+[[requirement]]
+id = "DC-0002-017"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST fail a handshake with a transport parameter error where the peer advertises more than 128 data addresses."
+rationale = "A bound on the list bounds the memory and work one peer can cost the endpoint."
+
+[[requirement]]
+id = "DC-0002-018"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST fail a handshake with a transport parameter error where an advertised data address has port 0."
+rationale = "Port 0 doesn't name a socket a sender can reach."
+
+[[requirement]]
+id = "DC-0002-019"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST replace an unspecified IP address in an advertised data address with the IP address its handshake reached the peer at."
+rationale = "A peer that listens on every address is reachable at the address the handshake used."
+
+[[requirement]]
+id = "DC-0002-020"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST fail a handshake with a transport parameter error where a peer whose handshake address isn't a loopback address advertises a loopback data address."
+rationale = "A remote peer that names a loopback address would turn the endpoint's traffic onto its own host."
+
+[[requirement]]
+id = "DC-0002-021"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST map an advertised IPv4 data address to its IPv4-mapped IPv6 form where its handshake reached the peer at an IPv6 address."
+rationale = "The endpoint sends to the peer on the socket family of the handshake, and that socket can reach a mapped address."
+
+[[requirement]]
+id = "DC-0002-022"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST fail a handshake with a transport parameter error where a peer whose handshake address is an IPv4 address advertises an IPv6 data address other than the unspecified address."
+rationale = "A socket of the IPv4 family can't send to an IPv6 address."
+
+[[requirement]]
+id = "DC-0002-023"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST check the peer's data addresses before it obtains the path secret of the handshake."
+rationale = "Checking first ends a handshake with a bad list before any secret exists for it."

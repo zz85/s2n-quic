@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/03-secret-map.md#DC-0002-028"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST retire the earlier path secret that a newer one replaces for a peer address and role, keeping it for the packets that still use it until it is evicted."

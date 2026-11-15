@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/04-retirement.md#DC-0002-034"
+
+[[spec]]
+level = "SHOULD"
+quote = "An endpoint SHOULD start each cleaning pass at a random time within its minute."

@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/09-control-packets.md#DC-0002-070"
+
+[[spec]]
+level = "MAY"
+quote = "An endpoint MAY evict the path secret an accepted unknown path secret packet names, where its configuration asks for it."

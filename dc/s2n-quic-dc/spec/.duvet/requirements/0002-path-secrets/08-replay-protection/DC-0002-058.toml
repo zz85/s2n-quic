@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/08-replay-protection.md#DC-0002-058"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST record a received key identifier as seen only after the packet that carries it is authenticated."

@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/08-replay-protection.md#DC-0002-060"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST reject a packet as a replay where it has already recorded the packet's key identifier as seen under that path secret."

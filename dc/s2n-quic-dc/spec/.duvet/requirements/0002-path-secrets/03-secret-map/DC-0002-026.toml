@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/03-secret-map.md#DC-0002-026"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST choose the path secret for a new flow to a peer by the peer's address, among the path secrets for which it was the client."

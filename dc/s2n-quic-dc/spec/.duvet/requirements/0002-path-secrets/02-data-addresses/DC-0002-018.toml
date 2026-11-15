@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/02-data-addresses.md#DC-0002-018"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST fail a handshake with a transport parameter error where an advertised data address has port 0."

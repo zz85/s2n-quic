@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/01-handshake.md#DC-0002-003"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST bind each path secret to the cipher suite and the protocol version negotiated in its handshake and to the endpoint's role in that handshake, client or server."

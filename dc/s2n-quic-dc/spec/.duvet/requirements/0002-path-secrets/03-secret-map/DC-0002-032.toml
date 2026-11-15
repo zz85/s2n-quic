@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/03-secret-map.md#DC-0002-032"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST NOT hold two path secrets with the same identifier."

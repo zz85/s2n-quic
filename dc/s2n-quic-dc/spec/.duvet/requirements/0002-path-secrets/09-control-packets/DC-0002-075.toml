@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/09-control-packets.md#DC-0002-075"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST send its unknown path secret packets at a rate that stays within a limit the endpoint configures."

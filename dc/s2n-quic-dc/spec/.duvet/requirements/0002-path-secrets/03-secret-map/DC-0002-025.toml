@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/03-secret-map.md#DC-0002-025"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST find the path secret for a received packet by the path secret identifier the packet carries."

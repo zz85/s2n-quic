@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/08-replay-protection.md#DC-0002-063"
+
+[[spec]]
+level = "SHOULD"
+quote = "An endpoint SHOULD answer a packet it rejects as a possible replay with a stale key packet that carries one more than the highest key identifier it has seen, or 0 where it has seen none."

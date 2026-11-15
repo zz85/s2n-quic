@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/02-data-addresses.md#DC-0002-022"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST fail a handshake with a transport parameter error where a peer whose handshake address is an IPv4 address advertises an IPv6 data address other than the unspecified address."

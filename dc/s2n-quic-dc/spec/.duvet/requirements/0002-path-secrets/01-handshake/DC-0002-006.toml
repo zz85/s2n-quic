@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/01-handshake.md#DC-0002-006"
+
+[[spec]]
+level = "SHOULD"
+quote = "An endpoint SHOULD keep the key it computes stateless reset tokens with across its restarts."

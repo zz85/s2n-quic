@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/02-data-addresses.md#DC-0002-016"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST treat a data address parameter that it can't decode, or whose version it doesn't support, as if the peer advertised an empty list."

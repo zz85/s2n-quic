@@ -1,0 +1,62 @@
+[section]
+anchor = "replay-protection"
+title = "Replay protection"
+problem = "An attacker who captures a packet can send it again, and a receiver that opens it a second time would act on the same data twice."
+motivation = "Tracking which recent key identifiers a path secret has received lets the receiver reject a repeated packet and tell the sender, at a fixed cost per path secret."
+prose = "A receiver tracks, for each path secret, the highest key identifier it has seen and which key identifiers it has seen in a window of 896 identifiers that ends at that highest one. A stale key packet tells the sender to move its next key identifier past the highest one the receiver has seen."
+
+[[requirement]]
+id = "DC-0002-058"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST record a received key identifier as seen only after the packet that carries it is authenticated."
+rationale = "Recording a forged packet's key identifier would let an attacker block the sender's real packets."
+
+[[requirement]]
+id = "DC-0002-059"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST track, for each path secret, which key identifiers it has seen in a window of 896 key identifiers that ends at the highest one it has seen."
+rationale = "A window of that size covers the reordering a sender's packets meet on a path while costing a fixed amount of memory."
+
+[[requirement]]
+id = "DC-0002-060"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST reject a packet as a replay where it has already recorded the packet's key identifier as seen under that path secret."
+rationale = "A key identifier is used for one sending key, so a second packet under it is a copy."
+
+[[requirement]]
+id = "DC-0002-061"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST reject a packet as a possible replay where the packet's key identifier is below the window it tracks."
+rationale = "The endpoint no longer knows whether it saw such a key identifier, so accepting it could accept a copy."
+
+[[requirement]]
+id = "DC-0002-062"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint SHOULD answer a packet it rejects as a replay with a replay detected packet that carries the rejected key identifier."
+rationale = "The sender learns which key identifier was rejected and can move past it. The rejection protects against the replay whether or not the answer is sent, so an endpoint that can't send an answer on the path the packet arrived on still keeps that protection."
+
+[[requirement]]
+id = "DC-0002-063"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint SHOULD answer a packet it rejects as a possible replay with a stale key packet that carries one more than the highest key identifier it has seen, or 0 where it has seen none."
+rationale = "The sender learns where to resume so that its next packets fall inside the window. The rejection protects against the replay whether or not the answer is sent, so an endpoint that can't send an answer on the path the packet arrived on still keeps that protection."
+
+[[requirement]]
+id = "DC-0002-064"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "An endpoint MUST NOT deliver the payload of a packet it rejects as a replay or a possible replay."
+rationale = "Delivering it would let a copy reach the application."

@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/08-replay-protection.md#DC-0002-062"
+
+[[spec]]
+level = "SHOULD"
+quote = "An endpoint SHOULD answer a packet it rejects as a replay with a replay detected packet that carries the rejected key identifier."

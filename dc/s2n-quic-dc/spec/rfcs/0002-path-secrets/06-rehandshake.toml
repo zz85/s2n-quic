@@ -1,0 +1,54 @@
+[section]
+anchor = "rehandshake"
+title = "Periodic rehandshake"
+problem = "A path secret used for a long time carries more traffic under one secret than is prudent, and a fleet of endpoints that handshakes again with every peer at once overloads them."
+motivation = "Handshaking again with each peer once per period, in an order each endpoint chooses at random and at a paced rate, renews every path secret while keeping the load even."
+prose = "An endpoint renews the path secret of each peer it holds one for by handshaking with the peer again within each rehandshake period. The cleaning pass of the previous section starts each minute's share of these handshakes."
+
+[[requirement]]
+id = "DC-0002-046"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint SHOULD handshake again with each peer it holds a path secret for about once per rehandshake period, 24 hours by default."
+rationale = "A bounded lifetime for each path secret limits the traffic sealed under one secret."
+
+[[requirement]]
+id = "DC-0002-047"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint SHOULD schedule periodic rehandshakes by going through its peers in turn, scheduling each peer once in each pass through them."
+rationale = "Going through the peers in turn keeps any one peer from handshaking much more often than the period asks, while the count of peers can change within a period."
+
+[[requirement]]
+id = "DC-0002-048"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint SHOULD order the peers it handshakes with again by a hash keyed with a value it chooses at random."
+rationale = "A random order on each endpoint keeps the endpoints of a fleet from all handshaking with the same peer at the same time."
+
+[[requirement]]
+id = "DC-0002-049"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint SHOULD spread the periodic rehandshakes of a period evenly over it, starting the share of them that each minute holds within that minute."
+rationale = "An even spread keeps the handshake load flat instead of in bursts."
+
+[[requirement]]
+id = "DC-0002-050"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint SHOULD leave at least 100 milliseconds between the starts of two periodic rehandshakes."
+rationale = "Pacing the starts keeps one minute's share from arriving at its peers all at once."
+
+[[requirement]]
+id = "DC-0002-051"
+level = "SHOULD"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint SHOULD run at most 2 periodic rehandshakes at once."
+rationale = "Keeping periodic rehandshakes below the bound on concurrent handshakes leaves room for the handshakes that flows need now."
