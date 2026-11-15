@@ -2,4 +2,4 @@ number = 0
 title = "Specification format and change process"
 area = "format"
 abstract = "How the s2n-quic-dc specification is laid out, how a requirement is written, and how a change to the specification is proposed, reviewed and merged."
-retired = []
+retired = ["DC-0000-005"]

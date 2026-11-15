@@ -38,9 +38,9 @@ statement = "Each section of an RFC MUST state the problem it addresses and the 
 rationale = "A reader who knows the problem and the motivation can judge whether the requirements solve it, and can write a requirement the section lacks."
 
 [[requirement]]
-id = "DC-0000-005"
+id = "DC-0000-020"
 level = "MUST"
-polarity = "forbidden"
+polarity = "required"
 binds_to = "process"
-statement = "A person MUST NOT edit a file under `rendered` or `.duvet/requirements` by hand."
-rationale = "Those files are the render command's output from the sources, and a hand edit would make them disagree with the sources they come from."
+statement = "The files under `rendered` and `.duvet/requirements` MUST be exactly the files, byte for byte, that the render command writes from the sources."
+rationale = "Readers and the requirement tracking read those files as the text of the sources, and anyone can check the rule by running the render command and comparing its output with the files, however the files were written."
