@@ -2,4 +2,4 @@ target = "rendered/0007-recovery/04-congestion-control.md#DC-0007-030"
 
 [[spec]]
 level = "MUST"
-quote = "The system MUST bound each send of a sender to its controller's send quantum, in datagrams of the path's maximum size, rounded up."
+quote = "Each send of a sender MUST put at most its send quantum on the wire, counted in datagrams of the path's maximum size and rounded up."

@@ -1,10 +1,10 @@
 ## Pacing and sender load {#pacing}
 
-The controller's pacing rate sets each sender's earliest departure time, the time before which its next data may not leave. Data frames wait for that time unless a probe carries them; acknowledgements and probes go at once, since they add little load and a delayed acknowledgement slows the peer. The earliest departure time is never more than one second in the future, so a degenerate pacing rate can't hold a sender for longer. The socket's own pacing, which RFC 0010 states, applies after this one. Each sender publishes a load score for the endpoint's choice among the senders of the same peer: the later of the current time and its earliest departure time, plus one smoothed round-trip time while the congestion window limits it, plus its queued bytes divided by its pacing rate. The published score reflects each change of the sender's queue, and shows an acknowledgement's effect on the window and the pacing rate only once every update of that acknowledgement is applied, so that the choice reads the sender's current state.
+Each sender's pacing rate, which it sets from its bandwidth estimate, sets its earliest departure time, the time before which its next data may not leave. Data frames wait for that time unless a probe carries them; acknowledgements and probes go at once, since they add little load and a delayed acknowledgement slows the peer. The earliest departure time is never more than one second in the future, so a degenerate pacing rate can't hold a sender for longer. The socket's own pacing, which RFC 0010 states, applies after this one. Each sender publishes a load score for the endpoint's choice among the senders of the same peer: the later of the current time and its earliest departure time, plus one smoothed round-trip time while the congestion window limits it, plus its queued bytes divided by its pacing rate. The published score reflects each change of the sender's queue, and shows an acknowledgement's effect on the window and the pacing rate only once every update of that acknowledgement is applied, so that the choice reads the sender's current state.
 
 ### DC-0007-033 {#DC-0007-033}
 
-The system MUST hold each sender's data frames, other than those a probe carries, until the earliest departure time that its controller's pacing rate sets.
+A sender MUST hold its data frames, other than those a probe carries, until its earliest departure time.
 
 ### DC-0007-034 {#DC-0007-034}
 

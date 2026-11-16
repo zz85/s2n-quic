@@ -2,4 +2,4 @@ target = "rendered/0007-recovery/04-congestion-control.md#DC-0007-031"
 
 [[spec]]
 level = "MUST"
-quote = "The bytes a sender counts against its window MUST equal the total size of its outstanding packets, each counted once."
+quote = "The room a sender has for new data MUST be the larger of zero and its window less the total size of its outstanding packets whose frames no probe has carried again."

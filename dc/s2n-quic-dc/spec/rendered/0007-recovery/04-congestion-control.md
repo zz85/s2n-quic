@@ -1,10 +1,10 @@
 ## Congestion control {#congestion-control}
 
-Each sender has one congestion controller, created with the path's maximum datagram size. The controller is model-based: it estimates the path's bottleneck bandwidth and its minimum round-trip time from the acknowledgements it receives, and sets the congestion window, the pacing rate and the send quantum from those estimates, with loss and congestion marks as further signals. A sender that has no more application data queued doesn't lower its rate or its window for the room it leaves unused, so a quiet sender isn't read as a slow path. A run of consecutive lost packet numbers counts as one loss event, and each increase of the peer's count of packets marked congestion experienced counts as a sign of congestion. The sender takes an acknowledgement's congestion marks and losses into account before it raises its rate or its window for the data that acknowledgement acknowledges. The sender doesn't treat a long silence as persistent congestion: the probe timer and the model cover it. The sender sends new data frames only while the window has room, while the controller asks for fast retransmission, or when the frames make up a probe, and each send carries at most the send quantum. The bytes counted against the window count each outstanding packet once: when a probe carries a packet's frames, the original's bytes leave the count.
+Each sender has one congestion controller, created with the path's maximum datagram size. The controller is model-based: it estimates the path's bottleneck bandwidth and its minimum round-trip time from the acknowledgements it receives, and sets the congestion window, the pacing rate and the send quantum from those estimates, with loss and congestion marks as further signals. A sender that has no more application data queued doesn't lower its rate or its window for the room it leaves unused, so a quiet sender isn't read as a slow path. A run of consecutive lost packet numbers counts as one loss event, and each increase of the peer's count of packets marked congestion experienced counts as a sign of congestion. The sender takes an acknowledgement's congestion marks and losses into account before it raises its rate or its window for the data that acknowledgement acknowledges. The sender doesn't treat a long silence as persistent congestion: the probe timer and the model cover it. The sender sends new data frames only while it has room for new data, as a fast retransmission, or when the frames make up a probe, and each send carries at most the send quantum. The room for new data is the window less the total size of the outstanding packets, leaving out each packet whose frames a probe has carried again, and it is never less than zero.
 
 ### DC-0007-023 {#DC-0007-023}
 
-The system MUST keep one congestion controller for each sender.
+The system MUST give each sender one window and one sending rate, set from the acknowledgements, losses and congestion marks of all of that sender's packets.
 
 ### DC-0007-024 {#DC-0007-024}
 
@@ -20,7 +20,7 @@ A sender MUST NOT lower its sending rate or its window because it sent less than
 
 ### DC-0007-026 {#DC-0007-026}
 
-A sender MUST count a run of consecutive lost packet numbers as one loss event when it judges whether loss limits its sending.
+A sender MUST respond to a run of consecutive lost packet numbers as it responds to one lost packet.
 
 ### DC-0007-027 {#DC-0007-027}
 
@@ -28,20 +28,20 @@ A sender MUST lower its sending rate or its window in response to an increase of
 
 ### DC-0007-028 {#DC-0007-028}
 
-A sender MUST take an acknowledgement's losses and congestion marks into account before it raises its sending rate or its window for the data that acknowledgement acknowledges.
+A sender MUST apply an acknowledgement's losses and congestion marks to its sending rate and its window before it raises either of them for the data that acknowledgement acknowledges.
 
 ### DC-0007-029 {#DC-0007-029}
 
-A sender MUST NOT send new data frames while its controller reports it limited by the congestion window, unless the controller asks for fast retransmission or the frames make up a probe.
+A sender MUST NOT send new data frames while it has no room for new data, unless it sends them as a fast retransmission or as a probe.
 
 ### DC-0007-030 {#DC-0007-030}
 
-The system MUST bound each send of a sender to its controller's send quantum, in datagrams of the path's maximum size, rounded up.
+Each send of a sender MUST put at most its send quantum on the wire, counted in datagrams of the path's maximum size and rounded up.
 
 ### DC-0007-031 {#DC-0007-031}
 
-The bytes a sender counts against its window MUST equal the total size of its outstanding packets, each counted once.
+The room a sender has for new data MUST be the larger of zero and its window less the total size of its outstanding packets whose frames no probe has carried again.
 
 ### DC-0007-032 {#DC-0007-032}
 
-Once a probe carries a packet's frames, the system MUST remove that packet's bytes from the outstanding bytes.
+A packet whose frames a probe carries again MUST NOT take room in the window once the probe is sent.

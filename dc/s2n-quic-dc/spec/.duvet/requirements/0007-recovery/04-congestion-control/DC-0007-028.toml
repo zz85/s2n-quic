@@ -2,4 +2,4 @@ target = "rendered/0007-recovery/04-congestion-control.md#DC-0007-028"
 
 [[spec]]
 level = "MUST"
-quote = "A sender MUST take an acknowledgement's losses and congestion marks into account before it raises its sending rate or its window for the data that acknowledgement acknowledges."
+quote = "A sender MUST apply an acknowledgement's losses and congestion marks to its sending rate and its window before it raises either of them for the data that acknowledgement acknowledges."

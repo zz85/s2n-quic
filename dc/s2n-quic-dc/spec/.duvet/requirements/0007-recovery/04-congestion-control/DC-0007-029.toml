@@ -2,4 +2,4 @@ target = "rendered/0007-recovery/04-congestion-control.md#DC-0007-029"
 
 [[spec]]
 level = "MUST"
-quote = "A sender MUST NOT send new data frames while its controller reports it limited by the congestion window, unless the controller asks for fast retransmission or the frames make up a probe."
+quote = "A sender MUST NOT send new data frames while it has no room for new data, unless it sends them as a fast retransmission or as a probe."

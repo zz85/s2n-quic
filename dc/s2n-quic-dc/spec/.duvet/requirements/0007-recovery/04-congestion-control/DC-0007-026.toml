@@ -2,4 +2,4 @@ target = "rendered/0007-recovery/04-congestion-control.md#DC-0007-026"
 
 [[spec]]
 level = "MUST"
-quote = "A sender MUST count a run of consecutive lost packet numbers as one loss event when it judges whether loss limits its sending."
+quote = "A sender MUST respond to a run of consecutive lost packet numbers as it responds to one lost packet."

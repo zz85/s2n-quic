@@ -2,4 +2,4 @@ target = "rendered/0007-recovery/05-pacing.md#DC-0007-033"
 
 [[spec]]
 level = "MUST"
-quote = "The system MUST hold each sender's data frames, other than those a probe carries, until the earliest departure time that its controller's pacing rate sets."
+quote = "A sender MUST hold its data frames, other than those a probe carries, until its earliest departure time."

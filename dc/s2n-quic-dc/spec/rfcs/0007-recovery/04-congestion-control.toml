@@ -3,14 +3,14 @@ anchor = "congestion-control"
 title = "Congestion control"
 problem = "A sender that sends faster than the path carries builds queues and drops in the network, and one that sends slower than the path wastes it."
 motivation = "A controller for each sender that models the path's bandwidth and round trip keeps the queues short on a data-center network while keeping the path full."
-prose = "Each sender has one congestion controller, created with the path's maximum datagram size. The controller is model-based: it estimates the path's bottleneck bandwidth and its minimum round-trip time from the acknowledgements it receives, and sets the congestion window, the pacing rate and the send quantum from those estimates, with loss and congestion marks as further signals. A sender that has no more application data queued doesn't lower its rate or its window for the room it leaves unused, so a quiet sender isn't read as a slow path. A run of consecutive lost packet numbers counts as one loss event, and each increase of the peer's count of packets marked congestion experienced counts as a sign of congestion. The sender takes an acknowledgement's congestion marks and losses into account before it raises its rate or its window for the data that acknowledgement acknowledges. The sender doesn't treat a long silence as persistent congestion: the probe timer and the model cover it. The sender sends new data frames only while the window has room, while the controller asks for fast retransmission, or when the frames make up a probe, and each send carries at most the send quantum. The bytes counted against the window count each outstanding packet once: when a probe carries a packet's frames, the original's bytes leave the count."
+prose = "Each sender has one congestion controller, created with the path's maximum datagram size. The controller is model-based: it estimates the path's bottleneck bandwidth and its minimum round-trip time from the acknowledgements it receives, and sets the congestion window, the pacing rate and the send quantum from those estimates, with loss and congestion marks as further signals. A sender that has no more application data queued doesn't lower its rate or its window for the room it leaves unused, so a quiet sender isn't read as a slow path. A run of consecutive lost packet numbers counts as one loss event, and each increase of the peer's count of packets marked congestion experienced counts as a sign of congestion. The sender takes an acknowledgement's congestion marks and losses into account before it raises its rate or its window for the data that acknowledgement acknowledges. The sender doesn't treat a long silence as persistent congestion: the probe timer and the model cover it. The sender sends new data frames only while it has room for new data, as a fast retransmission, or when the frames make up a probe, and each send carries at most the send quantum. The room for new data is the window less the total size of the outstanding packets, leaving out each packet whose frames a probe has carried again, and it is never less than zero."
 
 [[requirement]]
 id = "DC-0007-023"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "The system MUST keep one congestion controller for each sender."
+statement = "The system MUST give each sender one window and one sending rate, set from the acknowledgements, losses and congestion marks of all of that sender's packets."
 rationale = "A sender's packets share one path and one sequence of packet numbers, so one controller sees all of their signals."
 
 [[requirement]]
@@ -42,7 +42,7 @@ id = "DC-0007-026"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "A sender MUST count a run of consecutive lost packet numbers as one loss event when it judges whether loss limits its sending."
+statement = "A sender MUST respond to a run of consecutive lost packet numbers as it responds to one lost packet."
 rationale = "One overflow of a queue drops a run of packets, and counting each packet as its own event would overstate the congestion."
 
 [[requirement]]
@@ -58,7 +58,7 @@ id = "DC-0007-028"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "A sender MUST take an acknowledgement's losses and congestion marks into account before it raises its sending rate or its window for the data that acknowledgement acknowledges."
+statement = "A sender MUST apply an acknowledgement's losses and congestion marks to its sending rate and its window before it raises either of them for the data that acknowledgement acknowledges."
 rationale = "The sender adapts to loss at the end of a round, so a round's losses and marks have to count before its closing acknowledgement raises the rate."
 
 [[requirement]]
@@ -66,7 +66,7 @@ id = "DC-0007-029"
 level = "MUST"
 polarity = "forbidden"
 binds_to = "system"
-statement = "A sender MUST NOT send new data frames while its controller reports it limited by the congestion window, unless the controller asks for fast retransmission or the frames make up a probe."
+statement = "A sender MUST NOT send new data frames while it has no room for new data, unless it sends them as a fast retransmission or as a probe."
 rationale = "Sending past the window builds queues, and fast retransmission lets recovery go on while the window is full."
 
 [[requirement]]
@@ -74,7 +74,7 @@ id = "DC-0007-030"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "The system MUST bound each send of a sender to its controller's send quantum, in datagrams of the path's maximum size, rounded up."
+statement = "Each send of a sender MUST put at most its send quantum on the wire, counted in datagrams of the path's maximum size and rounded up."
 rationale = "The send quantum bounds the burst that one send puts on the wire."
 
 [[requirement]]
@@ -82,13 +82,13 @@ id = "DC-0007-031"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "The bytes a sender counts against its window MUST equal the total size of its outstanding packets, each counted once."
-rationale = "The window and the pacing decisions are only as accurate as this count."
+statement = "The room a sender has for new data MUST be the larger of zero and its window less the total size of its outstanding packets whose frames no probe has carried again."
+rationale = "The window bounds the data in flight only where the room it leaves counts each outstanding packet, and a probe already counts the frames it carries again."
 
 [[requirement]]
 id = "DC-0007-032"
 level = "MUST"
-polarity = "required"
+polarity = "forbidden"
 binds_to = "system"
-statement = "Once a probe carries a packet's frames, the system MUST remove that packet's bytes from the outstanding bytes."
+statement = "A packet whose frames a probe carries again MUST NOT take room in the window once the probe is sent."
 rationale = "A probe's packet and the original carry the same frames, and counting both would shrink the window that new data can use."
