@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/05-accepting.md#DC-0006-078"
+
+[[spec]]
+level = "MUST"
+quote = "The server MUST hand each room that the memory holding waiting streams frees to the client that has waited longest for its first queue slot, before it grows any grant under DC-0006-063."

@@ -1,5 +1,0 @@
-target = "rendered/0006-streams/05-accepting.md#DC-0006-043"
-
-[[spec]]
-level = "MUST"
-quote = "When a receiver's queue is full, the server MUST evict either the oldest or the newest waiting stream, as the application configures."

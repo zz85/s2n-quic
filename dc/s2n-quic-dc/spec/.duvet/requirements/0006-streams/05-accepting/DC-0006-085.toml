@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/05-accepting.md#DC-0006-085"
+
+[[spec]]
+level = "MUST"
+quote = "Where the server refuses under DC-0006-069 a stream whose first write names a slot whose withdrawal has ended, the server MUST reset that stream with an error that tells the client to open the stream on another slot."

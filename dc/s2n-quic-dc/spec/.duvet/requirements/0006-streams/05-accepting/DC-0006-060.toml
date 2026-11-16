@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/05-accepting.md#DC-0006-060"
+
+[[spec]]
+level = "MUST"
+quote = "The server MUST set the number of queue slots each client may hold for streams to that server."

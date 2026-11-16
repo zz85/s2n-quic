@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/05-accepting.md#DC-0006-081"
+
+[[spec]]
+level = "MUST"
+quote = "The client MUST NOT open a stream on a queue slot that a withdrawal frame it has received names."

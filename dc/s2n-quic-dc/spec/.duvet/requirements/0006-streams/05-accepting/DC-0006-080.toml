@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/05-accepting.md#DC-0006-080"
+
+[[spec]]
+level = "MUST"
+quote = "The server MUST tell a client of each slot it withdraws by naming that slot in a frame that withdraws slots."

@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/05-accepting.md#DC-0006-059"
+
+[[spec]]
+level = "MUST"
+quote = "The server MUST NOT return a stream's queue slot to the client, or take it out of the client's grant, until the application has finished with the stream."

@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/05-accepting.md#DC-0006-073"
+
+[[spec]]
+level = "MUST"
+quote = "While the memory that holds waiting streams refuses room for a slot, the server MUST take each freed slot out of its client's grant instead of returning it, except the last slot of that client's grant that no withdrawal frame names."

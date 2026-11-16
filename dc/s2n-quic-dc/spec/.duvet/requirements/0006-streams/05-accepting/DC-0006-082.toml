@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/05-accepting.md#DC-0006-082"
+
+[[spec]]
+level = "MUST"
+quote = "The client MUST confirm to the server the withdrawal of each slot that a withdrawal frame names, once that slot holds no stream of the client, with the retransmission the frame that withdraws slots has."

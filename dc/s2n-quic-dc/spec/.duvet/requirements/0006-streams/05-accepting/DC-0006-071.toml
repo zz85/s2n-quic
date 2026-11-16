@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/05-accepting.md#DC-0006-071"
+
+[[spec]]
+level = "MUST"
+quote = "The server MUST refuse a stream whose first write to reach the server names a queue slot that holds another stream the server hasn't freed."

@@ -2,4 +2,4 @@ number = 6
 title = "Streams and accepting them"
 area = "dc"
 abstract = "How an application opens, reads, writes, ends and resets a stream between two hosts that share a path secret, how a server accepts incoming streams and hands them to the application, and how a request-response exchange runs over one stream."
-retired = []
+retired = ["DC-0006-042", "DC-0006-043", "DC-0006-044"]

@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/05-accepting.md#DC-0006-067"
+
+[[spec]]
+level = "MUST"
+quote = "The client MUST take a slot that the server names as free and that the client hasn't held as a new slot of its grant."

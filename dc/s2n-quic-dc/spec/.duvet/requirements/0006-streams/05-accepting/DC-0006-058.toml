@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/05-accepting.md#DC-0006-058"
+
+[[spec]]
+level = "MUST"
+quote = "The server MUST NOT evict a waiting stream from a receiver's queue to make room for a new stream."

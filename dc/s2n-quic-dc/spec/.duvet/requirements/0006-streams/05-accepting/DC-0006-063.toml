@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/05-accepting.md#DC-0006-063"
+
+[[spec]]
+level = "MUST"
+quote = "Where a receiver takes a stream of a client that holds every slot of its grant and no stream of that client waits in any receiver's queue after the take, the server MUST grow that client's grant by as many slots as the memory that holds waiting streams gives room for, up to doubling the grant."

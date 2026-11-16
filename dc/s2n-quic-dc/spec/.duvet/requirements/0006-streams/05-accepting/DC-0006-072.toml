@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/05-accepting.md#DC-0006-072"
+
+[[spec]]
+level = "MUST"
+quote = "The server MUST NOT grant a client a queue slot that the memory holding waiting streams hasn't given room for."

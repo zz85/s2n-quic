@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/05-accepting.md#DC-0006-074"
+
+[[spec]]
+level = "MUST"
+quote = "The server MUST keep the room it took for a granted slot until the slot leaves the client's grant."
