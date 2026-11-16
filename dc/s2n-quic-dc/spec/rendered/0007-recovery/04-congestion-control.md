@@ -24,7 +24,7 @@ A sender MUST respond to a run of consecutive lost packet numbers as it responds
 
 ### DC-0007-027 {#DC-0007-027}
 
-A sender MUST lower a limit that caps its window, and that never caps it below the sender's minimum window, within the round trip after one in which the peer's count of packets marked congestion experienced increased, unless at some point in that round trip the sender was starting up, draining the queue its start-up built, probing for more bandwidth, or probing its round-trip time.
+A sender MUST lower a limit that caps its window, and that never caps it below the sender's minimum window, within the round trip after one in which the peer's count of packets marked congestion experienced increased after both that round trip's start and the sender's last start of a cycle of bandwidth probing, unless the sender was starting up or probing for more bandwidth when that round trip ended.
 
 ### DC-0007-043 {#DC-0007-043}
 
