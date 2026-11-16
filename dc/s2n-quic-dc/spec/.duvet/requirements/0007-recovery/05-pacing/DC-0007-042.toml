@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/05-pacing.md#DC-0007-042"
+
+[[spec]]
+level = "MUST"
+quote = "Once every update an acknowledgement makes to a sender's window and pacing rate is applied, the sender's published load score MUST reflect them."

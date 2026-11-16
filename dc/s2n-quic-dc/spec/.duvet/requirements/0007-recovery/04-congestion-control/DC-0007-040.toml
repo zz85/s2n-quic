@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/04-congestion-control.md#DC-0007-040"
+
+[[spec]]
+level = "MUST"
+quote = "The rate at which a sender sends data MUST follow the path's bottleneck bandwidth, as the sender measures it from the acknowledgements it receives."
