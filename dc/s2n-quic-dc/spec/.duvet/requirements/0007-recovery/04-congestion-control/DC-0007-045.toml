@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/04-congestion-control.md#DC-0007-045"
+
+[[spec]]
+level = "MUST"
+quote = "On an acknowledgement that ends a probe as DC-0007-044 describes, the sender MUST set a limit that caps its window, and that never caps it below the sender's minimum window, to the larger of the total size of its outstanding packets whose frames no probe had carried again when it sent the newest packet that acknowledgement acknowledges and seven tenths of the smaller of its window and its estimate of the path's bandwidth-delay product, unless it sent that packet within an application-limited period: one that opens when the sender runs out of queued application data while no such period is open, and that closes once the data the sender has seen acknowledged, declared lost or discarded since the period opened exceeds the total size of its outstanding packets whose frames no probe had carried again when the period opened."

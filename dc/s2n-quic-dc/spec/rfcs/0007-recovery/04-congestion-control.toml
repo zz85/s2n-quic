@@ -3,7 +3,7 @@ anchor = "congestion-control"
 title = "Congestion control"
 problem = "A sender that sends faster than the path carries builds queues and drops in the network, and one that sends slower than the path wastes it."
 motivation = "A controller for each sender that models the path's bandwidth and round trip keeps the queues short on a data-center network while keeping the path full."
-prose = "Each sender has one congestion controller, created with the path's maximum datagram size. The controller is model-based: it estimates the path's bottleneck bandwidth and its minimum round-trip time from the acknowledgements it receives, and sets the congestion window, the pacing rate and the send quantum from those estimates, with loss and congestion marks as further signals. A sender that has no more application data queued doesn't lower its rate or its window for the room it leaves unused, so a quiet sender isn't read as a slow path. A run of consecutive lost packet numbers counts as one loss event, and each increase of the peer's count of packets marked congestion experienced counts as a sign of congestion. The sender takes an acknowledgement's congestion marks and losses into account before it raises its rate or its window for the data that acknowledgement acknowledges. The sender doesn't treat a long silence as persistent congestion: the probe timer and the model cover it. The sender sends new data frames only while it has room for new data, as a fast retransmission, or when the frames make up a probe, and each send carries at most the send quantum. The room for new data is the window less the total size of the outstanding packets, leaving out each packet whose frames a probe has carried again, and it is never less than zero."
+prose = "Each sender has one congestion controller, created with the path's maximum datagram size. The controller is model-based: it estimates the path's bottleneck bandwidth and its minimum round-trip time from the acknowledgements it receives, and sets the congestion window, the pacing rate and the send quantum from those estimates, with loss and congestion marks as further signals. A sender that has no more application data queued doesn't lower its rate or its window for the room it leaves unused, so a quiet sender isn't read as a slow path. A run of consecutive lost packet numbers counts as one loss event, and each increase of the peer's count of packets marked congestion experienced counts as a sign of congestion. A sender that probes above its bandwidth estimate ends the probe once more than half of the data an acknowledgement shows delivered was marked, and caps its window near the total size of its outstanding packets when it sent that data. The sender takes an acknowledgement's congestion marks and losses into account before it raises its rate or its window for the data that acknowledgement acknowledges. The sender doesn't treat a long silence as persistent congestion: the probe timer and the model cover it. The sender sends new data frames only while it has room for new data, as a fast retransmission, or when the frames make up a probe, and each send carries at most the send quantum. The room for new data is the window less the total size of the outstanding packets, leaving out each packet whose frames a probe has carried again, and it is never less than zero."
 
 [[requirement]]
 id = "DC-0007-023"
@@ -60,6 +60,22 @@ polarity = "required"
 binds_to = "system"
 statement = "A sender that is starting up MUST end its start-up, in which it raises its sending rate each round trip, after two consecutive round trips in each of which the packets marked congestion experienced, each counted at the path's maximum datagram size, made up more than half of the data delivered."
 rationale = "A sender starting up raises its rate fast, so two round trips in a row with most of the delivered data marked show that it has filled the path, while one such round trip can be a passing burst."
+
+[[requirement]]
+id = "DC-0007-044"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A sender that is sending above its estimate of the path's bottleneck bandwidth to probe for more bandwidth MUST end that probe and lower its sending rate below its estimate on an acknowledgement for which the packets marked congestion experienced, each counted at the path's maximum datagram size, made up more than half of the data delivered between the send of the newest packet that acknowledgement acknowledges and its arrival."
+rationale = "Most of the delivered data marked while the sender sends above its estimate shows that the extra rate built a queue, so the sender stops adding to the queue and drains it at once, rather than at the probe's planned end."
+
+[[requirement]]
+id = "DC-0007-045"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "On an acknowledgement that ends a probe as DC-0007-044 describes, the sender MUST set a limit that caps its window, and that never caps it below the sender's minimum window, to the larger of the total size of its outstanding packets whose frames no probe had carried again when it sent the newest packet that acknowledgement acknowledges and seven tenths of the smaller of its window and its estimate of the path's bandwidth-delay product, unless it sent that packet within an application-limited period: one that opens when the sender runs out of queued application data while no such period is open, and that closes once the data the sender has seen acknowledged, declared lost or discarded since the period opened exceeds the total size of its outstanding packets whose frames no probe had carried again when the period opened."
+rationale = "The total size of the sender's outstanding packets when it sent the marked data, the quantity DC-0007-031 counts against the window, is the amount the path carried before the queue built, and seven tenths of the window keeps the cap from falling to it when that amount was small. A packet sent within an application-limited period, until the data outstanding when the sender ran out of queued data has left the path, yields a sample shaped by the sender's own pauses and not by the path, so it leaves the cap as it was. Never capping below the minimum window keeps enough data outstanding to go on measuring the path."
 
 [[requirement]]
 id = "DC-0007-028"

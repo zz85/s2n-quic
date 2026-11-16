@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/04-congestion-control.md#DC-0007-044"
+
+[[spec]]
+level = "MUST"
+quote = "A sender that is sending above its estimate of the path's bottleneck bandwidth to probe for more bandwidth MUST end that probe and lower its sending rate below its estimate on an acknowledgement for which the packets marked congestion experienced, each counted at the path's maximum datagram size, made up more than half of the data delivered between the send of the newest packet that acknowledgement acknowledges and its arrival."
