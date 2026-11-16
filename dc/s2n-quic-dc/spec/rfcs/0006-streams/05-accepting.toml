@@ -286,6 +286,14 @@ statement = "The client MUST open again on another granted slot a stream that th
 rationale = "The client may have opened the stream on the slot before it read the withdrawal frame, as DC-0006-081 allows, and its acknowledgement of that frame can reach the server before the stream's first write, so the server ends the withdrawal and resets a stream that the client opened by these rules (DC-0006-083). Opening the stream again on a slot of the client's grant keeps its work, so the client's application doesn't see a failure it didn't cause; where every slot of the grant holds a stream, the client holds the stream back until a slot frees, as DC-0006-068 asks, and DC-0006-079 keeps the client's last slot in its grant. DC-0006-014, DC-0006-023 and DC-0006-035 leave that reset out of what the client tells its application."
 
 [[requirement]]
+id = "DC-0006-087"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The client MUST keep each byte the application has written on a stream until the server confirms the stream."
+rationale = "The server refuses a stream under DC-0006-069 only at the stream's first write to reach it, and the server's acknowledgement of a packet that carried the stream's bytes can reach the client before the reset of DC-0006-085, since frames arrive in any order or are lost. A client that let go of those bytes once the server acknowledged them would then open the stream again under DC-0006-086 without them, though DC-0006-018 has already reported the write to the application as successful. Keeping the bytes until the server confirms the stream lets the stream opened again carry every byte the application wrote. What the client keeps past an acknowledgement is bounded by the limit the server granted on the stream (DC-0006-017), which before the application takes the stream is the read half's starting limit, so the server's grant bounds it and not a fixed size. Once the server confirms the stream, no reset of DC-0006-085 can follow, and the client lets go of acknowledged bytes as for any other stream."
+
+[[requirement]]
 id = "DC-0006-045"
 level = "SHOULD"
 polarity = "required"

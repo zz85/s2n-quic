@@ -142,6 +142,10 @@ Where the server refuses under DC-0006-069 a stream whose first write names a sl
 
 The client MUST open again on another granted slot a stream that the server resets with the error of DC-0006-085.
 
+### DC-0006-087 {#DC-0006-087}
+
+The client MUST keep each byte the application has written on a stream until the server confirms the stream.
+
 ### DC-0006-045 {#DC-0006-045}
 
 Where an acceptor has several receivers, the server SHOULD give each stream to the less loaded of two receivers it picks at random.

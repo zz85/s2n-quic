@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/05-accepting.md#DC-0006-087"
+
+[[spec]]
+level = "MUST"
+quote = "The client MUST keep each byte the application has written on a stream until the server confirms the stream."
