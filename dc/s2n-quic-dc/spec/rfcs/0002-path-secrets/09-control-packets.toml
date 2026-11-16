@@ -27,7 +27,15 @@ level = "MUST"
 polarity = "required"
 binds_to = "system"
 statement = "An endpoint MUST keep the unknown path secret packets waiting to be sent within a limit the endpoint configures for all path secrets and senders together, and drop each answer past that limit."
-rationale = "Both the path secret's identifier and the sender of the packet an answer replies to come from a packet the endpoint can't authenticate, so a sender that forges its source address and the identifiers it names makes a new pair for each packet, and DC-0002-072's limit for each pair doesn't bound the total; without this limit, packets that arrive faster than DC-0002-075's rate sends answers would grow the endpoint's memory without a bound. A limit near what that rate sends in a short time keeps the waiting answers fresh, and a peer that keeps sending still receives an answer once one fits."
+rationale = "Both the path secret's identifier and the sender of the packet an answer replies to come from a packet the endpoint can't authenticate, so a sender that forges its source address and the identifiers it names makes a new pair for each packet, and DC-0002-072's limit for each pair doesn't bound the total; without this limit, packets that arrive faster than DC-0002-075's rate sends answers would grow the endpoint's memory without a bound. A limit near what that rate sends in a short time keeps the waiting answers fresh, and a peer that keeps sending still receives an answer once one fits. The limit counts the unknown path secret packets alone, and DC-0002-077 keeps it from dropping the stale key and replay detected packets that answer authenticated packets."
+
+[[requirement]]
+id = "DC-0002-077"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "An endpoint MUST NOT drop a stale key or replay detected packet waiting to be sent because the unknown path secret packets waiting beside it have reached DC-0002-076's limit."
+rationale = "Stale key and replay detected packets answer packets the endpoint authenticated with a path secret it holds, so DC-0002-072's limit for each path secret and sender bounds them by the path secrets the endpoint holds and the senders that authenticated packets name, which a sender without a path secret can't add to. Where DC-0002-076's limit also dropped them, a sender that forges unknown path secret packets could fill that limit and keep the answers owed to authenticated peers from being sent, which delays those peers' recovery of their key identifiers."
 
 [[requirement]]
 id = "DC-0002-066"

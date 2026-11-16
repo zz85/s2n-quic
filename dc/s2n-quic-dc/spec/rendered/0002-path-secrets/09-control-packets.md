@@ -14,6 +14,10 @@ An endpoint MUST send its unknown path secret packets at a rate that stays withi
 
 An endpoint MUST keep the unknown path secret packets waiting to be sent within a limit the endpoint configures for all path secrets and senders together, and drop each answer past that limit.
 
+### DC-0002-077 {#DC-0002-077}
+
+An endpoint MUST NOT drop a stale key or replay detected packet waiting to be sent because the unknown path secret packets waiting beside it have reached DC-0002-076's limit.
+
 ### DC-0002-066 {#DC-0002-066}
 
 An endpoint MUST authenticate each stale key and replay detected packet it sends with the control key of the path secret the packet names.

@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/09-control-packets.md#DC-0002-077"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST NOT drop a stale key or replay detected packet waiting to be sent because the unknown path secret packets waiting beside it have reached DC-0002-076's limit."
