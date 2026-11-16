@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/09-control-packets.md#DC-0002-076"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST keep the unknown path secret packets waiting to be sent within a limit the endpoint configures for all path secrets and senders together, and drop each answer past that limit."

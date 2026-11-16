@@ -10,6 +10,10 @@ An endpoint MUST answer packets that name a path secret it doesn't hold with unk
 
 An endpoint MUST send its unknown path secret packets at a rate that stays within a limit the endpoint configures.
 
+### DC-0002-076 {#DC-0002-076}
+
+An endpoint MUST keep the unknown path secret packets waiting to be sent within a limit the endpoint configures for all path secrets and senders together, and drop each answer past that limit.
+
 ### DC-0002-066 {#DC-0002-066}
 
 An endpoint MUST authenticate each stale key and replay detected packet it sends with the control key of the path secret the packet names.

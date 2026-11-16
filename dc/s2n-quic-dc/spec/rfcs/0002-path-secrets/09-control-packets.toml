@@ -19,7 +19,15 @@ level = "MUST"
 polarity = "required"
 binds_to = "system"
 statement = "An endpoint MUST send its unknown path secret packets at a rate that stays within a limit the endpoint configures."
-rationale = "The packets those answers reply to aren't authenticated, so without a bound a sender that forges its source address could make the endpoint send one answer for each packet it sends; the configured limit bounds what the endpoint sends, and a peer that keeps sending still receives an answer once the limit allows one."
+rationale = "The packets those answers reply to aren't authenticated, so without a bound a sender that forges its source address could make the endpoint send one answer for each packet it sends; the configured limit bounds what the endpoint sends, and a peer that keeps sending still receives an answer once the limit allows one. The rate limit doesn't bound the answers the endpoint holds while they wait to be sent: DC-0002-076 does."
+
+[[requirement]]
+id = "DC-0002-076"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "An endpoint MUST keep the unknown path secret packets waiting to be sent within a limit the endpoint configures for all path secrets and senders together, and drop each answer past that limit."
+rationale = "Both the path secret's identifier and the sender of the packet an answer replies to come from a packet the endpoint can't authenticate, so a sender that forges its source address and the identifiers it names makes a new pair for each packet, and DC-0002-072's limit for each pair doesn't bound the total; without this limit, packets that arrive faster than DC-0002-075's rate sends answers would grow the endpoint's memory without a bound. A limit near what that rate sends in a short time keeps the waiting answers fresh, and a peer that keeps sending still receives an answer once one fits."
 
 [[requirement]]
 id = "DC-0002-066"
@@ -75,4 +83,4 @@ level = "SHOULD"
 polarity = "required"
 binds_to = "system"
 statement = "An endpoint SHOULD keep at most one secret control packet waiting to be sent for each path secret and sender it answers, and drop the others."
-rationale = "Control packets answer packets that keep arriving, so a later packet brings a fresh answer, and more than one waiting answer for the same path secret and sender would only add delay and memory."
+rationale = "Control packets answer packets that keep arriving, so a later packet brings a fresh answer, and more than one waiting answer for the same path secret and sender would only add delay. For unknown path secret packets both identifiers come from packets the endpoint can't authenticate, so this limit doesn't bound the endpoint's memory; DC-0002-076 does."
