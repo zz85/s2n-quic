@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/03-binding.md#DC-0005-054"
+
+[[spec]]
+level = "MUST"
+quote = "The reset that answers a frame under DC-0005-020 MUST carry the binding identifier of the frame it answers."

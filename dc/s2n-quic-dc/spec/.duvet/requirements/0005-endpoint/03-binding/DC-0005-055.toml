@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/03-binding.md#DC-0005-055"
+
+[[spec]]
+level = "MUST"
+quote = "A server MUST NOT answer with a reset a frame for a slot that a stream holds, or a frame whose binding identifier isn't newer than the last binding of its free slot."

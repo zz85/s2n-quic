@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/03-binding.md#DC-0005-057"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST NOT carry the stream-not-found error code on a reset other than one that answers a frame under DC-0005-020."

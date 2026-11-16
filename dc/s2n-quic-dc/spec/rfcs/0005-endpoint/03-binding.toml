@@ -3,7 +3,7 @@ anchor = "binding"
 title = "Binding server streams"
 problem = "The first frames of a new stream can reach the server in any order, a reset can arrive before them, and frames can arrive for a stream the server has already closed; a server that built a stream differently for each order would give one stream different settings."
 motivation = "Letting any opening frame bind the stream, with the same settings carried on each, makes the stream the server builds the same in every arrival order, and answering frames for streams that don't exist lets the client stop sending them."
-prose = "A client opens a stream by sending frames marked as opening frames: a data frame, a message frame or a reset. Each opening frame carries the acceptor that is to receive the new stream and the credit tier the stream is to use. The server binds the stream on the first opening frame that arrives; once the server confirms the binding, the client sends later frames without the opening fields."
+prose = "A client opens a stream by sending frames marked as opening frames: a data frame, a message frame or a reset. Each opening frame carries the acceptor that is to receive the new stream and the credit tier the stream is to use. The server binds the stream on the first opening frame that arrives; once the server confirms the binding, the client sends later frames without the opening fields. A frame for a free slot whose binding is newer than any the slot has held, which the server can't bind, is for a stream the server never held: the server answers it with a reset that carries the stream-not-found error code and the frame's binding. A late frame of a stream the server has freed, and a frame of a newer stream that waits for a slot another stream still holds, are dropped without an answer."
 
 [[requirement]]
 id = "DC-0005-017"
@@ -34,7 +34,7 @@ id = "DC-0005-020"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "A server MUST answer a frame for a stream it hasn't bound, and won't bind from that frame, with a reset sent back to the frame's sender."
+statement = "A server MUST answer a frame for a free slot whose binding identifier is newer than the slot's last binding, and that it won't bind from that frame, with a reset sent back to the frame's sender."
 rationale = "The reset tells the client that the stream doesn't exist at the server, so the client stops sending to it and ends the stream for its application."
 
 [[requirement]]
@@ -44,3 +44,43 @@ polarity = "required"
 binds_to = "system"
 statement = "A receiver MUST authenticate a packet whose frames it rejects for their routing before it acknowledges that packet."
 rationale = "Routing fields travel unencrypted, so a corrupted field can send a genuine packet of a live stream to a stream that doesn't exist; acknowledging that packet without authenticating it would stop its retransmission and leave a permanent gap in the live stream."
+
+[[requirement]]
+id = "DC-0005-053"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The reset that answers a frame under DC-0005-020 MUST carry the stream-not-found error code."
+rationale = "The client tells its application why the stream ended, and only a code of its own tells the application that the server never held the stream, so that it opens a new stream instead of waiting on this one."
+
+[[requirement]]
+id = "DC-0005-054"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The reset that answers a frame under DC-0005-020 MUST carry the binding identifier of the frame it answers."
+rationale = "The client delivers a reset to a stream only where its binding matches the stream's slot (DC-0012-036, DC-0012-037), so a reset that answers a late frame of an earlier stream on the same queue is dropped instead of ending the stream that holds the queue now."
+
+[[requirement]]
+id = "DC-0005-055"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A server MUST NOT answer with a reset a frame for a slot that a stream holds, or a frame whose binding identifier isn't newer than the last binding of its free slot."
+rationale = "Such a frame is a late frame of a stream the server has freed or replaced, such as a retransmission that arrives after the server freed the slot, or an early frame of a newer stream that waits for the slot to free; a reset for it could end a stream the client still holds on that queue, while dropping it costs nothing, since a late frame needs no answer and a retransmission of an early frame binds the slot once it is free."
+
+[[requirement]]
+id = "DC-0005-056"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A client MUST NOT answer with a reset a reset that arrives for a stream it doesn't hold."
+rationale = "A client that answered such resets, facing a server that answers frames for unbound streams, would send resets back and forth with the server without end."
+
+[[requirement]]
+id = "DC-0005-057"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "An endpoint MUST NOT carry the stream-not-found error code on a reset other than one that answers a frame under DC-0005-020."
+rationale = "The application reads the stream-not-found code as a stream the server never held (DC-0005-053), so a reset for any other reason that carried it would tell the application to open a new stream for a stream that did exist."
