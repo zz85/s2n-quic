@@ -1,0 +1,5 @@
+target = "rendered/0002-path-secrets/09-control-packets.md#DC-0002-078"
+
+[[spec]]
+level = "MUST"
+quote = "An endpoint MUST keep at most one stale key or replay detected packet waiting to be sent for each path secret and sender it answers."
