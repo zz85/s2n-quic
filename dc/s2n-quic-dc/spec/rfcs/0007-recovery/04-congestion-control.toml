@@ -18,7 +18,7 @@ id = "DC-0007-024"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "Except for data it sends as a fast retransmission or as a probe, the data a sender has sent and not yet seen acknowledged MUST stay within a window that the sender sets from the path's bottleneck bandwidth and minimum round-trip time, as it measures them from the acknowledgements it receives."
+statement = "Except when it sends a fast retransmission or a probe, a sender MUST send a packet that becomes outstanding only where the total size of its outstanding packets whose frames no probe has carried again, that packet included, stays within a window that it sets from the path's bottleneck bandwidth and minimum round-trip time, as it measures them from the acknowledgements it receives."
 rationale = "A model of bandwidth and round trip keeps queues short on a network whose losses are rare and whose round trips are short."
 
 [[requirement]]
