@@ -2,4 +2,4 @@ target = "rendered/0006-streams/05-accepting.md#DC-0006-065"
 
 [[spec]]
 level = "MAY"
-quote = "While streams of a client wait in a receiver's queue, the server MAY shrink that client's grant by keeping freed slots instead of returning them to the client, down to half the grant the client held when its streams began to wait, or further where DC-0006-073 asks."
+quote = "While streams of a client wait in a receiver's queue, the server MAY shrink that client's grant by keeping freed slots that no withdrawal frame names instead of returning them to the client, down to half the grant the client held when its streams began to wait, or further where DC-0006-073 asks."

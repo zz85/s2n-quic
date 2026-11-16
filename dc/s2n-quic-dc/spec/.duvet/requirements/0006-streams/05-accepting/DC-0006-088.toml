@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/05-accepting.md#DC-0006-088"
+
+[[spec]]
+level = "MUST"
+quote = "The server MUST take a slot it has withdrawn out of the client's grant once that slot holds no stream of the client and the client has confirmed the slot's withdrawal or acknowledged a packet that carried a withdrawal frame naming the slot."
