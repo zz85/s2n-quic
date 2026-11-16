@@ -16,7 +16,7 @@ A builder MUST turn each completed buffer into a chunk through its policy.
 
 ### DC-0012-052 {#DC-0012-052}
 
-A tagged buffer MUST count against its owner the bytes it was created with, for as long as it holds them.
+A tagged buffer MUST count against its owner the bytes it holds, for as long as it holds them.
 
 ### DC-0012-053 {#DC-0012-053}
 

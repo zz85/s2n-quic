@@ -2,4 +2,4 @@ target = "rendered/0012-runtime/07-buffers.md#DC-0012-052"
 
 [[spec]]
 level = "MUST"
-quote = "A tagged buffer MUST count against its owner the bytes it was created with, for as long as it holds them."
+quote = "A tagged buffer MUST count against its owner the bytes it holds, for as long as it holds them."

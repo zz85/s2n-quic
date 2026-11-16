@@ -34,7 +34,7 @@ id = "DC-0012-052"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "A tagged buffer MUST count against its owner the bytes it was created with, for as long as it holds them."
+statement = "A tagged buffer MUST count against its owner the bytes it holds, for as long as it holds them."
 rationale = "An operator reads the counts to find which owner holds memory that keeps growing."
 
 [[requirement]]
