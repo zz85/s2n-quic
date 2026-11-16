@@ -50,8 +50,16 @@ id = "DC-0007-027"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "A sender MUST lower its sending rate or its window in response to an increase of the peer's count of packets marked congestion experienced."
-rationale = "Congestion marks show a queue building before it drops packets."
+statement = "A sender MUST lower a limit that caps its window, and that never caps it below the sender's minimum window, within the round trip after one in which the peer's count of packets marked congestion experienced increased, unless at some point in that round trip the sender was starting up, draining the queue its start-up built, probing for more bandwidth, or probing its round-trip time."
+rationale = "Congestion marks show a queue building before it drops packets. The cap falls rather than the window itself, since in some states the window already sits below the cap, and at the minimum window the sender keeps enough data in flight to go on measuring the path. A round trip in which the sender starts up, drains, or probes builds or empties a short queue on purpose, and the sender starts its next phase with fresh congestion signals, so this requirement leaves those round trips out."
+
+[[requirement]]
+id = "DC-0007-043"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "A sender that is starting up MUST end its start-up, in which it raises its sending rate each round trip, after two consecutive round trips in each of which the packets marked congestion experienced, each counted at the path's maximum datagram size, made up more than half of the data delivered."
+rationale = "A sender starting up raises its rate fast, so two round trips in a row with most of the delivered data marked show that it has filled the path, while one such round trip can be a passing burst."
 
 [[requirement]]
 id = "DC-0007-028"

@@ -1,0 +1,5 @@
+target = "rendered/0007-recovery/04-congestion-control.md#DC-0007-043"
+
+[[spec]]
+level = "MUST"
+quote = "A sender that is starting up MUST end its start-up, in which it raises its sending rate each round trip, after two consecutive round trips in each of which the packets marked congestion experienced, each counted at the path's maximum datagram size, made up more than half of the data delivered."

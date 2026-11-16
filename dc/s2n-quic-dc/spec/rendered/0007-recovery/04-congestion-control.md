@@ -24,7 +24,11 @@ A sender MUST respond to a run of consecutive lost packet numbers as it responds
 
 ### DC-0007-027 {#DC-0007-027}
 
-A sender MUST lower its sending rate or its window in response to an increase of the peer's count of packets marked congestion experienced.
+A sender MUST lower a limit that caps its window, and that never caps it below the sender's minimum window, within the round trip after one in which the peer's count of packets marked congestion experienced increased, unless at some point in that round trip the sender was starting up, draining the queue its start-up built, probing for more bandwidth, or probing its round-trip time.
+
+### DC-0007-043 {#DC-0007-043}
+
+A sender that is starting up MUST end its start-up, in which it raises its sending rate each round trip, after two consecutive round trips in each of which the packets marked congestion experienced, each counted at the path's maximum datagram size, made up more than half of the data delivered.
 
 ### DC-0007-028 {#DC-0007-028}
 
