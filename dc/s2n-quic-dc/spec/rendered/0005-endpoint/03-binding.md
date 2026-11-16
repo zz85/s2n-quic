@@ -41,3 +41,7 @@ A client MUST NOT answer with a reset a reset that arrives for a stream it doesn
 ### DC-0005-057 {#DC-0005-057}
 
 An endpoint MUST NOT carry the stream-not-found error code on a reset other than one that answers a frame under DC-0005-020.
+
+### DC-0005-058 {#DC-0005-058}
+
+A client MUST NOT answer with a reset a frame of any kind that arrives for a stream it doesn't hold, a control frame among them.

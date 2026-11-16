@@ -1,0 +1,5 @@
+target = "rendered/0005-endpoint/03-binding.md#DC-0005-058"
+
+[[spec]]
+level = "MUST"
+quote = "A client MUST NOT answer with a reset a frame of any kind that arrives for a stream it doesn't hold, a control frame among them."

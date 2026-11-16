@@ -84,3 +84,11 @@ polarity = "forbidden"
 binds_to = "system"
 statement = "An endpoint MUST NOT carry the stream-not-found error code on a reset other than one that answers a frame under DC-0005-020."
 rationale = "The application reads the stream-not-found code as a stream the server never held (DC-0005-053), so a reset for any other reason that carried it would tell the application to open a new stream for a stream that did exist."
+
+[[requirement]]
+id = "DC-0005-058"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A client MUST NOT answer with a reset a frame of any kind that arrives for a stream it doesn't hold, a control frame among them."
+rationale = "Only the server, which binds streams, answers a frame for a stream it doesn't hold (DC-0005-020); a client that answered such frames with resets, a server's control frame for a queue the client has freed among them, would send resets back and forth with the server without end, as DC-0005-056 says of a reset."
