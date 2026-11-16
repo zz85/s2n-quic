@@ -1,0 +1,5 @@
+target = "rendered/0006-streams/05-accepting.md#DC-0006-086"
+
+[[spec]]
+level = "MUST"
+quote = "The client MUST open again on another granted slot a stream that the server resets with the error of DC-0006-085."

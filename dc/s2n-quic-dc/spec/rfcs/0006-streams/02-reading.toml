@@ -66,8 +66,8 @@ id = "DC-0006-014"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "The read half MUST let the application learn that the peer's write half has ended or failed without consuming the data the read half holds."
-rationale = "An application that is still handling a request can watch for the peer to disappear, and read the remaining data later."
+statement = "Except for a reset with the error of DC-0006-085, the read half MUST let the application learn that the peer's write half has ended or failed without consuming the data the read half holds."
+rationale = "An application that is still handling a request can watch for the peer to disappear, and read the remaining data later. A reset with the error of DC-0006-085 is left out, since the client opens that stream again under DC-0006-086 and the peer hasn't left the exchange."
 
 [[requirement]]
 id = "DC-0006-015"

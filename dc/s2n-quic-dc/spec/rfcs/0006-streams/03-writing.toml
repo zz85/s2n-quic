@@ -66,8 +66,8 @@ id = "DC-0006-023"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "The write half MUST let the application learn, without writing, that the peer has stopped reading, has reset the stream, or can't be reached."
-rationale = "A producer that is still gathering data can stop as soon as the peer is gone, instead of finding out at its next write."
+statement = "Except for a reset with the error of DC-0006-085, the write half MUST let the application learn, without writing, that the peer has stopped reading, has reset the stream, or can't be reached."
+rationale = "A producer that is still gathering data can stop as soon as the peer is gone, instead of finding out at its next write. A reset with the error of DC-0006-085 is left out, since the client opens that stream again under DC-0006-086 and the peer isn't gone."
 
 [[requirement]]
 id = "DC-0006-024"

@@ -28,7 +28,7 @@ Until the server confirms a stream, each write of the client MUST carry the stre
 
 ### DC-0006-035 {#DC-0006-035}
 
-The client MUST report the server's rejection of a stream as an error of a later read or write on that stream.
+Except for a reset with the error of DC-0006-085, the client MUST report the server's rejection of a stream as an error of a later read or write on that stream.
 
 ### DC-0006-036 {#DC-0006-036}
 

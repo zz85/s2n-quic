@@ -58,8 +58,8 @@ id = "DC-0006-035"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "The client MUST report the server's rejection of a stream as an error of a later read or write on that stream."
-rationale = "Opening doesn't wait for the server, so the rejection can only reach the application through the stream itself."
+statement = "Except for a reset with the error of DC-0006-085, the client MUST report the server's rejection of a stream as an error of a later read or write on that stream."
+rationale = "Opening doesn't wait for the server, so the rejection can only reach the application through the stream itself. A reset with the error of DC-0006-085 is left out: DC-0006-086 has the client open that stream again on another granted slot, so the application doesn't see a failure it didn't cause."
 
 [[requirement]]
 id = "DC-0006-036"

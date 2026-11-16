@@ -2,4 +2,4 @@ target = "rendered/0006-streams/04-opening.md#DC-0006-035"
 
 [[spec]]
 level = "MUST"
-quote = "The client MUST report the server's rejection of a stream as an error of a later read or write on that stream."
+quote = "Except for a reset with the error of DC-0006-085, the client MUST report the server's rejection of a stream as an error of a later read or write on that stream."

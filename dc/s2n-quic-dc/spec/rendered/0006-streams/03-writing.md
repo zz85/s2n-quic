@@ -32,7 +32,7 @@ After the write half has sent the end-of-stream signal or has been shut down, it
 
 ### DC-0006-023 {#DC-0006-023}
 
-The write half MUST let the application learn, without writing, that the peer has stopped reading, has reset the stream, or can't be reached.
+Except for a reset with the error of DC-0006-085, the write half MUST let the application learn, without writing, that the peer has stopped reading, has reset the stream, or can't be reached.
 
 ### DC-0006-024 {#DC-0006-024}
 

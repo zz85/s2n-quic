@@ -32,7 +32,7 @@ Where the read half is dropped while the application is failing abnormally, it M
 
 ### DC-0006-014 {#DC-0006-014}
 
-The read half MUST let the application learn that the peer's write half has ended or failed without consuming the data the read half holds.
+Except for a reset with the error of DC-0006-085, the read half MUST let the application learn that the peer's write half has ended or failed without consuming the data the read half holds.
 
 ### DC-0006-015 {#DC-0006-015}
 
