@@ -3,7 +3,7 @@ anchor = "admission"
 title = "Admission by credit"
 problem = "Storage operations run on a bounded set of execution slots. When submitters take slots before they know that the device can accept their work, blocked slots can wait on work that never gets a slot, and the system deadlocks."
 motivation = "Gating each operation on credit from the device's budget before it takes any execution slot bounds admitted work by the budget, and a submitter that waits for credit holds no slot, so the hold-and-wait cycle cannot form. Priority tiers let latency-sensitive reads go ahead of background writes."
-prose = "Each device holds one or two credit pools whose capacity is the device's queue depth. An operation's cost, in credits, is taken from a pool before the operation enters the device's execution pipeline and is returned when the operation completes. A submitter that finds the pool short of credit waits without holding a thread or an execution slot. Each operation carries a priority tier. A device's configuration also holds a rate ceiling, in operations or in bytes per second, which this version stores and doesn't yet apply to admission."
+prose = "Each device holds one or two credit pools. A pool's capacity starts at the capacity the device's configuration sets for it, the device's queue depth, and changes at run time from the device's answers. A would-block answer, such as EAGAIN, says that the device can't take an operation now; it halves the capacity of the pool the operation drew from, and the would-block answers to operations that pool granted before that decrease don't lower it again. A clean completion is the completion of an operation that the device took without a would-block answer and that returns its credit while a submitter waits for credit from the same pool. A run of clean completions ends once their costs add up to the pool's capacity at the start of the run, and raises the capacity by one operation's cost; a would-block answer or a raise starts a new run. A decrease never takes the capacity below the cost of an operation that waits for the pool's credit, an operation whose cost is higher than the capacity raises the capacity to its cost as it begins to wait, and only an upper bound that the configuration sets stops the capacity from rising. Each change of the capacity changes the pool's free credit by the same amount, so a lower capacity takes its difference back from the credit that completing operations return, and never from an operation that holds credit. Where this RFC says a pool's capacity, it means its current capacity, and the configured capacity is the value it starts at. An operation's cost, in credits, is taken from a pool before the operation enters the device's execution pipeline and is returned when the operation completes. A submitter that finds the pool short of credit waits without holding a thread or an execution slot. Each operation carries a priority tier. A device's configuration also holds a rate ceiling, in operations or in bytes per second, which this version stores and doesn't yet apply to admission."
 
 [[requirement]]
 id = "DC-0011-005"
@@ -68,3 +68,67 @@ polarity = "required"
 binds_to = "system"
 statement = "The device MUST keep its configured rate ceiling, in operations or in bytes per second, with its configuration."
 rationale = "The rate ceiling is part of a device's configuration, so a later version can pace admission by it without a change to how devices are configured."
+
+[[requirement]]
+id = "DC-0011-045"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The device MUST start each pool's capacity at the capacity the device's configuration sets for that pool."
+rationale = "The configured queue depth is the operator's first estimate of how much work the device takes at once, and the pool discovers the device's real depth from there."
+
+[[requirement]]
+id = "DC-0011-046"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "On a would-block answer to an operation, the device MUST lower the capacity of the pool the operation drew from to half its value, rounded up, or to the largest cost among the operations waiting for that pool's credit where that cost is higher."
+rationale = "A would-block answer shows that the device holds more work than it can take, so halving the capacity backs off at once, while every waiting operation can still be granted its whole cost."
+
+[[requirement]]
+id = "DC-0011-047"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "The device MUST NOT lower a pool's capacity for a would-block answer to an operation that the pool granted before its last decrease."
+rationale = "Operations granted before a decrease were admitted under the old capacity, so their would-block answers report the overload that decrease already answered, and counting each one would collapse the capacity."
+
+[[requirement]]
+id = "DC-0011-048"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "When an operation whose cost is higher than its pool's capacity begins to wait for the pool's credit, the device MUST raise the pool's capacity to that operation's cost."
+rationale = "An operation is granted its whole cost or nothing, so an operation that waits on a pool whose capacity is below its cost would never be granted; DC-0011-022 keeps the cost within the pool's configured capacity, and DC-0011-050 keeps any upper bound at or above that capacity, so the raise never passes the upper bound."
+
+[[requirement]]
+id = "DC-0011-049"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "After each run of clean completions from a pool, the device MUST raise that pool's capacity by the cost of the operation whose completion ends the run, up to the upper bound the device's configuration sets for the pool where it sets one."
+rationale = "A small, steady raise while submitters wait finds the device's real depth from its own answers, without a limit that the device chooses for itself, and only an operator's configured bound stops it."
+
+[[requirement]]
+id = "DC-0011-050"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The registry MUST refuse, with an invalid-input error, to create a device whose configuration sets an upper bound for a pool's capacity below that pool's configured capacity."
+rationale = "A pool starts at its configured capacity, so an upper bound below it contradicts the configuration that sets both."
+
+[[requirement]]
+id = "DC-0011-051"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The device MUST change a pool's free credit by the same amount as each change of the pool's capacity."
+rationale = "A matching change keeps the pool's credit adding up to its capacity, as DC-0008-026 requires, so a lower capacity takes its difference back from the credit that completing operations return."
+
+[[requirement]]
+id = "DC-0011-052"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "A decrease of a pool's capacity MUST NOT take credit from an operation that holds it."
+rationale = "An operation that holds its credit may already be running on the device, so taking its credit would leave work running that the pool no longer counts."

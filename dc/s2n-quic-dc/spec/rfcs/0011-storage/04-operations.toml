@@ -34,8 +34,8 @@ id = "DC-0011-022"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "The device MUST reject, with an invalid-input error and before it acquires any credit, an operation whose cost exceeds the capacity of the pool it draws from."
-rationale = "Such an operation could never be granted its whole cost, so it would wait forever."
+statement = "The device MUST reject, with an invalid-input error and before it acquires any credit, an operation whose cost exceeds the configured capacity of the pool it draws from."
+rationale = "Such an operation would raise its pool's capacity above the depth its device was configured for, and a check against the configured capacity answers the same operation the same way whatever the pool's capacity is at the time."
 
 [[requirement]]
 id = "DC-0011-023"

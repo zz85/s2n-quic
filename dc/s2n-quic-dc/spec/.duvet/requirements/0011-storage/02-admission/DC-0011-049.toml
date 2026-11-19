@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/02-admission.md#DC-0011-049"
+
+[[spec]]
+level = "MUST"
+quote = "After each run of clean completions from a pool, the device MUST raise that pool's capacity by the cost of the operation whose completion ends the run, up to the upper bound the device's configuration sets for the pool where it sets one."

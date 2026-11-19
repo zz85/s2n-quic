@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/02-admission.md#DC-0011-047"
+
+[[spec]]
+level = "MUST"
+quote = "The device MUST NOT lower a pool's capacity for a would-block answer to an operation that the pool granted before its last decrease."

@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/02-admission.md#DC-0011-046"
+
+[[spec]]
+level = "MUST"
+quote = "On a would-block answer to an operation, the device MUST lower the capacity of the pool the operation drew from to half its value, rounded up, or to the largest cost among the operations waiting for that pool's credit where that cost is higher."

@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/02-admission.md#DC-0011-052"
+
+[[spec]]
+level = "MUST"
+quote = "A decrease of a pool's capacity MUST NOT take credit from an operation that holds it."

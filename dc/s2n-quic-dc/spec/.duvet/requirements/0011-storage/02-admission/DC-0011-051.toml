@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/02-admission.md#DC-0011-051"
+
+[[spec]]
+level = "MUST"
+quote = "The device MUST change a pool's free credit by the same amount as each change of the pool's capacity."

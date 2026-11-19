@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/02-admission.md#DC-0011-050"
+
+[[spec]]
+level = "MUST"
+quote = "The registry MUST refuse, with an invalid-input error, to create a device whose configuration sets an upper bound for a pool's capacity below that pool's configured capacity."

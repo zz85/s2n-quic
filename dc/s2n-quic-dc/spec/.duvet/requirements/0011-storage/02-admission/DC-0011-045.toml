@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/02-admission.md#DC-0011-045"
+
+[[spec]]
+level = "MUST"
+quote = "The device MUST start each pool's capacity at the capacity the device's configuration sets for that pool."

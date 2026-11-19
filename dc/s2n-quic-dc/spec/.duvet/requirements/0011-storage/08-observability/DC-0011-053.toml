@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/08-observability.md#DC-0011-053"
+
+[[spec]]
+level = "MUST"
+quote = "The device MUST report the current capacity of each of its pools."
