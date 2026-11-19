@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/02-admission.md#DC-0011-056"
+
+[[spec]]
+level = "MUST"
+quote = "After the device starts a pool's capacity at its configured capacity, the device MUST change the capacity only as DC-0011-046, DC-0011-048, DC-0011-054 and DC-0011-055 require."

@@ -14,10 +14,6 @@ The device MUST reject, with an invalid-input error and before it acquires any c
 
 The device MUST reject, with an invalid-input error and before it acquires any credit, a direct operation whose offset or length is not a multiple of the direct alignment of 4096 bytes.
 
-### DC-0011-022 {#DC-0011-022}
-
-Where the device's configuration sets an upper bound for the capacity of the pool an operation draws from, the device MUST reject, with an invalid-input error and before it acquires any credit, an operation whose cost exceeds that upper bound.
-
 ### DC-0011-023 {#DC-0011-023}
 
 A buffered read that reaches the end of the file MUST complete with the number of bytes it read, which can be fewer than its length.

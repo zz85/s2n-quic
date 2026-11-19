@@ -1,5 +1,0 @@
-target = "rendered/0011-storage/04-operations.md#DC-0011-022"
-
-[[spec]]
-level = "MUST"
-quote = "Where the device's configuration sets an upper bound for the capacity of the pool an operation draws from, the device MUST reject, with an invalid-input error and before it acquires any credit, an operation whose cost exceeds that upper bound."
