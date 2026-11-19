@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/02-admission.md#DC-0011-069"
+
+[[spec]]
+level = "MUST"
+quote = "When the device answers would-block to an operation that DC-0011-057 granted alone and that operation waits for its pool's credit again, the device MUST grant it after each operation of its priority tier that waited for that pool's credit when that answer came."

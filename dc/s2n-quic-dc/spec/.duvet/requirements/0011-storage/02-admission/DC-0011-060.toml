@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/02-admission.md#DC-0011-060"
+
+[[spec]]
+level = "MUST"
+quote = "The device MUST NOT allocate the buffer of a buffered operation before the operation's pool grants its credit."

@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/02-admission.md#DC-0011-064"
+
+[[spec]]
+level = "MUST"
+quote = "When an operation whose cost is higher than its pool's shown capacity is at the front of the pool, no other operation holds credit from that pool and no operation of a higher priority tier waits for that pool's credit, the device MUST grant that operation its whole cost, though its cost is higher than the pool's free credit, without changing the pool's capacity."

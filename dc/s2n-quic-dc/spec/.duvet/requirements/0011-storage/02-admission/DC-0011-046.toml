@@ -2,4 +2,4 @@ target = "rendered/0011-storage/02-admission.md#DC-0011-046"
 
 [[spec]]
 level = "MUST"
-quote = "On a would-block answer to an operation, the device MUST lower the capacity of the pool the operation drew from to half its value, rounded up, or to the largest cost among the operations waiting for that pool's credit where that cost is higher."
+quote = "On a would-block answer to an operation, the device MUST lower the capacity of the pool the operation drew from to half its value, rounded up, or to the largest cost among the operations waiting for that pool's credit where that cost is higher, leaving out each operation whose cost is higher than the pool's shown capacity as DC-0011-062 lowers it at that answer."

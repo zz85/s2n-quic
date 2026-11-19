@@ -2,4 +2,4 @@ target = "rendered/0011-storage/02-admission.md#DC-0011-048"
 
 [[spec]]
 level = "MUST"
-quote = "When an operation whose cost is higher than its pool's capacity begins to wait for the pool's credit, the device MUST raise the pool's capacity to that operation's cost."
+quote = "When an operation whose cost is higher than its pool's capacity, and not higher than its pool's shown capacity, begins to wait for the pool's credit, the device MUST raise the pool's capacity to that operation's cost."

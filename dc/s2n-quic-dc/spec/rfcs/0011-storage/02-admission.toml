@@ -3,7 +3,7 @@ anchor = "admission"
 title = "Admission by credit"
 problem = "Storage operations run on a bounded set of execution slots. When submitters take slots before they know that the device can accept their work, blocked slots can wait on work that never gets a slot, and the system deadlocks."
 motivation = "Gating each operation on credit from the device's budget before it takes any execution slot bounds admitted work by the budget, and a submitter that waits for credit holds no slot, so the hold-and-wait cycle cannot form. Priority tiers let latency-sensitive reads go ahead of background writes."
-prose = "Each device holds one or two credit pools. A pool's capacity starts at the capacity the device's configuration sets for it, the device's queue depth, and changes at run time from the device's answers. A would-block answer, such as EAGAIN, says that the device can't take an operation now; it halves the capacity of the pool the operation drew from, and the would-block answers to operations that pool granted before that decrease don't lower it again. A clean completion is the completion of an operation that the device took without a would-block answer and that returns its credit while a submitter waits for credit from the same pool. A pool's first run of clean completions begins when its device is created, and a new run begins at each would-block answer to an operation that drew from the pool, at each raise of the pool's capacity and at the end of the run before it. A run ends at the clean completion that brings the summed cost of the run's clean completions to at least the capacity the pool had when the run began, and that completion raises the capacity by its operation's cost. The capacity the pool had when a run began is the capacity as the event that began the run leaves it, after any decrease or raise that event makes, so a run that begins at a raise from 8 to 12 ends at the clean completion that brings its summed cost to at least 12, and a run that begins at a would-block answer that halves the capacity from 8 to 4 ends at the one that brings it to at least 4. A run's completion time is the longest time from the pool's grant of an operation's credit to that operation's completion among the operations of the run's clean completions, and a pool's last decrease is the latest lowering of its capacity, or the device's creation where the device hasn't lowered it yet. A run whose clean completions are all of operations that the pool granted after its last decrease, and whose completion time is at least twice the shortest completion time above zero among the pool's earlier runs of that kind since that decrease, shows the device's completion latency rising: the completion that ends that run halves the capacity, as a would-block answer does, instead of raising it. A decrease never takes the capacity below the cost of an operation that waits for the pool's credit, and an operation whose cost is higher than the capacity raises the capacity to its cost as it begins to wait. A device's configuration doesn't set an upper bound on a pool's capacity: only the device's answers stop the capacity from rising. Each change of the capacity changes the pool's free credit by the same amount, so a lower capacity takes its difference back from the credit that completing operations return, and never from an operation that holds credit. Where this RFC says a pool's capacity, it means its current capacity, and the configured capacity is the value it starts at. An operation's cost, in credits, is taken from a pool before the operation enters the device's execution pipeline and is returned when the operation completes. A submitter that finds the pool short of credit waits without holding a thread or an execution slot. Each operation carries a priority tier. A device's configuration doesn't hold a rate, in operations or in bytes per second: the work admitted to a device is bounded by its pools' capacities, which the device's answers set."
+prose = "Each device holds one or two credit pools. A pool's capacity starts at the capacity the device's configuration sets for it, the device's queue depth, and changes at run time from the device's answers. A would-block answer, such as EAGAIN, says that the device can't take an operation now; it halves the capacity of the pool the operation drew from, and the would-block answers to operations that pool granted before that decrease don't lower it again. A clean completion is the completion of an operation that the device took without a would-block answer, that the pool didn't grant alone for its cost, and that returns its credit while a submitter waits for credit from the same pool. A pool's first run of clean completions begins when its device is created, and a new run begins at each would-block answer to an operation that drew from the pool, at each raise of the pool's capacity and at the end of the run before it. A run ends at the clean completion that brings the summed cost of the run's clean completions to at least the capacity the pool had when the run began, and that completion raises the capacity by its operation's cost. The capacity the pool had when a run began is the capacity as the event that began the run leaves it, after any decrease or raise that event makes, so a run that begins at a raise from 8 to 12 ends at the clean completion that brings its summed cost to at least 12, and a run that begins at a would-block answer that halves the capacity from 8 to 4 ends at the one that brings it to at least 4. A run's completion time is the longest time from the pool's grant of an operation's credit to that operation's completion among the operations of the run's clean completions, and a pool's last decrease is the latest lowering of its capacity or of its shown capacity, or the device's creation where the device hasn't lowered either yet. A run whose clean completions are all of operations that the pool granted after its last decrease, and whose completion time is at least twice the shortest completion time above zero among the pool's earlier runs of that kind since that decrease, shows the device's completion latency rising: the completion that ends that run halves the capacity, as a would-block answer does, instead of raising it. An operation that waits for a pool's credit is at the front of the pool when no operation of its priority tier or of a higher tier that began to wait before it still waits. A pool's shown capacity is the most work the device has shown that it takes from the pool at once: it starts at the configured capacity; at each raise at the end of a run, it rises to the capacity that raise leaves the pool at or to twice its value, whichever is lower; at the completion of each operation that the pool granted alone for its cost and that the device took without a would-block answer, it rises to that operation's cost or to twice its value, whichever is lower; and each would-block answer to an operation that the pool granted after its last decrease, and each run whose completion latency rises, halves it, rounded up, whether or not the capacity falls. So the shown capacity at most doubles at each clean answer and falls at each sign of congestion, and it follows the device's current answers rather than one past answer. A decrease never takes the capacity below the cost of an operation that waits for the pool's credit and whose cost isn't higher than the shown capacity as that decrease leaves it. An operation whose cost is higher than the capacity, and not higher than the shown capacity, raises the capacity to its cost as it begins to wait. An operation whose cost is higher than the shown capacity doesn't change the capacity: once it is at the front, no other operation holds the pool's credit and no operation of a higher tier waits, the pool grants it its whole cost alone, which takes the pool's free credit below zero, and the pool grants nothing else until that operation returns its credit. While it waits at the front, the pool doesn't grant an operation of its tier or a lower tier, and grants an operation of a higher tier only within the shown capacity; where the device answers it would-block and it waits again, it waits behind the operations of its tier that waited when that answer came. The device doesn't reject an operation for its cost. A buffered operation's buffer is allocated only once the pool grants the operation's credit. A device's configuration doesn't set an upper bound on a pool's capacity: only the device's answers stop the capacity from rising. Each change of the capacity changes the pool's free credit by the same amount, so a lower capacity takes its difference back from the credit that completing operations return, and never from an operation that holds credit. Where this RFC says a pool's capacity, it means its current capacity, and the configured capacity is the value it starts at. An operation's cost, in credits, is taken from a pool before the operation enters the device's execution pipeline and is returned when the operation completes. A submitter that finds the pool short of credit waits without holding a thread or an execution slot. Each operation carries a priority tier. A device's configuration doesn't hold a rate, in operations or in bytes per second: the work admitted to a device is bounded by its pools' capacities, which the device's answers set."
 
 [[requirement]]
 id = "DC-0011-005"
@@ -74,8 +74,8 @@ id = "DC-0011-046"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "On a would-block answer to an operation, the device MUST lower the capacity of the pool the operation drew from to half its value, rounded up, or to the largest cost among the operations waiting for that pool's credit where that cost is higher."
-rationale = "A would-block answer shows that the device holds more work than it can take, so halving the capacity backs off at once, while every waiting operation can still be granted its whole cost."
+statement = "On a would-block answer to an operation, the device MUST lower the capacity of the pool the operation drew from to half its value, rounded up, or to the largest cost among the operations waiting for that pool's credit where that cost is higher, leaving out each operation whose cost is higher than the pool's shown capacity as DC-0011-062 lowers it at that answer."
+rationale = "A would-block answer shows that the device holds more work than it can take, so halving the capacity backs off at once, while every waiting operation within the shown capacity can still be granted its whole cost. An operation whose cost is higher than the shown capacity is granted alone without the capacity, as DC-0011-064 says, so it doesn't hold the capacity up, and the answer to it lowers the capacity as an answer to any other operation does."
 
 [[requirement]]
 id = "DC-0011-047"
@@ -90,8 +90,112 @@ id = "DC-0011-048"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "When an operation whose cost is higher than its pool's capacity begins to wait for the pool's credit, the device MUST raise the pool's capacity to that operation's cost."
-rationale = "An operation is granted its whole cost or nothing, so an operation that waits on a pool whose capacity is below its cost would never be granted, and the device's configuration doesn't set an upper bound on the capacity that the raise could pass."
+statement = "When an operation whose cost is higher than its pool's capacity, and not higher than its pool's shown capacity, begins to wait for the pool's credit, the device MUST raise the pool's capacity to that operation's cost."
+rationale = "An operation is granted its whole cost or nothing, so an operation that waits on a pool whose capacity is below its cost would never be granted. The device has shown that it takes that much work from the pool at once, so the raise doesn't put more work on the device than its answers support. An operation whose cost is higher than the shown capacity doesn't raise the capacity: DC-0011-064 grants it alone without that credit, so no operation granted beside it or after it spends credit raised for it."
+
+[[requirement]]
+id = "DC-0011-057"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The device MUST grant an operation whose cost is higher than its pool's shown capacity only while no other operation holds credit from that pool."
+rationale = "An operation's cost bounds the credit it holds and, for a buffered operation, the buffer it fills, so an operation whose cost passes the most the device has shown that it takes would, beside other work, hold the device deeper than any answer of the device has supported. Granting it alone keeps the device's work to that one operation while it runs. The operation waits for its pool rather than being refused at a value the pool holds now, so the work is kept, and the device's clean answer to it raises how much the pool takes at once, within the bound that DC-0011-058 sets."
+
+[[requirement]]
+id = "DC-0011-058"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "When an operation that DC-0011-057 granted alone completes and the device took it without a would-block answer, the device MUST raise its pool's shown capacity to that operation's cost or to twice the shown capacity, whichever is lower."
+rationale = "The device took the whole operation at once, so it has shown that it takes that much work from the pool, but that is one answer to one operation. Raising the shown capacity to the operation's cost at once would let one caller's single large operation set, for good, how much work runs beside other work, and with it how much credit DC-0011-048 and DC-0011-051 raise for that work and how many buffers DC-0011-060 lets the pool hold at once. Raising it at most twofold for each such answer lets the bound grow quickly while the device's answers stay clean, and an operation whose cost passes the raised value runs alone again until the shown capacity reaches its cost. A pool that never has a waiter doesn't make a clean completion, so DC-0011-055 never raises its capacity, and without this raise its shown capacity would stay at the configured capacity and every operation above it would wait to run alone for good. The raise leaves the capacity as it is: the operation's completion isn't a clean completion, so it doesn't count toward a run of DC-0011-054 or DC-0011-055, and the capacity stays where the device's answers to work run beside other work set it. A would-block answer to the operation halves the shown capacity, as DC-0011-062 says, and the capacity, as DC-0011-046 says."
+
+[[requirement]]
+id = "DC-0011-059"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "The device MUST NOT reject an operation because its cost is higher than its pool's capacity or its pool's shown capacity."
+rationale = "An operation that waits for its pool is granted in time, alone where DC-0011-057 says, so a reject at a value the pool holds now would refuse work that the device may take; only the device's answers stop the capacity from rising. Splitting the operation instead would break the single whole-cost grant that DC-0011-007 requires, and would change what one completion reports, such as the bytes a buffered read returns, so the device keeps the operation whole."
+
+[[requirement]]
+id = "DC-0011-060"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "The device MUST NOT allocate the buffer of a buffered operation before the operation's pool grants its credit."
+rationale = "A buffered operation's buffer is as large as its length, so allocating it only at the grant bounds the buffers held at once by the credit that the pool grants, and an operation that waits for credit doesn't hold any buffer."
+
+[[requirement]]
+id = "DC-0011-061"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "While an operation whose cost is higher than its pool's shown capacity waits at the front of that pool, the device MUST NOT grant an operation of its priority tier or of a lower tier from that pool."
+rationale = "Without this rule, the operations behind it would be granted as credit returns, and the pool might never empty for DC-0011-064 to grant it alone. The hold starts only at the front, once every operation of its tier and of the higher tiers that began to wait before it is granted, so it delays only work that began to wait after it or that DC-0011-010 orders after it. It holds the operation's own tier and the lower tiers, and not the higher ones, which DC-0011-065 lets go first within the shown capacity, so one submitter's large operation doesn't stop latency-sensitive work. Two such operations don't hold each other: only one operation of a tier is at the front, and between two tiers the higher one holds the lower one. The wait ends once the operations that hold credit complete; work of a higher tier can delay it, as DC-0011-010 lets that work go first."
+
+[[requirement]]
+id = "DC-0011-062"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "At each would-block answer to an operation that its pool granted after the pool's last decrease, and at each completion at which DC-0011-054 requires a decrease, the device MUST lower the pool's shown capacity to half its value, rounded up, whether or not the pool's capacity falls."
+rationale = "A would-block answer, or a run whose completion latency rises, shows that the device takes less work at once than it did, so the most work that it has shown that it takes falls at each such answer. It falls whether or not the capacity does, since the waiting operations that DC-0011-046 and DC-0011-054 keep within the capacity can hold the capacity where it is, and an operation above the shown capacity, which DC-0011-064 grants alone, would otherwise be granted again at once to a pool that its answer didn't change. A lowering of the shown capacity is a decrease for DC-0011-047, so the answers to the operations that the pool granted before it don't halve it again. Without this decrease, one past answer would keep operations up to that size running beside other work after the device signals congestion, and the credit that DC-0011-048 and DC-0011-051 raise for them would hold the device deeper than its current answers support. The shown capacity can fall below the configured capacity, as the capacity can, and an operation above it then runs alone until clean answers raise it again."
+
+[[requirement]]
+id = "DC-0011-063"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "When a clean completion raises a pool's capacity as DC-0011-055 requires, the device MUST raise the pool's shown capacity to the capacity that raise leaves the pool at or to twice the shown capacity, whichever is lower, where that is higher than the shown capacity."
+rationale = "A run's end shows that the device took the run's work cleanly while submitters waited, so the shown capacity follows the capacity that the raise leaves. Bounding the rise at twice the shown capacity keeps one run from raising it past what the device has taken beside other work. An operation that DC-0011-064 granted alone doesn't end a run, since its completion isn't a clean completion, so its single completion doesn't raise the shown capacity here; DC-0011-058 raises it for that completion."
+
+[[requirement]]
+id = "DC-0011-064"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "When an operation whose cost is higher than its pool's shown capacity is at the front of the pool, no other operation holds credit from that pool and no operation of a higher priority tier waits for that pool's credit, the device MUST grant that operation its whole cost, though its cost is higher than the pool's free credit, without changing the pool's capacity."
+rationale = "An operation is granted its whole cost or nothing, so an operation whose cost is higher than the capacity would never be granted from the free credit alone. Granting it while no other operation holds credit takes the pool's free credit below zero and keeps the capacity where the device's answers set it, so once the operation leaves the pool, whether it completes, fails, is cancelled or is answered would-block, no credit raised for it remains to admit other work. The free credit stays below zero until the operation returns its cost, as DC-0011-011 says, and DC-0011-066 keeps other work off the pool while it runs, so this one operation is the only work admitted past the pool's capacity, and DC-0011-005 still holds, since the operation holds its whole cost before it enters the execution pipeline. A waiting operation of a higher tier goes first, as DC-0011-010 and DC-0011-061 say, so where operations of two tiers wait at the front, the higher one is granted first and the lower one once the higher one returns its credit."
+
+[[requirement]]
+id = "DC-0011-065"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "While an operation whose cost is higher than its pool's shown capacity waits at the front of that pool, the device MUST grant an operation of a higher priority tier whose cost isn't higher than the shown capacity only while the credit that operations hold from the pool, with that operation's cost, is at most the shown capacity."
+rationale = "A higher tier goes first, as DC-0011-010 says, so the hold of DC-0011-061 doesn't let one submitter of a lower tier stop latency-sensitive work. Granting that work only within the shown capacity keeps the device to the work it has shown that it takes, and that work's credit returns as it completes, so the pool empties for DC-0011-064 to grant the waiting operation alone. An operation of a higher tier whose cost is higher than the shown capacity is granted alone, as DC-0011-057 says."
+
+[[requirement]]
+id = "DC-0011-066"
+level = "MUST"
+polarity = "forbidden"
+binds_to = "system"
+statement = "While an operation that DC-0011-064 granted holds credit from its pool, the device MUST NOT grant another operation from that pool."
+rationale = "The operation's cost is higher than the most the device has shown that it takes from the pool at once, so any work beside it would hold the device deeper than its answers support. Its credit returns once, when it completes, fails or is cancelled, as DC-0011-011 says, and the pool grants again from then."
+
+[[requirement]]
+id = "DC-0011-067"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "The device MUST start each pool's shown capacity at the capacity the device's configuration sets for that pool."
+rationale = "Before the device answers any operation, the configured capacity is the most work it is known to take from the pool at once, so an operation whose cost is at most the configured capacity runs beside other work from the start."
+
+[[requirement]]
+id = "DC-0011-068"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "After the device starts a pool's shown capacity at its configured capacity, the device MUST change the shown capacity only as DC-0011-058, DC-0011-062 and DC-0011-063 require."
+rationale = "The shown capacity rises only from the device's clean answers and falls at each sign of congestion, as DC-0011-062 says, so the work that an operation above it runs beside is bounded by what the device's current answers support."
+
+[[requirement]]
+id = "DC-0011-069"
+level = "MUST"
+polarity = "required"
+binds_to = "system"
+statement = "When the device answers would-block to an operation that DC-0011-057 granted alone and that operation waits for its pool's credit again, the device MUST grant it after each operation of its priority tier that waited for that pool's credit when that answer came."
+rationale = "Without this rule, an operation that the device answered would-block could come back to the front ahead of the operations its hold delayed, and hold the pool again on each try; waiting behind them lets the work it delayed go first. A would-block answer halves the shown capacity, as DC-0011-062 says, so the operation still runs alone when it reaches the front again."
 
 [[requirement]]
 id = "DC-0011-055"
@@ -130,5 +234,5 @@ id = "DC-0011-054"
 level = "MUST"
 polarity = "required"
 binds_to = "system"
-statement = "When a run of a pool's clean completions ends, its clean completions are all of operations that the pool granted after its last decrease, and its completion time is at least twice the shortest completion time above zero among the pool's earlier runs since that decrease whose clean completions are all of such operations, the device MUST lower the pool's capacity, at the completion that ends the run, to half its value, rounded up, or to the largest cost among the operations waiting for that pool's credit where that cost is higher."
+statement = "When a run of a pool's clean completions ends, its clean completions are all of operations that the pool granted after its last decrease, and its completion time is at least twice the shortest completion time above zero among the pool's earlier runs since that decrease whose clean completions are all of such operations, the device MUST lower the pool's capacity, at the completion that ends the run, to half its value, rounded up, or to the largest cost among the operations waiting for that pool's credit where that cost is higher, leaving out each operation whose cost is higher than the pool's shown capacity as DC-0011-062 lowers it at that completion."
 rationale = "An operation's time from its grant to its completion is the time the device takes to complete it, its queueing in the device included, and it doesn't depend on when submitters arrive, so a run whose slowest operation takes twice as long as the slowest operation of the pool's fastest run since its last decrease shows the device's completion latency rising, which signals congestion as a would-block answer does; lowering the capacity then keeps a device that queues work without refusing it from holding a deep queue. The shortest completion time starts again at each decrease, so the device's own answers set the threshold rather than a fixed latency, and a completion time of zero, as a coarse clock can measure, doesn't set it, so that it doesn't make every later run meet the threshold."

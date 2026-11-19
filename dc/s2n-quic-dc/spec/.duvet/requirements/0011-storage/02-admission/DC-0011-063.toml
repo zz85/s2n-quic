@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/02-admission.md#DC-0011-063"
+
+[[spec]]
+level = "MUST"
+quote = "When a clean completion raises a pool's capacity as DC-0011-055 requires, the device MUST raise the pool's shown capacity to the capacity that raise leaves the pool at or to twice the shown capacity, whichever is lower, where that is higher than the shown capacity."

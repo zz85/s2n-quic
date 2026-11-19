@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/02-admission.md#DC-0011-062"
+
+[[spec]]
+level = "MUST"
+quote = "At each would-block answer to an operation that its pool granted after the pool's last decrease, and at each completion at which DC-0011-054 requires a decrease, the device MUST lower the pool's shown capacity to half its value, rounded up, whether or not the pool's capacity falls."

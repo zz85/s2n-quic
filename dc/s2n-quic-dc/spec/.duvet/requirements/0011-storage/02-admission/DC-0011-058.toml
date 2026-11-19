@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/02-admission.md#DC-0011-058"
+
+[[spec]]
+level = "MUST"
+quote = "When an operation that DC-0011-057 granted alone completes and the device took it without a would-block answer, the device MUST raise its pool's shown capacity to that operation's cost or to twice the shown capacity, whichever is lower."

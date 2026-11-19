@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/02-admission.md#DC-0011-066"
+
+[[spec]]
+level = "MUST"
+quote = "While an operation that DC-0011-064 granted holds credit from its pool, the device MUST NOT grant another operation from that pool."

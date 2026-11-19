@@ -1,0 +1,5 @@
+target = "rendered/0011-storage/02-admission.md#DC-0011-057"
+
+[[spec]]
+level = "MUST"
+quote = "The device MUST grant an operation whose cost is higher than its pool's shown capacity only while no other operation holds credit from that pool."
