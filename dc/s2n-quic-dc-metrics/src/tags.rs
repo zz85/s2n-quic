@@ -39,6 +39,11 @@ use std::sync::Arc;
 /// (`send.{idx}`, `Variant|{variant}`) never do, and the querylog format already precludes commas.
 pub const TAG_SEPARATOR: char = ',';
 
+/// Matches the keyless, `Variant`, `Task`, and `Runtime` aggregation keys.
+pub fn is_legacy_tag_key(key: &str) -> bool {
+    matches!(key, "" | "Variant" | "Task" | "Runtime")
+}
+
 /// Separates a tag's key from its value. See the escaping note on [`TAG_SEPARATOR`].
 pub const KV_SEPARATOR: char = '|';
 
@@ -113,7 +118,7 @@ impl<'a> AggregationTags<'a> {
 /// same string, so a downstream aggregator keying on the residual string groups them identically.
 /// A single keyless tag round-trips a legacy bare string unchanged (`[("", "send.5")]` -> `send.5`),
 /// and a single `key|value` tag round-trips the historical convention (`Variant|ect0`).
-pub(crate) fn serialize<'a>(tags: impl IntoIterator<Item = (&'a str, &'a str)>) -> Option<String> {
+pub fn serialize<'a>(tags: impl IntoIterator<Item = (&'a str, &'a str)>) -> Option<String> {
     let mut tags: Vec<(&str, &str)> = tags.into_iter().collect();
     if tags.is_empty() {
         return None;

@@ -88,7 +88,8 @@ impl<S> StatsdBackend<S> {
         &mut self.buffer
     }
 
-    /// Finishes the current record: appends the optional `|#variant:` tag and records the boundary.
+    /// Finishes the current record: appends the aggregation's tags (see [`write_tag`]) and records
+    /// the boundary.
     fn end_record(&mut self, aggregation: Option<&Arc<str>>) {
         write_tag(&mut self.buffer, aggregation.map(|a| a.as_ref()));
         self.bounds.push(self.buffer.len());
@@ -279,14 +280,38 @@ fn write_name(out: &mut String, prefix: Option<&str>, name: &str) {
     write_sanitized(out, name);
 }
 
-/// Appends the `|#variant:{aggregation}` tag to `out`, for a non-empty aggregation.
-///
-/// An empty (or `None`) aggregation produces no tag — emitting a bare `|#variant:` would be an
-/// invalid StatsD tag.
+/// Appends sanitized aggregation tags; absent or empty aggregations emit nothing.
+/// A single legacy tag uses `variant:<whole aggregation>`; other tag sets use per-tag keys and values.
 fn write_tag(out: &mut String, aggregation: Option<&str>) {
-    if let Some(agg) = aggregation.filter(|a| !a.is_empty()) {
+    let Some(agg) = aggregation.filter(|a| !a.is_empty()) else {
+        return;
+    };
+
+    let tags = crate::AggregationTags::parse(agg);
+    let mut iter = tags.iter();
+    let is_legacy = match (iter.next(), iter.next()) {
+        (Some(tag), None) => crate::tags::is_legacy_tag_key(tag.key),
+        _ => false,
+    };
+
+    if is_legacy {
         out.push_str("|#variant:");
         write_sanitized(out, agg);
+        return;
+    }
+
+    for (i, tag) in tags.iter().enumerate() {
+        out.push_str(if i == 0 { "|#" } else { "," });
+        write_sanitized(
+            out,
+            if tag.key.is_empty() {
+                "variant"
+            } else {
+                tag.key
+            },
+        );
+        out.push(':');
+        write_sanitized(out, tag.value);
     }
 }
 
@@ -300,6 +325,13 @@ fn write_sanitized(out: &mut String, input: &str) {
             _ => '_',
         });
     }
+}
+
+/// The statsd-safe form of `input`: `[A-Za-z0-9_.-]` kept, `:` to `.`, anything else to `_`.
+pub fn sanitize_tag(input: &str) -> String {
+    let mut out = String::new();
+    write_sanitized(&mut out, input);
+    out
 }
 
 /// Iterator over datagram-sized `&str` slices of a record buffer.
@@ -480,6 +512,59 @@ mod test {
         assert!(
             lines.contains(&"svc.empty.agg:1|c".to_string()),
             "got: {lines:?}"
+        );
+    }
+
+    /// Checks whole-string tags for single legacy aggregations and per-key tags for dimension sets.
+    #[test]
+    fn tag_encoding_legacy_vs_dimensions() {
+        let sink = CaptureSink::default();
+        let mut backend = StatsdBackend::new(sink.clone(), None);
+
+        backend.report_start(&ReportOptions::default());
+        for agg in ["Variant|ect0", "Task|worker", "Runtime|main", "send.5"] {
+            backend.record_counter(
+                &info(
+                    &arc("legacy"),
+                    Some(&arc(agg)),
+                    Unit::Count,
+                    MetricKind::Counter,
+                ),
+                1,
+            );
+        }
+        backend.record_counter(
+            &info(
+                &arc("dimmed"),
+                Some(&arc("operation|get,result|ok")),
+                Unit::Count,
+                MetricKind::Counter,
+            ),
+            2,
+        );
+        backend.record_counter(
+            &info(
+                &arc("one.dim"),
+                Some(&arc("operation|get")),
+                Unit::Count,
+                MetricKind::Counter,
+            ),
+            3,
+        );
+        backend.report_end();
+
+        let lines = sink.lines();
+        assert!(lines.contains(&"legacy:1|c|#variant:Variant_ect0".to_string()));
+        assert!(lines.contains(&"legacy:1|c|#variant:Task_worker".to_string()));
+        assert!(lines.contains(&"legacy:1|c|#variant:Runtime_main".to_string()));
+        assert!(lines.contains(&"legacy:1|c|#variant:send.5".to_string()));
+        assert!(
+            lines.contains(&"dimmed:2|c|#operation:get,result:ok".to_string()),
+            "got: {lines:?}"
+        );
+        assert!(
+            lines.contains(&"one.dim:3|c|#operation:get".to_string()),
+            "a single keyed non-legacy tag is a dimension, not a legacy blob: {lines:?}"
         );
     }
 

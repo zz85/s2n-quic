@@ -375,22 +375,26 @@ struct SeriesKey {
 impl SeriesKey {
     /// Parses this key into ordered `(label_name, label_value)` pairs.
     ///
-    /// The bool `result` side comes first, then the aggregation convention: `Kind|value` ->
-    /// `{kind="value"}`, a bare non-empty string -> `{aggregation="value"}`, and an empty string ->
-    /// no label. Label names are static (`result`/`aggregation`) or derived from the aggregation's
-    /// kind; label values share the aggregation `Arc<str>` where possible.
+    /// Prepends the boolean `result` label when present, then labels each aggregation tag.
+    /// Keyless tags use `aggregation`; keyed tags use sanitized label names.
     fn labels(&self) -> Vec<(Cow<'static, str>, Arc<str>)> {
         let mut labels = Vec::new();
         if let Some(side) = self.side {
             labels.push((Cow::Borrowed("result"), Arc::from(side.as_str())));
         }
-        let agg = &*self.aggregation;
-        if !agg.is_empty() {
-            match agg.split_once('|') {
-                Some((kind, value)) => {
-                    labels.push((Cow::Owned(sanitize_label_name(kind)), Arc::from(value)));
-                }
-                None => labels.push((Cow::Borrowed("aggregation"), self.aggregation.clone())),
+        for tag in crate::AggregationTags::parse(&self.aggregation).iter() {
+            if tag.key.is_empty() {
+                let value = if tag.value == &*self.aggregation {
+                    self.aggregation.clone()
+                } else {
+                    Arc::from(tag.value)
+                };
+                labels.push((Cow::Borrowed("aggregation"), value));
+            } else {
+                labels.push((
+                    Cow::Owned(sanitize_label_name(tag.key)),
+                    Arc::from(tag.value),
+                ));
             }
         }
         labels
@@ -802,6 +806,27 @@ mod test {
         );
         // Both series share one TYPE line.
         assert_eq!(rendered.matches("# TYPE rx_ecn counter").count(), 1);
+    }
+
+    #[test]
+    fn multi_tag_aggregation_becomes_one_label_per_tag() {
+        let (mut backend, handle) = PrometheusBackend::new(None);
+        backend.report_start(&ReportOptions::default());
+        backend.record_counter(
+            &info(
+                &arc("api.calls"),
+                Some(&arc("operation|get,result|ok")),
+                Unit::Count,
+                MetricKind::Counter,
+            ),
+            5,
+        );
+        backend.report_end();
+        let rendered = handle.render();
+        assert!(
+            lines(&rendered).contains(&"api_calls{operation=\"get\",result=\"ok\"} 5"),
+            "{rendered}"
+        );
     }
 
     #[test]

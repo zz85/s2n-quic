@@ -27,7 +27,10 @@ pub use counter::Counter;
 pub use gauge::Gauge;
 pub use registry::{MetricBuilder, MetricDescriptor, Registry};
 pub use summary::Summary;
-pub use tags::{AggregationTag, AggregationTags, MetricTagSet, MetricTags};
+pub use tags::{
+    is_legacy_tag_key, serialize as serialize_aggregation, AggregationTag, AggregationTags,
+    MetricTagSet, MetricTags,
+};
 
 pub use runtime::TaskMonitor;
 

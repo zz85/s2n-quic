@@ -20,7 +20,8 @@
 //! [`Keep`](Action::Keep) (forward verbatim), [`Drop`](Action::Drop) (filter the metric out of this
 //! backend entirely), or [`Collapse`](Action::Collapse) (merge the metric across one aggregation key
 //! — summing counters, bool sides, gauge/callback values, and merging histogram buckets — and
-//! re-emit one series with that key removed).
+//! re-emit one series with that key removed). [`FlattenDimensions`](Action::FlattenDimensions)
+//! emits a series per dimension combination and a combined series under the original name.
 //!
 //! A [`Matcher`] is a **predicate tree** over three leaf kinds — the metric name
 //! ([`name`](Matcher::name)/[`prefix`](Matcher::prefix)/[`glob`](Matcher::glob)), its
@@ -101,6 +102,9 @@ enum Leaf {
     Tag { key: Arc<str>, value: StrMatch },
     /// Requires the emitted [aggregation](crate::MetricInfo::aggregation) to carry the given key.
     AggKey(Arc<str>),
+    /// Requires the emitted aggregation to carry at least one non-legacy (dimension) key — any
+    /// key [`is_legacy_tag_key`](crate::tags::is_legacy_tag_key) rejects.
+    AnyDimensionKey,
 }
 
 impl Leaf {
@@ -113,6 +117,10 @@ impl Leaf {
                 None => false,
             },
             Leaf::AggKey(key) => info.aggregation_tags().contains_key(key),
+            Leaf::AnyDimensionKey => info
+                .aggregation_tags()
+                .iter()
+                .any(|t| !crate::tags::is_legacy_tag_key(t.key)),
         }
     }
 
@@ -124,6 +132,7 @@ impl Leaf {
             // constraint dominates when both are present in an AND.
             Leaf::Tag { value, .. } => 200 + value.specificity() / 4,
             Leaf::AggKey(_) => 200,
+            Leaf::AnyDimensionKey => 200,
         }
     }
 }
@@ -249,6 +258,11 @@ impl Matcher {
         Matcher::leaf(Leaf::AggKey(key.into()))
     }
 
+    /// Matches metrics whose emitted aggregation carries at least one dimension (non-legacy) key.
+    pub fn any_dimension_key() -> Self {
+        Matcher::leaf(Leaf::AnyDimensionKey)
+    }
+
     /// Matches when **all** of `matchers` match (AND). An empty set matches everything.
     pub fn all(matchers: impl IntoIterator<Item = Matcher>) -> Self {
         Matcher {
@@ -322,6 +336,10 @@ pub enum Action {
     /// keyless/bare dimension (e.g. a pre-migration `send.5`).
     #[non_exhaustive]
     Collapse { key: Arc<str> },
+    /// Appends non-legacy tags to each forwarded metric name.
+    /// Also merges records by original name, residual legacy tags, kind, unit, and histogram scale,
+    /// emitting those aggregates at report end.
+    FlattenDimensions,
 }
 
 /// One matcher-plus-action entry in a [`Policy`], with a resolution priority (higher wins).
@@ -583,6 +601,34 @@ impl<B> Filtered<B> {
             .map(|t| (t.key, t.value));
         crate::tags::serialize_arc(residual)
     }
+
+    /// The residual aggregation after removing every dimension (non-legacy) key, keeping only
+    /// legacy tags. Memoized like [`residual_aggregation`](Self::residual_aggregation).
+    fn residual_legacy(info: &MetricInfo<'_>) -> Option<Arc<str>> {
+        let residual = info
+            .aggregation_tags()
+            .iter()
+            .filter(|t| crate::tags::is_legacy_tag_key(t.key))
+            .map(|t| (t.key, t.value));
+        crate::tags::serialize_arc(residual)
+    }
+
+    /// Appends non-legacy tags as `.key.value` in their aggregation-string order.
+    /// The result is cached in `Decision::Flatten`.
+    fn flattened_name(info: &MetricInfo<'_>) -> Arc<str> {
+        let mut flat = String::from(&**info.name);
+        for tag in info
+            .aggregation_tags()
+            .iter()
+            .filter(|t| !crate::tags::is_legacy_tag_key(t.key))
+        {
+            flat.push('.');
+            flat.push_str(tag.key);
+            flat.push('.');
+            flat.push_str(tag.value);
+        }
+        Arc::from(flat)
+    }
 }
 
 impl<B: Backend> Filtered<B> {
@@ -599,6 +645,10 @@ impl<B: Backend> Filtered<B> {
             Some(Action::Drop) => Decision::Drop,
             Some(Action::Collapse { key }) => Decision::Collapse {
                 residual: Self::residual_aggregation(info, key),
+            },
+            Some(Action::FlattenDimensions) => Decision::Flatten {
+                flat_name: Self::flattened_name(info),
+                residual: Self::residual_legacy(info),
             },
         };
         self.cache.insert(key, decision.clone());
@@ -626,7 +676,7 @@ impl<B: Backend> Filtered<B> {
 }
 
 /// The resolution outcome for one record. Cloned out of the memoization cache per record (cheap: at
-/// most an `Arc` refcount bump on the residual).
+/// most `Arc` refcount bumps).
 #[derive(Clone)]
 enum Decision {
     /// No rule matched — forward to the inner backend unchanged.
@@ -636,6 +686,24 @@ enum Decision {
     /// A `Collapse` rule matched — buffer under this precomputed residual aggregation (the source
     /// aggregation with the collapse key removed).
     Collapse { residual: Option<Arc<str>> },
+    /// Forwards with a suffixed name and buffers by original name, residual tags, and metric shape.
+    Flatten {
+        flat_name: Arc<str>,
+        residual: Option<Arc<str>>,
+    },
+}
+
+/// The forwarded [`MetricInfo`] for a flattened record: the dimension-suffixed name carrying only
+/// the residual legacy aggregation, all other metadata unchanged.
+fn flat_info<'a>(
+    info: &MetricInfo<'a>,
+    flat_name: &'a Arc<str>,
+    residual: &'a Option<Arc<str>>,
+) -> MetricInfo<'a> {
+    let mut flat = MetricInfo::new(flat_name, residual.as_ref(), info.unit, info.kind);
+    flat.sparsity = info.sparsity;
+    flat.tags = info.tags;
+    flat
 }
 
 impl<B: Backend> Backend for Filtered<B> {
@@ -646,10 +714,19 @@ impl<B: Backend> Backend for Filtered<B> {
     }
 
     fn record_counter(&mut self, info: &MetricInfo<'_>, value: u64) {
-        match self.decide(info) {
+        let decision = self.decide(info);
+        if let Decision::Flatten {
+            flat_name,
+            residual,
+        } = &decision
+        {
+            self.inner
+                .record_counter(&flat_info(info, flat_name, residual), value);
+        }
+        match decision {
             Decision::Pass => self.inner.record_counter(info, value),
             Decision::Drop => {}
-            Decision::Collapse { residual } => {
+            Decision::Collapse { residual } | Decision::Flatten { residual, .. } => {
                 // scale is irrelevant for non-histograms; 1.0 keeps the Shape uniform.
                 let group = self.group_entry(info, &residual, 1.0, || MergedValue::Counter(0));
                 if let MergedValue::Counter(total) = &mut group.value {
@@ -662,10 +739,19 @@ impl<B: Backend> Backend for Filtered<B> {
     }
 
     fn record_gauge(&mut self, info: &MetricInfo<'_>, value: i64) {
-        match self.decide(info) {
+        let decision = self.decide(info);
+        if let Decision::Flatten {
+            flat_name,
+            residual,
+        } = &decision
+        {
+            self.inner
+                .record_gauge(&flat_info(info, flat_name, residual), value);
+        }
+        match decision {
             Decision::Pass => self.inner.record_gauge(info, value),
             Decision::Drop => {}
-            Decision::Collapse { residual } => {
+            Decision::Collapse { residual } | Decision::Flatten { residual, .. } => {
                 let group = self.group_entry(info, &residual, 1.0, || MergedValue::Gauge(0));
                 if let MergedValue::Gauge(total) = &mut group.value {
                     // Saturate: summing e.g. per-worker timestamp gauges can exceed i64.
@@ -676,10 +762,22 @@ impl<B: Backend> Backend for Filtered<B> {
     }
 
     fn record_bool(&mut self, info: &MetricInfo<'_>, true_count: u64, false_count: u64) {
-        match self.decide(info) {
+        let decision = self.decide(info);
+        if let Decision::Flatten {
+            flat_name,
+            residual,
+        } = &decision
+        {
+            self.inner.record_bool(
+                &flat_info(info, flat_name, residual),
+                true_count,
+                false_count,
+            );
+        }
+        match decision {
             Decision::Pass => self.inner.record_bool(info, true_count, false_count),
             Decision::Drop => {}
-            Decision::Collapse { residual } => {
+            Decision::Collapse { residual } | Decision::Flatten { residual, .. } => {
                 let group = self.group_entry(info, &residual, 1.0, || MergedValue::Bool {
                     true_: 0,
                     false_: 0,
@@ -693,10 +791,19 @@ impl<B: Backend> Backend for Filtered<B> {
     }
 
     fn record_histogram(&mut self, info: &MetricInfo<'_>, hist: Histogram<'_>) {
-        match self.decide(info) {
+        let decision = self.decide(info);
+        if let Decision::Flatten {
+            flat_name,
+            residual,
+        } = &decision
+        {
+            self.inner
+                .record_histogram(&flat_info(info, flat_name, residual), hist);
+        }
+        match decision {
             Decision::Pass => self.inner.record_histogram(info, hist),
             Decision::Drop => {}
-            Decision::Collapse { residual } => {
+            Decision::Collapse { residual } | Decision::Flatten { residual, .. } => {
                 let scale = hist.scale();
                 // The Shape includes `scale`, so histograms of differing scale land in separate
                 // groups; every record in one group therefore shares this scale and the same
@@ -716,10 +823,19 @@ impl<B: Backend> Backend for Filtered<B> {
     }
 
     fn record_callback(&mut self, info: &MetricInfo<'_>, values: &[&dyn CallbackValue]) {
-        match self.decide(info) {
+        let decision = self.decide(info);
+        if let Decision::Flatten {
+            flat_name,
+            residual,
+        } = &decision
+        {
+            self.inner
+                .record_callback(&flat_info(info, flat_name, residual), values);
+        }
+        match decision {
             Decision::Pass => self.inner.record_callback(info, values),
             Decision::Drop => {}
-            Decision::Collapse { residual } => {
+            Decision::Collapse { residual } | Decision::Flatten { residual, .. } => {
                 let sum: f64 = values.iter().map(|v| v.as_f64()).sum();
                 let group = self.group_entry(info, &residual, 1.0, || MergedValue::Callback(0.0));
                 if let MergedValue::Callback(total) = &mut group.value {
@@ -903,6 +1019,55 @@ mod test {
             .collect();
         assert_eq!(lost, vec![&("send.lost".to_string(), None, 6)]);
         // The variant and unruled metrics passed through verbatim.
+        assert!(cap.counters.contains(&(
+            "rx.ecn".to_string(),
+            Some("Variant|ect0".to_string()),
+            10
+        )));
+        assert!(cap.counters.contains(&("rx.data".to_string(), None, 42)));
+    }
+
+    #[test]
+    fn flatten_dimensions_emits_suffixed_and_bare_and_keeps_legacy() {
+        let registry = Registry::new();
+        for (op, result, v) in [("get", "ok", 1), ("get", "err", 2), ("put", "ok", 4)] {
+            registry
+                .metric("api.calls")
+                .aggregation(format!("operation|{op},result|{result}"))
+                .counter()
+                .increment(v);
+        }
+        registry
+            .metric("rx.ecn")
+            .aggregation("Variant|ect0")
+            .counter()
+            .increment(10);
+        registry
+            .register_counter("rx.data".into(), None)
+            .increment(42);
+
+        let policy = Policy::new().rule(Matcher::any_dimension_key(), Action::FlattenDimensions);
+        let mut backend = Filtered::new(Capture::default(), policy);
+        registry.report_with(&ReportOptions::new(false), &mut backend);
+
+        let cap = backend.inner();
+        for (suffixed, v) in [
+            ("api.calls.operation.get.result.ok", 1),
+            ("api.calls.operation.get.result.err", 2),
+            ("api.calls.operation.put.result.ok", 4),
+        ] {
+            assert!(
+                cap.counters.contains(&(suffixed.to_string(), None, v)),
+                "missing {suffixed}: {:?}",
+                cap.counters
+            );
+        }
+        let bare: Vec<_> = cap
+            .counters
+            .iter()
+            .filter(|(n, _, _)| n == "api.calls")
+            .collect();
+        assert_eq!(bare, vec![&("api.calls".to_string(), None, 7)]);
         assert!(cap.counters.contains(&(
             "rx.ecn".to_string(),
             Some("Variant|ect0".to_string()),
