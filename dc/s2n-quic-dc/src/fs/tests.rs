@@ -9,6 +9,7 @@
 //! credit conservation (acquire-on-submit / release-on-complete, zero leak at quiescence).
 
 use crate::{
+    byte_vec::ByteVec,
     counter::Registry,
     fs::{
         backend::{
@@ -17,7 +18,7 @@ use crate::{
         },
         config::{CostModel, DeviceConfig, OpWeights, PoolMode},
         device::Device,
-        materialize::materialize,
+        materialize::{materialize, materialize_direct},
         op::{IoOp, IoStatus},
         scheduler::{BlockRef, DeviceRegistry},
     },
@@ -822,6 +823,31 @@ fn materialize_delivers_in_order() {
         }
         .primary()
         .spawn();
+    });
+}
+
+#[test]
+fn bach_delivers_resident_blocks_without_device_wakeups() {
+    bach::environment::default::Runtime::new().block_on(async {
+        let reader = bach::spawn(async {
+            // The last block requires refilling the 256-block window.
+            let blocks = (0..=256u16).map(|i| ByteVec::from(i.to_le_bytes().to_vec()));
+            let mut stream = materialize_direct(blocks, TierPriority::default());
+            for i in 0..=256u16 {
+                let bytes = stream
+                    .next()
+                    .await
+                    .expect("missing resident block")
+                    .unwrap();
+                assert_eq!(bytes.copy_to_bytes().as_ref(), &i.to_le_bytes());
+            }
+            assert!(stream.next().await.is_none());
+        });
+        // The deadline wakes the joiner. Only the stream can wake the reader.
+        bach::time::timeout(std::time::Duration::from_millis(1), reader)
+            .await
+            .expect("resident-only stream stalled without device I/O")
+            .expect("reader aborted");
     });
 }
 
