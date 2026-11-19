@@ -99,7 +99,7 @@ level = "MUST"
 polarity = "required"
 binds_to = "system"
 statement = "When an operation whose cost is higher than its pool's capacity begins to wait for the pool's credit, the device MUST raise the pool's capacity to that operation's cost."
-rationale = "An operation is granted its whole cost or nothing, so an operation that waits on a pool whose capacity is below its cost would never be granted; DC-0011-022 keeps the cost within the pool's configured capacity, and DC-0011-050 keeps any upper bound at or above that capacity, so the raise never passes the upper bound."
+rationale = "An operation is granted its whole cost or nothing, so an operation that waits on a pool whose capacity is below its cost would never be granted; DC-0011-022 keeps the cost within any upper bound the device's configuration sets for the pool, so the raise never passes the upper bound."
 
 [[requirement]]
 id = "DC-0011-049"

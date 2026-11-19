@@ -16,7 +16,7 @@ The device MUST reject, with an invalid-input error and before it acquires any c
 
 ### DC-0011-022 {#DC-0011-022}
 
-The device MUST reject, with an invalid-input error and before it acquires any credit, an operation whose cost exceeds the configured capacity of the pool it draws from.
+Where the device's configuration sets an upper bound for the capacity of the pool an operation draws from, the device MUST reject, with an invalid-input error and before it acquires any credit, an operation whose cost exceeds that upper bound.
 
 ### DC-0011-023 {#DC-0011-023}
 
