@@ -888,6 +888,49 @@ fn materialize_mixes_resident_and_device_blocks() {
     });
 }
 
+/// A materialize stream whose front block is resident delivers that block on the poll that pulls
+/// it. `pull` files a resident block `Ready` in the reorder window itself, and no completion wakes
+/// the stream for it, so a `Pending` from that poll would never end. One poll with a no-op waker
+/// returns the block verbatim, and the next poll ends the stream.
+#[test]
+fn materialize_delivers_a_resident_front_block_on_its_first_poll() {
+    use crate::fs::materialize::Block;
+    use core::task::Poll;
+
+    const RESIDENT: u8 = 0x3c;
+    let bytes = crate::byte_vec::ByteVec::from(vec![RESIDENT; 1024]);
+    let mut stream = materialize([Block::Resident(bytes)], TierPriority::High);
+    let waker = s2n_quic_core::task::waker::noop();
+    let mut cx = core::task::Context::from_waker(&waker);
+
+    let first = {
+        let mut next = core::pin::pin!(stream.next());
+        core::future::Future::poll(next.as_mut(), &mut cx)
+    };
+    match first {
+        Poll::Ready(Some(Ok(chunk))) => {
+            let buf = chunk.copy_to_bytes();
+            assert_eq!(buf.len(), 1024, "the resident block's length changed");
+            assert!(
+                buf.iter().all(|&b| b == RESIDENT),
+                "the resident block isn't delivered verbatim"
+            );
+        }
+        Poll::Ready(Some(Err(error))) => panic!("the first poll returned an error: {error}"),
+        Poll::Ready(None) => panic!("the first poll ended the stream before its block"),
+        Poll::Pending => panic!("the first poll of a resident block returned Pending"),
+    }
+
+    let second = {
+        let mut next = core::pin::pin!(stream.next());
+        core::future::Future::poll(next.as_mut(), &mut cx)
+    };
+    assert!(
+        matches!(second, Poll::Ready(None)),
+        "the second poll ends the stream"
+    );
+}
+
 /// Cross-device head-of-line blocking: a materialize stream whose blocks alternate between a
 /// **credit-starved** device (depth 1) and a roomy one must still make progress and deliver all
 /// blocks in FIFO order. With one shared acquire slot, a block parked on the starved device's credit

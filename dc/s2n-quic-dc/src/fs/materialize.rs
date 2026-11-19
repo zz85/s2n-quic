@@ -275,6 +275,12 @@ where
 
             // 2. Top up the read-ahead window from the source (bounded by MAX_RESIDENT_BLOCKS).
             self.pull();
+            // `pull` files a resident block, or a block that failed validation, `Ready` itself, and
+            // no completion wakes the stream for it: deliver it now, since a `Pending` here would
+            // leave a stream whose window was empty with no wake source registered for its front.
+            if matches!(self.window.front(), Some(Slot::Ready(_))) {
+                continue;
+            }
 
             // 3. End of stream: source drained and the window fully delivered.
             if self.source_done && self.window.is_empty() {
