@@ -2,4 +2,4 @@ target = "rendered/0011-storage/02-admission.md#DC-0011-049"
 
 [[spec]]
 level = "MUST"
-quote = "When a clean completion from a pool brings the summed cost of the clean completions in the pool's current run to at least the capacity the pool had when that run began, the device MUST raise the pool's capacity by the cost of that completion's operation, up to the upper bound the device's configuration sets for the pool where it sets one."
+quote = "When a clean completion from a pool brings the summed cost of the clean completions in the pool's current run to at least the capacity the pool had when that run began, the device MUST raise the pool's capacity by the cost of that completion's operation, up to the upper bound the device's configuration sets for the pool where it sets one, except where DC-0011-054 lowers the pool's capacity at that completion."
