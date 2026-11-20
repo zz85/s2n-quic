@@ -561,21 +561,28 @@ impl HandshakeQueue {
                     // eventually, but keeping it for parity for now.
                     error!("handshake with {peer} failed: {e}");
 
+                    // A timed-out handshake didn't finish within the transport's handshake limit
+                    // or the confirm deadline above, so the attempt itself spaced it out: its entry
+                    // goes now, and the next caller starts a new attempt. A peer still gets one
+                    // attempt at a time, and a path that comes back is found by the next attempt,
+                    // not after a random hold.
+                    if e.kind() == io::ErrorKind::TimedOut {
+                        self.remove_entry(&entry3);
+                        return Err(HandshakeFailed(e));
+                    }
+
                     let this = self.clone();
                     tokio::spawn(async move {
                         // Delay deleting the entry by a random time, up to 2 minutes.
                         //
                         // This avoids aggressively reconnecting to a given peer if handshakes
-                        // fail (instead we keep returning the cached error). This is good both for
-                        // fast failure (e.g., certificate issues) and for slow errors (timeouts).
-                        // In the first case, it's very unlikely the issue will be fixed within
-                        // seconds, so backing off is natural to keep aggregate handshake volume
-                        // more bounded. For the latter, backing off avoids generating undue load
-                        // on the network or server. The specific duration is not chosen
-                        // with any particular rationale, mostly intended to be a relatively small
-                        // amount (to avoid significantly extending recovery times if the server
-                        // was temporarily overloaded) while still significantly reducing handshake
-                        // volume (>60x for fast-failing handshakes and >10x for timeouts).
+                        // fail fast (e.g., certificate issues), returning the cached error instead.
+                        // It's very unlikely the issue will be fixed within seconds, so backing off
+                        // is natural to keep aggregate handshake volume more bounded. The specific
+                        // duration is not chosen with any particular rationale, mostly intended to
+                        // be a relatively small amount (to avoid significantly extending recovery
+                        // times if the server was temporarily overloaded) while still significantly
+                        // reducing handshake volume (>60x for fast-failing handshakes).
                         let duration = {
                             let mut rng = rand::rng();
                             rng.random_range(1000..120_000)
@@ -816,6 +823,38 @@ mod tests {
             "Connection took {:?}, expected < 500ms",
             duration
         );
+    }
+
+    /// A handshake that times out, the peer never answering within the transport's handshake
+    /// limit, frees its de-duplication entry as it fails, so the next handshake with the peer
+    /// starts at once and finds a path that has come back. A failure the peer answered, such as
+    /// a refusal, stays held.
+    #[tokio::test]
+    async fn timed_out_handshake_is_not_held() {
+        let setup = TestSetup::new(Some(CloseAllConnectionsLimiter)).await;
+        let server_name: s2n_quic::server::Name = "localhost".into();
+
+        // A bound socket that nothing reads: the handshake runs to the transport's own limit.
+        let silent = std::net::UdpSocket::bind("127.0.0.1:0").unwrap();
+        let silent_addr = silent.local_addr().unwrap();
+        let timed_out = setup
+            .client
+            .connect(silent_addr, HandshakeReason::User, server_name.clone())
+            .await
+            .unwrap_err();
+        assert_eq!(io::Error::from(timed_out).kind(), io::ErrorKind::TimedOut);
+        assert!(!setup.client.has_pending_entry(silent_addr));
+
+        // The server refuses every connection, at once.
+        let refused = setup
+            .client
+            .connect(setup.server_addr, HandshakeReason::User, server_name)
+            .await
+            .unwrap_err();
+        assert_ne!(io::Error::from(refused).kind(), io::ErrorKind::TimedOut);
+        assert!(setup.client.has_pending_entry(setup.server_addr));
+
+        drop(silent);
     }
 
     #[test]
