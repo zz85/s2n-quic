@@ -234,6 +234,9 @@ impl Default for Options {
 pub struct File {
     inner: std::fs::File,
     path: PathBuf,
+    /// Opened with [`Options::direct`], so [`read_at`](Self::read_at) and
+    /// [`write_at`](Self::write_at) hold every call to direct IO's alignment.
+    direct: bool,
 }
 
 impl std::os::fd::AsRawFd for File {
@@ -253,7 +256,11 @@ impl File {
         if options.size > 0 {
             inner.set_len(options.size)?;
         }
-        Ok(Self { inner, path })
+        Ok(Self {
+            inner,
+            path,
+            direct: options.direct,
+        })
     }
 
     /// The raw fd, for handing to a backend (e.g. an `IoOp`'s `fd` field).
@@ -269,13 +276,41 @@ impl File {
     }
 
     /// Read exactly `buf.len()` bytes at `offset`.
+    ///
+    /// On a file opened with [`Options::direct`], `buf`'s address and length and `offset` must be
+    /// multiples of [`ALIGNMENT`], as an [`AlignedBuf`] is; see [`write_at`](Self::write_at).
     pub fn read_at(&self, buf: &mut [u8], offset: u64) -> io::Result<()> {
+        self.check_direct_alignment(buf.as_ptr(), buf.len(), offset)?;
         self.inner.read_exact_at(buf, offset)
     }
 
     /// Write all of `buf` at `offset`.
+    ///
+    /// On a file opened with [`Options::direct`], `buf`'s address and length and `offset` must be
+    /// multiples of [`ALIGNMENT`], as an [`AlignedBuf`] is. Otherwise the call fails with
+    /// `InvalidInput` before it reaches the kernel. The kernel's own check depends on the device:
+    /// a disk whose DMA alignment is 512 bytes refuses a buffer that a disk with 4-byte DMA
+    /// alignment takes, and tmpfs, where the file isn't opened `O_DIRECT`, takes any buffer. This
+    /// check makes a misaligned buffer fail the same way on every device.
     pub fn write_at(&self, buf: &[u8], offset: u64) -> io::Result<()> {
+        self.check_direct_alignment(buf.as_ptr(), buf.len(), offset)?;
         self.inner.write_all_at(buf, offset)
+    }
+
+    /// Refuses, on a file opened with [`Options::direct`], a buffer whose address or length, or an
+    /// offset, isn't a multiple of [`ALIGNMENT`].
+    fn check_direct_alignment(&self, addr: *const u8, len: usize, offset: u64) -> io::Result<()> {
+        if !self.direct
+            || ((addr as usize).is_multiple_of(ALIGNMENT)
+                && len.is_multiple_of(ALIGNMENT)
+                && offset.is_multiple_of(ALIGNMENT as u64))
+        {
+            return Ok(());
+        }
+        Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "direct file: buffer address, buffer length or offset is not block-aligned",
+        ))
     }
 
     /// Flush file data + metadata to the device.
@@ -444,6 +479,60 @@ mod tests {
         file.read_at(&mut buf, 0).unwrap();
         assert_eq!(&buf, data);
 
+        let _ = std::fs::remove_file(&path);
+    }
+
+    /// A file opened `direct` refuses, with `InvalidInput`, a read or write whose buffer address,
+    /// buffer length or offset isn't block-aligned, whatever the device underneath would take, and
+    /// takes an aligned one. Here the temp dir may be tmpfs, where the file isn't opened
+    /// `O_DIRECT`, or a disk that takes 4-byte-aligned buffers: there the kernel takes each
+    /// misaligned call below, and only this check refuses it.
+    #[test]
+    fn direct_file_refuses_misaligned_io() {
+        let dir = std::env::temp_dir();
+        let path = dir.join(format!("s2n-dc-direct-align-test-{}", std::process::id()));
+        let file = File::open(
+            &path,
+            Options {
+                truncate: true,
+                size: 2 * ALIGNMENT as u64,
+                direct: true,
+            },
+        )
+        .unwrap();
+        let mut buf = AlignedBuf::new(2 * ALIGNMENT);
+        let misaligned = |result: io::Result<()>, what: &str| {
+            let err = result.expect_err(what);
+            assert_eq!(err.kind(), io::ErrorKind::InvalidInput, "{what}: {err}");
+        };
+
+        // A buffer 16 bytes past a page boundary: the address a `Vec<u8>` from the allocator has.
+        misaligned(
+            file.write_at(&buf.as_slice()[16..16 + ALIGNMENT], 0),
+            "a write from a misaligned address",
+        );
+        misaligned(
+            file.read_at(&mut buf.as_mut_slice()[16..16 + ALIGNMENT], 0),
+            "a read into a misaligned address",
+        );
+        misaligned(
+            file.write_at(&buf.as_slice()[..100], 0),
+            "a write of a length that isn't a whole block",
+        );
+        misaligned(
+            file.write_at(&buf.as_slice()[..ALIGNMENT], 100),
+            "a write at an offset inside a block",
+        );
+
+        buf.as_mut_slice()[..ALIGNMENT].fill(7);
+        file.write_at(&buf.as_slice()[..ALIGNMENT], ALIGNMENT as u64)
+            .expect("an aligned write");
+        buf.as_mut_slice()[ALIGNMENT..].fill(0);
+        file.read_at(&mut buf.as_mut_slice()[ALIGNMENT..], ALIGNMENT as u64)
+            .expect("an aligned read");
+        assert!(buf.as_slice()[ALIGNMENT..].iter().all(|&b| b == 7));
+
+        drop(file);
         let _ = std::fs::remove_file(&path);
     }
 }
