@@ -322,7 +322,8 @@ type RecvRingHandle = core::convert::Infallible;
 /// ring was spawned (the ring thread now owns both `socket` and `router`); returns
 /// `Err((socket, router))` — handing both back — when the socket has no real fd or the ring could not
 /// be created, so the caller falls back to the syscall recv path. Linux-only; the non-Linux build
-/// never calls this (`use_uring` is always false there).
+/// never calls this (`use_uring` is always false there). The ring records the socket's `socket.rx.*`
+/// counters in `counter_registry` under `recv.{idx}`, as the syscall recv path does.
 #[cfg(target_os = "linux")]
 fn try_spawn_recv_ring<S, Router>(
     idx: usize,
@@ -330,6 +331,7 @@ fn try_spawn_recv_ring<S, Router>(
     recv_pool: crate::socket::pool::Pool,
     router: Router,
     rings: &mut Vec<RecvRingHandle>,
+    counter_registry: &crate::counter::Registry,
 ) -> Result<(), (S, Router)>
 where
     S: crate::socket::recv::BindOnWorker + Send + 'static,
@@ -344,6 +346,7 @@ where
         recv_pool,
         reuse,
         router,
+        uring::Counters::register(counter_registry, idx),
     ) {
         Ok(ring) => {
             rings.push(ring);
@@ -377,6 +380,7 @@ fn try_spawn_recv_ring<S, Router>(
     _recv_pool: crate::socket::pool::Pool,
     router: Router,
     _rings: &mut Vec<RecvRingHandle>,
+    _counter_registry: &crate::counter::Registry,
 ) -> Result<(), (S, Router)>
 where
     S: crate::socket::recv::BindOnWorker + Send + 'static,
@@ -993,6 +997,7 @@ where
                 recv_pool.clone(),
                 router,
                 &mut recv_rings,
+                &counter_registry,
             ) {
                 Ok(()) => continue,
                 Err((socket, router)) => (socket, router),

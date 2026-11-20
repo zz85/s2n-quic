@@ -118,6 +118,37 @@ impl FillWindow {
     }
 }
 
+/// A recv ring's per-socket counters. The first three are the ones the syscall recv path records
+/// for a socket through `endpoint::socket::Metered`, with the same meaning, so a socket reports
+/// its traffic the same way on either path.
+pub struct Counters {
+    /// Datagrams received (`socket.rx.ops`): one per successful completion, a GRO-coalesced
+    /// datagram counting once.
+    pub ops: crate::counter::Counter,
+    /// Payload bytes received (`socket.rx.bytes`).
+    pub bytes: crate::counter::Counter,
+    /// Receive completions that failed (`!socket.rx.errors`), and completions whose
+    /// `recvmsg_out` couldn't be parsed.
+    pub errors: crate::counter::Counter,
+    /// Completions that carried no buffer because every provided buffer was taken
+    /// (`socket.rx.no_buffer`, `-ENOBUFS`). Each one grows the ring's [`FillWindow`] until the
+    /// window covers the ring; after that, each one means the ring is full.
+    pub no_buffer: crate::counter::Counter,
+}
+
+impl Counters {
+    /// Registers the counters for recv socket `idx`, under the `recv.{idx}` variant the syscall
+    /// recv path uses for the same socket.
+    pub fn register(registry: &crate::counter::Registry, idx: usize) -> Self {
+        Self {
+            ops: registry.register_nominal("socket.rx.ops", format_args!("recv.{idx}")),
+            bytes: registry.register_nominal("socket.rx.bytes", format_args!("recv.{idx}")),
+            errors: registry.register_nominal("!socket.rx.errors", format_args!("recv.{idx}")),
+            no_buffer: registry.register_nominal("socket.rx.no_buffer", format_args!("recv.{idx}")),
+        }
+    }
+}
+
 /// Reserved `user_data` for the armed eventfd [`PollAdd`](opcode::PollAdd). Distinct from the single
 /// recv op's user_data ([`RECV_USER_DATA`]).
 const EVENTFD_TOKEN: u64 = u64::MAX;
@@ -332,7 +363,9 @@ fn build_eventfd_poll(efd: RawFd) -> squeue::Entry {
 /// The recv ring thread. Takes the already-created ring + registered buffer ring (built fallibly in
 /// [`spawn`] before this thread starts, so registration failures fall back cleanly), owns the socket
 /// fd and the bid→descriptor map, keeps the ring full of provided buffers, reaps recv completions into
-/// `Filled` segments, and routes them. Returns when `shutdown.closed` is observed.
+/// `Filled` segments, and routes them, recording each completion in `counters`. Returns when
+/// `shutdown.closed` is observed.
+#[allow(clippy::too_many_arguments)]
 fn ring_loop<R: Router>(
     mut ring: IoUring,
     mut buf_ring: BufRing,
@@ -340,6 +373,7 @@ fn ring_loop<R: Router>(
     pool: Pool,
     mut reuse: SyncReuseRing,
     mut router: R,
+    counters: Counters,
     shutdown: Arc<Shutdown>,
 ) {
     let depth = buf_ring.entries;
@@ -432,6 +466,11 @@ fn ring_loop<R: Router>(
                     // No buffer attached. A negative result with no buffer is a recv-level error
                     // (e.g. -ENOBUFS when the ring was momentarily empty): nothing to free, the
                     // re-arm + replenish below recovers. Non-negative with no buffer should not occur.
+                    if res == -libc::ENOBUFS {
+                        counters.no_buffer.add(1);
+                    } else if res < 0 {
+                        counters.errors.add(1);
+                    }
                     if res < 0 {
                         tracing::trace!(errno = -res, "recv cqe error without buffer");
                     }
@@ -449,6 +488,7 @@ fn ring_loop<R: Router>(
                 if res < 0 {
                     // Error completion: drop the descriptor (recycles) and replenish the bid.
                     tracing::trace!(errno = -res, bid, "recv error completion");
+                    counters.errors.add(1);
                     drop(unfilled);
                     to_replenish.push(bid);
                     continue;
@@ -458,13 +498,16 @@ fn ring_loop<R: Router>(
                 // into the descriptor's recv region. Finalize into a `Filled` (no application-side
                 // copy — the payload is used in place) and route.
                 match finalize(unfilled, res as usize) {
-                    Some(segments) => {
+                    Some((payload_len, segments)) => {
+                        counters.ops.add(1);
+                        counters.bytes.add(payload_len as u64);
                         for segment in segments {
                             router.on_segment(segment);
                         }
                     }
                     None => {
                         // Parse/length anomaly — descriptor already dropped in `finalize`.
+                        counters.errors.add(1);
                     }
                 }
                 to_replenish.push(bid);
@@ -499,11 +542,12 @@ fn ring_loop<R: Router>(
 /// (the payload is used in place; see the module docs on what "no copy" does and does not mean).
 /// `total` is the CQE byte count
 /// — the length of the `[recvmsg_out | name | control | payload]` the kernel wrote into the recv
-/// region. Returns `None` (dropping the descriptor) on a parse/length anomaly.
+/// region. Returns the payload's length with the segments, or `None` (dropping the descriptor) on a
+/// parse/length anomaly.
 fn finalize(
     unfilled: Unfilled<SyncRecycler>,
     total: usize,
-) -> Option<descriptor::SegmentsIter<SyncRecycler>> {
+) -> Option<(usize, descriptor::SegmentsIter<SyncRecycler>)> {
     use io_uring::types::RecvMsgOut;
 
     let (region_ptr, region_len) = unfilled.recv_prefix_region();
@@ -554,7 +598,7 @@ fn finalize(
         <Result<usize, core::convert::Infallible>>::Ok(payload_len)
     });
     match result {
-        Ok(segments) => Some(segments.into_iter()),
+        Ok(segments) => Some((payload_len, segments.into_iter())),
         Err(_) => None,
     }
 }
@@ -605,7 +649,8 @@ pub enum SpawnError<S, R> {
 /// raw fd, and routes received datagrams through `router`. The ring thread holds the socket for its
 /// whole lifetime (keeping the fd open), so the returned [`RecvRing`] need not — dropping the
 /// `RecvRing` signals the thread to stop and joins it, after which the socket is dropped on that
-/// thread. `socket` need only be `Send` (the ring thread is its sole accessor).
+/// thread. `socket` need only be `Send` (the ring thread is its sole accessor). The ring records
+/// each completion in `counters`.
 pub fn spawn<S, R>(
     idx: usize,
     socket: S,
@@ -613,6 +658,7 @@ pub fn spawn<S, R>(
     pool: Pool,
     reuse: SyncReuseRing,
     router: R,
+    counters: Counters,
 ) -> Result<RecvRing, SpawnError<S, R>>
 where
     S: crate::socket::recv::BindOnWorker + Send + 'static,
@@ -664,7 +710,16 @@ where
             // it is dropped here when the loop returns (after the fd is no longer referenced by any
             // in-flight SQE — the loop tears the ring down before returning).
             let _socket = socket;
-            ring_loop(ring, buf_ring, fd, pool, reuse, router, ring_shutdown);
+            ring_loop(
+                ring,
+                buf_ring,
+                fd,
+                pool,
+                reuse,
+                router,
+                counters,
+                ring_shutdown,
+            );
         });
     match join {
         Ok(join) => Ok(RecvRing {
@@ -736,7 +791,8 @@ mod tests {
 
         let pool = Pool::new(u16::MAX);
         let reuse = SyncReuseRing::new();
-        let ring = spawn(0, socket, 64, pool, reuse, router)
+        let counters = Counters::register(&crate::counter::Registry::new(), 0);
+        let ring = spawn(0, socket, 64, pool, reuse, router, counters)
             .unwrap_or_else(|_| panic!("recv ring spawn must succeed when io_uring is available"));
 
         // Give the ring thread a moment to register the buffer ring and arm the multishot recv.
@@ -822,7 +878,8 @@ mod tests {
 
         let pool = Pool::new(u16::MAX);
         let reuse = SyncReuseRing::new();
-        let ring = spawn(0, socket, 64, pool, reuse, router)
+        let counters = Counters::register(&crate::counter::Registry::new(), 0);
+        let ring = spawn(0, socket, 64, pool, reuse, router, counters)
             .unwrap_or_else(|_| panic!("recv ring spawn must succeed when io_uring is available"));
 
         // Give the ring thread a moment to register the buffer ring and arm the multishot recv.
@@ -850,5 +907,87 @@ mod tests {
         let marks: Vec<u8> = got.iter().map(|(payload, _)| payload[0]).collect();
         let expected: Vec<u8> = (0..count).collect();
         assert_eq!(marks, expected, "datagrams in order");
+    }
+
+    /// A ring-backed socket reports its traffic under the counters and `recv.{idx}` variant the
+    /// syscall recv path uses for it: one `socket.rx.ops` per datagram and its payload bytes in
+    /// `socket.rx.bytes`. The datagrams are queued before the ring starts with one buffer, so the
+    /// kernel's second pick finds every provided buffer taken, and `socket.rx.no_buffer` counts it.
+    /// Skipped (passes trivially) if io_uring is unavailable.
+    #[test]
+    fn uring_counts_datagrams_bytes_and_enobufs() {
+        if probe().is_err() {
+            eprintln!("io_uring unavailable; skipping uring_counts_datagrams_bytes_and_enobufs");
+            return;
+        }
+
+        let recv_sock = UdpSocket::bind("127.0.0.1:0").unwrap();
+        recv_sock.set_nonblocking(true).unwrap();
+        let recv_addr = recv_sock.local_addr().unwrap();
+
+        let send_sock = UdpSocket::bind("127.0.0.1:0").unwrap();
+        let count = 16u8;
+        let len = 100usize;
+        for i in 0..count {
+            send_sock.send_to(&[i; 100], recv_addr).unwrap();
+        }
+
+        let received = Arc::new(Mutex::new(Vec::new()));
+        let router = CaptureRouter {
+            received: received.clone(),
+        };
+        let registry = crate::counter::Registry::new();
+        let idx = 3;
+        let counters = Counters::register(&registry, idx);
+        let ring = spawn(
+            idx,
+            BusyPoll(recv_sock),
+            64,
+            Pool::new(u16::MAX),
+            SyncReuseRing::new(),
+            router,
+            counters,
+        )
+        .unwrap_or_else(|_| panic!("recv ring spawn must succeed when io_uring is available"));
+
+        let deadline = std::time::Instant::now() + Duration::from_secs(5);
+        while received.lock().unwrap().len() < usize::from(count) {
+            assert!(
+                std::time::Instant::now() < deadline,
+                "timed out waiting for {count} datagrams; got {}",
+                received.lock().unwrap().len()
+            );
+            std::thread::sleep(Duration::from_millis(10));
+        }
+        drop(ring); // stop + join the ring thread, so every completion is counted
+
+        let line = registry
+            .take_current_metrics_line()
+            .expect("the ring recorded its completions");
+        // Reads `{name}={value} Variant|recv.3` from the metrics line.
+        let value = |name: &str| -> u64 {
+            let key = format!("{name}=");
+            let start = line
+                .find(&key)
+                .unwrap_or_else(|| panic!("no {name} in: {line}"))
+                + key.len();
+            let digits: String = line[start..]
+                .chars()
+                .take_while(char::is_ascii_digit)
+                .collect();
+            assert!(
+                line[start + digits.len()..].starts_with(" Variant|recv.3"),
+                "{name} isn't under recv.3: {line}"
+            );
+            digits.parse().unwrap()
+        };
+        assert_eq!(value("socket.rx.ops"), u64::from(count), "{line}");
+        assert_eq!(
+            value("socket.rx.bytes"),
+            u64::from(count) * len as u64,
+            "{line}"
+        );
+        assert!(value("socket.rx.no_buffer") >= 1, "{line}");
+        assert!(!line.contains("!socket.rx.errors="), "{line}");
     }
 }
