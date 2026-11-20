@@ -253,6 +253,9 @@ impl<'a> MetricInfo<'a> {
 #[derive(Clone, Copy)]
 pub struct Histogram<'a> {
     buckets: &'a [u64],
+    /// The samples the view holds: the sum of `buckets`. A summary keeps it as it counts its
+    /// samples, so a report reads it without summing the buckets.
+    count: u64,
     config: &'a bucket::Config,
     unit: Unit,
     /// The fixed-point [`scale`](crate::Summary::scale) the samples were recorded with. Bucket
@@ -262,14 +265,34 @@ pub struct Histogram<'a> {
 }
 
 impl<'a> Histogram<'a> {
+    /// A view over `buckets` whose count is their sum, such as a bucket array summed from several
+    /// histograms' [`raw_buckets`](Self::raw_buckets).
     pub(crate) fn new(
         buckets: &'a [u64],
         config: &'a bucket::Config,
         unit: Unit,
         scale: f64,
     ) -> Self {
+        Self::with_count(buckets, buckets.iter().sum(), config, unit, scale)
+    }
+
+    /// A view over `buckets` that holds `count` samples, a count the caller kept as it counted them.
+    /// `count` is the sum of `buckets`.
+    pub(crate) fn with_count(
+        buckets: &'a [u64],
+        count: u64,
+        config: &'a bucket::Config,
+        unit: Unit,
+        scale: f64,
+    ) -> Self {
+        debug_assert_eq!(
+            count,
+            buckets.iter().sum::<u64>(),
+            "a histogram's count is the sum of its buckets"
+        );
         Self {
             buckets,
+            count,
             config,
             unit,
             scale,
@@ -292,7 +315,7 @@ impl<'a> Histogram<'a> {
 
     /// The total number of recorded samples.
     pub fn count(&self) -> u64 {
-        self.buckets.iter().sum()
+        self.count
     }
 
     /// The raw per-bucket sample counts, in bucket-index order.

@@ -44,25 +44,44 @@ pub struct Summary {
 
 const BUCKETS: usize = CONFIG.total_buckets();
 
+/// One summary's bucket counts, as the aggregate holds them.
+///
+/// The bucket array holds `BUCKETS` counts (about 58 KiB), so a summary allocates it when the
+/// aggregate takes in its first sample, and a summary that is never sampled doesn't allocate it: a
+/// process registers many summaries, and an idle one samples few of them. Once allocated, the
+/// array stays for the summary's lifetime, and a report zeroes it only where a sample came since
+/// the last report.
+#[derive(Default)]
 pub(crate) struct SharedSummary {
-    value: Box<[u64; BUCKETS]>,
+    /// The bucket counts; `None` until the summary's first sample.
+    value: Option<Box<[u64; BUCKETS]>>,
+    /// The samples counted into `value` since the last report: the sum of its buckets.
+    count: u64,
 }
 
-impl Default for SharedSummary {
-    fn default() -> Self {
-        Self {
-            // SAFETY: Slice to array conversion doesn't change the layout of the allocation.
-            //
-            // FIXME: Replace with https://doc.rust-lang.org/nightly/std/boxed/struct.Box.html#method.into_array
-            // once it's stabilized.
-            value: unsafe {
-                Box::from_raw(
-                    Box::into_raw(vec![0u64; BUCKETS].into_boxed_slice()) as *mut [u64; BUCKETS]
-                )
-            },
-        }
+impl SharedSummary {
+    /// Counts one sample into `bucket`, allocating the bucket array at the summary's first sample.
+    #[inline]
+    fn absorb(&mut self, bucket: usize) {
+        self.value.get_or_insert_with(zeroed_buckets)[bucket] += 1;
+        self.count += 1;
     }
 }
+
+/// A zeroed bucket array, allocated on the heap without a copy on the stack.
+fn zeroed_buckets() -> Box<[u64; BUCKETS]> {
+    // SAFETY: Slice to array conversion doesn't change the layout of the allocation.
+    //
+    // FIXME: Replace with https://doc.rust-lang.org/nightly/std/boxed/struct.Box.html#method.into_array
+    // once it's stabilized.
+    unsafe {
+        Box::from_raw(Box::into_raw(vec![0u64; BUCKETS].into_boxed_slice()) as *mut [u64; BUCKETS])
+    }
+}
+
+/// The bucket array a summary reports before its first sample, shared by every such summary.
+/// Nothing writes it, so its pages stay the zero pages the kernel maps for a read.
+static EMPTY: [u64; BUCKETS] = [0; BUCKETS];
 
 pub(crate) mod bucket;
 
@@ -75,13 +94,13 @@ impl Absorb for SharedSummary {
         for chunk in chunks {
             for event in chunk {
                 let idx = (*event >> 16) as usize;
-                slots[idx].value[*event as u16 as usize] += 1;
+                slots[idx].absorb(*event as u16 as usize);
             }
         }
 
         for event in tail {
             let idx = (*event >> 16) as usize;
-            slots[idx].value[*event as u16 as usize] += 1;
+            slots[idx].absorb(*event as u16 as usize);
         }
     }
 }
@@ -177,18 +196,28 @@ impl Summary {
     }
 
     /// Reports the histogram to `backend` via a borrowed [`Histogram`](crate::Histogram) view, then
-    /// drains the buckets. The view borrows the live bucket array and is only valid for the
-    /// duration of the `record_histogram` call (which happens under the aggregate lock).
+    /// drains the buckets. The view borrows the live bucket array, or `EMPTY` before the
+    /// summary's first sample, and is only valid for the duration of the `record_histogram` call
+    /// (which happens under the aggregate lock). Its count is the one the summary kept, so the
+    /// report doesn't sum the buckets, and a report with no sample since the last one leaves the
+    /// buckets as they are, all zero.
     pub(crate) fn report(&self, info: &crate::MetricInfo<'_>, backend: &mut dyn crate::Backend) {
         self.channels.get_mut(self.idx, |hist| {
-            let view = crate::backend::Histogram::new(
-                hist.value.as_slice(),
+            let buckets: &[u64; BUCKETS] = hist.value.as_deref().unwrap_or(&EMPTY);
+            let view = crate::backend::Histogram::with_count(
+                buckets.as_slice(),
+                hist.count,
                 &CONFIG,
                 self.display_unit,
                 self.scale,
             );
             backend.record_histogram(info, view);
-            hist.value.as_mut_slice().fill(0);
+            if hist.count != 0 {
+                if let Some(value) = hist.value.as_mut() {
+                    value.as_mut_slice().fill(0);
+                }
+                hist.count = 0;
+            }
         });
     }
 }
@@ -383,5 +412,81 @@ mod test {
         assert!(!summary.is_scaled());
         summary.record_value(42);
         assert_eq!(registry.take_current_metrics_line(), "a=42*1");
+    }
+
+    /// A summary allocates its bucket array when the aggregate takes in its first sample.
+    mod buckets {
+        use crate::{Backend, CallbackValue, Histogram, MetricInfo, Registry, Summary, Unit};
+        use std::collections::BTreeMap;
+
+        /// Each histogram a report records, by name: its count, and the sum of its buckets.
+        #[derive(Default)]
+        struct Capture {
+            histograms: BTreeMap<String, (u64, u64)>,
+        }
+
+        impl Backend for Capture {
+            fn record_counter(&mut self, _: &MetricInfo<'_>, _: u64) {}
+            fn record_gauge(&mut self, _: &MetricInfo<'_>, _: i64) {}
+            fn record_bool(&mut self, _: &MetricInfo<'_>, _: u64, _: u64) {}
+            fn record_histogram(&mut self, info: &MetricInfo<'_>, hist: Histogram<'_>) {
+                let sum = hist.raw_buckets().iter().sum();
+                let name = info.name.to_string();
+                self.histograms.insert(name, (hist.count(), sum));
+            }
+            fn record_callback(&mut self, _: &MetricInfo<'_>, _: &[&dyn CallbackValue]) {}
+        }
+
+        /// Reports `registry`, and returns each histogram it records.
+        fn report(registry: &Registry) -> BTreeMap<String, (u64, u64)> {
+            let mut capture = Capture::default();
+            registry.report(&mut capture);
+            capture.histograms
+        }
+
+        /// Whether `summary` holds its bucket array.
+        fn allocated(summary: &Summary) -> bool {
+            let Summary { channels, idx, .. } = summary;
+            channels.get_mut(*idx, |shared| shared.value.is_some())
+        }
+
+        /// Summaries that never take a sample report a histogram of no samples, and none of them
+        /// allocates its bucket array. A summary that takes samples allocates its array once and
+        /// reports its samples, its count the sum of its buckets; the report drains them, and the
+        /// array stays for the next samples.
+        #[test]
+        fn allocated_at_first_sample() {
+            let registry = Registry::new();
+            let idle: Vec<Summary> = (0..64)
+                .map(|i| registry.register_summary(format!("idle.{i}"), None, Unit::Count))
+                .collect();
+            let busy = registry.register_summary("busy".into(), None, Unit::Count);
+
+            let reported = report(&registry);
+            assert_eq!(reported.len(), 65);
+            assert!(reported.values().all(|counts| *counts == (0, 0)));
+            assert!(!allocated(&busy));
+            assert!(idle.iter().all(|summary| !allocated(summary)));
+
+            for value in [10, 10, 20, 30] {
+                busy.record_value(value);
+            }
+            let mut reported = report(&registry);
+            assert_eq!(reported.remove("busy"), Some((4, 4)));
+            assert!(reported.values().all(|counts| *counts == (0, 0)));
+            assert!(allocated(&busy));
+            assert!(idle.iter().all(|summary| !allocated(summary)));
+
+            // The report drained the samples: the next one counts none, and every bucket of the
+            // array the summary keeps is zero.
+            let reported = report(&registry);
+            assert!(reported.values().all(|counts| *counts == (0, 0)));
+            assert!(allocated(&busy));
+
+            busy.record_value(5);
+            let mut reported = report(&registry);
+            assert_eq!(reported.remove("busy"), Some((1, 1)));
+            assert!(reported.values().all(|counts| *counts == (0, 0)));
+        }
     }
 }
