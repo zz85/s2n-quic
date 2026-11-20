@@ -860,6 +860,75 @@ fn batch_frames_forwards_on_consumed() {
     assert_eq!(batcher.inner.consumed, 321);
 }
 
+/// [`test_clock`] that reports a timer resolution, as tokio's clock reports its 1 ms tick.
+struct CoarseClock {
+    clock: test_clock_mod::Clock,
+    resolution: core::time::Duration,
+}
+
+impl s2n_quic_core::time::Clock for CoarseClock {
+    fn get_time(&self) -> s2n_quic_core::time::Timestamp {
+        s2n_quic_core::time::Clock::get_time(&self.clock)
+    }
+}
+
+impl precision::Clock for CoarseClock {
+    type Timer = test_clock_mod::Timer;
+
+    fn now(&self) -> precision::Timestamp {
+        precision::Clock::now(&self.clock)
+    }
+
+    fn timer(&self) -> Self::Timer {
+        precision::Clock::timer(&self.clock)
+    }
+
+    fn resolution(&self) -> core::time::Duration {
+        self.resolution
+    }
+}
+
+/// A lone frame on a still-open channel, the shape of one small call: a clock whose timers
+/// can't keep the batch wait (~50 us at 10 Gbps) emits its batch on the first poll and arms no
+/// timer; a zero-resolution clock (busy-poll's) still holds it for the wait.
+#[test]
+fn batch_frames_lone_call_floor() {
+    use crate::time::precision::Timer as _;
+
+    let rate = Rate::new(10.0);
+    let wait = core::time::Duration::from_nanos(rate.nanos_for_bytes(u16::MAX as u64 - 3000));
+
+    let coarse = CoarseClock {
+        clock: test_clock(),
+        resolution: core::time::Duration::from_millis(1),
+    };
+    let (mut coarse_tx, rx) = unsync::new::<Frame>();
+    let frame = new_test_frame(test_path_secret_entry(), 16);
+    assert!(UnboundedSender::send(&mut coarse_tx, frame).is_ok());
+    let mut batcher = BatchFramesByPathSecret::new(rx, &coarse, rate);
+    let first = with_noop_context(|cx| batcher.poll_recv(cx, &mut Budget::new(usize::MAX)));
+    let Poll::Ready(Some(batch)) = first else {
+        panic!("a lone frame's batch should go out on its first poll");
+    };
+    assert_eq!(batch.len(), 1);
+    assert!(!batcher.timer.is_armed());
+
+    let fine = test_clock();
+    let (mut fine_tx, rx) = unsync::new::<Frame>();
+    let frame = new_test_frame(test_path_secret_entry(), 16);
+    assert!(UnboundedSender::send(&mut fine_tx, frame).is_ok());
+    let mut batcher = BatchFramesByPathSecret::new(rx, &fine, rate);
+    let first = with_noop_context(|cx| batcher.poll_recv(cx, &mut Budget::new(usize::MAX)));
+    assert!(first.is_pending());
+    assert!(batcher.timer.is_armed());
+    fine.advance(wait);
+    let second = with_noop_context(|cx| batcher.poll_recv(cx, &mut Budget::new(usize::MAX)));
+    let Poll::Ready(Some(batch)) = second else {
+        panic!("the batch should go out once its wait has passed");
+    };
+    assert_eq!(batch.len(), 1);
+}
+
 #[test]
 fn ack_processor_drops_message_with_out_of_range_sender_idx() {
     const OUT_OF_RANGE_SENDER_ID: u64 = 42; // total_sender_ids is 1, so any value > 0 is invalid.

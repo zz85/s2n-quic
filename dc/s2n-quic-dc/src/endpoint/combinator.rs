@@ -278,12 +278,19 @@ where
     pub fn new(inner: R, clock: &Clk, rate: Rate) -> Self {
         let target_bytes = u16::MAX as u64 - 3000;
         let wait_nanos = rate.nanos_for_bytes(target_bytes);
+        let mut wait_duration = core::time::Duration::from_nanos(wait_nanos);
+        // A wait shorter than the clock's timer resolution can stretch to a whole tick (tokio's
+        // 1 ms, against ~23 us at 22 Gbps), paid by every batch that isn't full, a lone small
+        // call's included. On such a clock a batch goes out at once, with what is already queued.
+        if wait_duration < clock.resolution() {
+            wait_duration = core::time::Duration::ZERO;
+        }
         Self {
             inner,
             buffered: None,
             pending_batch: None,
             timer: clock.timer(),
-            wait_duration: core::time::Duration::from_nanos(wait_nanos),
+            wait_duration,
         }
     }
 
@@ -399,6 +406,11 @@ where
                 return Poll::Ready(Some(batch));
             }
             FillResult::Pending => {}
+        }
+
+        // No wait to make: emit now, and arm no timer.
+        if self.wait_duration.is_zero() {
+            return Poll::Ready(Some(batch));
         }
 
         // Batch isn't full — arm timer and wait for more frames.

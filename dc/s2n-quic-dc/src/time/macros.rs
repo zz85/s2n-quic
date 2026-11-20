@@ -10,6 +10,11 @@ pub trait InstantHandle: Clone + fmt::Debug + Send + Sync + 'static {
     fn elapsed_since_start(&self) -> Duration;
     fn sleep(&self, duration: Duration) -> (Self::Sleep, Duration);
     fn update_sleep(&self, sleep: Pin<&mut Self::Sleep>, since_start: Duration);
+
+    /// See [`crate::time::precision::Clock::resolution`].
+    fn resolution(&self) -> Duration {
+        Duration::ZERO
+    }
 }
 
 use core::fmt;
@@ -57,6 +62,11 @@ macro_rules! impl_clock {
             #[inline]
             fn timer(&self) -> Self::Timer {
                 super::Timer::new(self)
+            }
+
+            #[inline]
+            fn resolution(&self) -> Duration {
+                self.0.resolution()
             }
         }
 

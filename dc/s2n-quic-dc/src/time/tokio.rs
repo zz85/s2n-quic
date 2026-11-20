@@ -36,6 +36,14 @@ impl super::macros::InstantHandle for Handle {
         let target = self.0 + since_start;
         sleep.reset(target.into());
     }
+
+    /// Tokio's timer wheel fires on whole-millisecond ticks and rounds each deadline up to the
+    /// end of its millisecond: "`Sleep` operates at millisecond granularity and should not be
+    /// used for tasks that require high-resolution timers"
+    /// (<https://docs.rs/tokio/latest/tokio/time/fn.sleep.html>).
+    fn resolution(&self) -> Duration {
+        Duration::from_millis(1)
+    }
 }
 
 impl_clock!(Handle);

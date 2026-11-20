@@ -10,6 +10,13 @@ pub trait Clock: s2n_quic_core::time::Clock + Send + Sync + 'static {
 
     /// Creates a new timer from this clock.
     fn timer(&self) -> Self::Timer;
+
+    /// The granularity of this clock's timers: they fire on ticks of this size, so a shorter
+    /// wait can stretch to a whole tick. Zero for a clock whose timers fire when asked.
+    #[inline]
+    fn resolution(&self) -> Duration {
+        Duration::ZERO
+    }
 }
 
 pub trait Timer: Send + 'static {
