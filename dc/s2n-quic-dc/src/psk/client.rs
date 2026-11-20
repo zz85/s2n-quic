@@ -332,6 +332,13 @@ impl Provider {
     pub fn map(&self) -> &secret::Map {
         &self.state.map
     }
+
+    /// Returns true if the handshake client holds an entry for this peer: a handshake in flight,
+    /// or a failure it holds. This is only available in test builds.
+    #[cfg(test)]
+    pub(crate) fn has_pending_entry(&self, peer: SocketAddr) -> bool {
+        self.state.client.has_pending_entry(peer)
+    }
 }
 
 #[cfg(test)]

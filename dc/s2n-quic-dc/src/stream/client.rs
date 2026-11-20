@@ -419,8 +419,9 @@ mod tests {
 
     /// `connect` to a peer that is down, with its entry dead past the cooldown and silent for an
     /// idle timeout, evicts the entry and handshakes, and returns that handshake's error in place
-    /// of the cooldown refusal. The handshake queue keeps the failure, so a connect right after
-    /// it gets the same failure back without handshaking again.
+    /// of the cooldown refusal. The handshake times out, and the handshake queue doesn't hold a
+    /// timed-out handshake's failure, so it keeps no entry for the peer and the next connect
+    /// handshakes again.
     #[tokio::test]
     async fn connect_to_a_down_peer_returns_the_handshake_error() {
         init_tracing();
@@ -464,7 +465,7 @@ mod tests {
             cooldown,
         );
         let endpoint = Arc::new(endpoint);
-        let mut client = Client::new(endpoint.clone(), handshakes, server_name());
+        let mut client = Client::new(endpoint.clone(), handshakes.clone(), server_name());
         let acceptor_id = VarInt::from_u8(0);
 
         // An entry for the peer, as an earlier handshake would leave it, marked dead as of a time
@@ -489,13 +490,11 @@ mod tests {
             "the entry is dead, past the cooldown and silent for an idle timeout"
         );
 
-        let first_start = std::time::Instant::now();
         let error = client
             .connect(peer_addr, acceptor_id, Priority::default())
             .await
             .map(|_| ())
             .expect_err("nothing answers the handshake");
-        let first_elapsed = first_start.elapsed();
         assert!(
             !error.to_string().contains("dead cooldown"),
             "connect returns the handshake's error, not the cooldown refusal: {error}"
@@ -504,16 +503,9 @@ mod tests {
             !map.contains(&peer_addr),
             "connect evicted the dead entry, and the failed handshake didn't insert one"
         );
-
-        let second_start = std::time::Instant::now();
-        client
-            .connect(peer_addr, acceptor_id, Priority::default())
-            .await
-            .map(|_| ())
-            .expect_err("the held failure comes back");
         assert!(
-            second_start.elapsed() < first_elapsed,
-            "the second connect gets the held failure without handshaking again"
+            !handshakes.has_pending_entry(peer_addr),
+            "the timed-out handshake's failure isn't held, so the next connect handshakes again"
         );
     }
 }
