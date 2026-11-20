@@ -919,6 +919,11 @@ fn init_uniqueness_fuzz() {
 /// network monitor, grouped by direction. It then asserts that for every
 /// port pair seen in one direction, the reverse pair exists in the other
 /// direction.
+///
+/// It also asserts the fan-out the sockets exist for: in each direction, every
+/// send socket `i` carries packets, and only to the peer's recv socket `i`, so
+/// the endpoints talk over one distinct 5-tuple per socket index and ECMP can
+/// spread them over as many paths.
 #[test]
 fn symmetric_5tuple_routing() {
     use std::net::SocketAddr;
@@ -927,9 +932,15 @@ fn symmetric_5tuple_routing() {
         Arc::new(Mutex::new(HashSet::new()));
     let reverse_tuples: Arc<Mutex<HashSet<(SocketAddr, SocketAddr)>>> =
         Arc::new(Mutex::new(HashSet::new()));
+    // Each endpoint's recv addresses in socket order; send socket `i` shares recv socket `i`'s
+    // port.
+    let client_data_addrs: Arc<Mutex<Vec<SocketAddr>>> = Arc::default();
+    let server_data_addrs: Arc<Mutex<Vec<SocketAddr>>> = Arc::default();
 
     let forward = forward_tuples.clone();
     let reverse = reverse_tuples.clone();
+    let client_addrs = client_data_addrs.clone();
+    let server_addrs = server_data_addrs.clone();
 
     let _guard = without_tracing();
     sim(|| {
@@ -957,6 +968,10 @@ fn symmetric_5tuple_routing() {
         {
             async move {
                 let server = Server::new();
+                server_addrs
+                    .lock()
+                    .unwrap()
+                    .extend_from_slice(server.data_addrs());
                 let mut acceptor = server
                     .register_acceptor_channel(acceptor_id, 8)
                     .expect("acceptor registration");
@@ -990,6 +1005,10 @@ fn symmetric_5tuple_routing() {
         {
             async move {
                 let mut client = Client::new();
+                client_addrs
+                    .lock()
+                    .unwrap()
+                    .extend_from_slice(client.data_addrs());
                 let stream = client
                     .connect("server:0", acceptor_id)
                     .await
@@ -1044,6 +1063,48 @@ fn symmetric_5tuple_routing() {
          these flows:\n{}",
         violations.join("\n")
     );
+
+    // Every send socket `i` carries packets, and only to the peer's recv socket `i`. Ports
+    // identify the sockets: each endpoint's send socket `i` shares recv socket `i`'s port.
+    let client_ports: Vec<u16> = client_data_addrs
+        .lock()
+        .unwrap()
+        .iter()
+        .map(|a| a.port())
+        .collect();
+    let server_ports: Vec<u16> = server_data_addrs
+        .lock()
+        .unwrap()
+        .iter()
+        .map(|a| a.port())
+        .collect();
+    assert!(!client_ports.is_empty(), "the client has no data addresses");
+    assert_eq!(client_ports.len(), server_ports.len());
+    for (direction, tuples, from, to) in [
+        ("client→server", &*reverse, &client_ports, &server_ports),
+        ("server→client", &*forward, &server_ports, &client_ports),
+    ] {
+        let seen: HashSet<(u16, u16)> = tuples
+            .iter()
+            .map(|(src, dst)| (src.port(), dst.port()))
+            .collect();
+        let idle: Vec<usize> = (0..from.len())
+            .filter(|&i| !seen.contains(&(from[i], to[i])))
+            .collect();
+        assert!(
+            idle.is_empty(),
+            "{direction}: send sockets {idle:?} of {} sent nothing to the peer's socket of the \
+             same index (port pairs seen: {seen:?})",
+            from.len()
+        );
+        let expected: HashSet<(u16, u16)> = from.iter().copied().zip(to.iter().copied()).collect();
+        let stray: Vec<&(u16, u16)> = seen.difference(&expected).collect();
+        assert!(
+            stray.is_empty(),
+            "{direction}: packets on port pairs other than socket i to the peer's socket i: \
+             {stray:?}"
+        );
+    }
 }
 
 // ── Loss distribution benchmark ──────────────────────────────────────────────
