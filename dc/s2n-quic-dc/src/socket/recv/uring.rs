@@ -85,6 +85,39 @@ use std::{
 /// staying small enough that the buffer ring and bid map are a few pages.
 pub const DEFAULT_RING_DEPTH: u16 = 1024;
 
+/// Descriptors a ring provides at start: one, the fewest that receive at all.
+const INITIAL_FILL: u16 = 1;
+
+/// How many of a ring's bids, from bid 0, hold a provided descriptor. Each `ENOBUFS` completion (a
+/// datagram found every provided buffer taken) doubles it, up to the depth. That datagram isn't
+/// lost: the kernel picks a buffer before it reads the socket, so it stays queued for the re-arm.
+struct FillWindow {
+    filled: u16,
+    depth: u16,
+}
+
+impl FillWindow {
+    fn new(depth: u16) -> Self {
+        Self {
+            filled: INITIAL_FILL.min(depth),
+            depth,
+        }
+    }
+
+    fn bids(&self) -> core::ops::Range<u16> {
+        0..self.filled
+    }
+
+    /// On `ENOBUFS`, doubles the window and returns the bids it newly holds; else returns none.
+    fn on_recv_without_buffer(&mut self, res: i32) -> core::ops::Range<u16> {
+        let old = self.filled;
+        if res == -libc::ENOBUFS {
+            self.filled = old.saturating_mul(2).min(self.depth);
+        }
+        old..self.filled
+    }
+}
+
 /// Reserved `user_data` for the armed eventfd [`PollAdd`](opcode::PollAdd). Distinct from the single
 /// recv op's user_data ([`RECV_USER_DATA`]).
 const EVENTFD_TOKEN: u64 = u64::MAX;
@@ -311,6 +344,7 @@ fn ring_loop<R: Router>(
 ) {
     let depth = buf_ring.entries;
     let bgid = buf_ring.bgid;
+    let mut window = FillWindow::new(depth);
 
     // bid -> the descriptor currently provided to the kernel in that buffer slot. A descriptor parked
     // here is owned by the kernel until its recv CQE arrives.
@@ -319,8 +353,8 @@ fn ring_loop<R: Router>(
     // Fixed msghdr referenced by the (single) multishot recv SQE for the whole loop.
     let msg = recv_msghdr();
 
-    // Fill the ring: allocate a descriptor per bid, publish its recv region, park it in the bid map.
-    for bid in 0..depth {
+    // Fill the window: allocate a descriptor per bid, publish its recv region, park it in bid_map.
+    for bid in window.bids() {
         let Some(unfilled) = reuse.alloc_or_reuse(&pool) else {
             // Pool exhausted at startup — provide what we have; the loop replenishes as CQEs free bids.
             break;
@@ -401,6 +435,8 @@ fn ring_loop<R: Router>(
                     if res < 0 {
                         tracing::trace!(errno = -res, "recv cqe error without buffer");
                     }
+                    // -ENOBUFS grows the window; its new bids are provided with the freed ones.
+                    to_replenish.extend(window.on_recv_without_buffer(res));
                     continue;
                 };
 
@@ -736,5 +772,83 @@ mod tests {
             assert_eq!(&got[i].0, expected, "payload {i} bytes");
             assert_eq!(got[i].1, send_addr.port(), "payload {i} source port");
         }
+    }
+
+    /// The window starts at `INITIAL_FILL` and each `ENOBUFS` doubles it, up to the depth.
+    #[test]
+    fn fill_window_doubles_on_enobufs() {
+        let mut window = FillWindow::new(DEFAULT_RING_DEPTH);
+        assert_eq!(window.bids(), 0..INITIAL_FILL);
+
+        let mut filled = INITIAL_FILL;
+        while filled < DEFAULT_RING_DEPTH {
+            let added = window.on_recv_without_buffer(-libc::ENOBUFS);
+            assert_eq!(added, filled..filled * 2);
+            filled *= 2;
+            assert_eq!(window.bids(), 0..filled);
+        }
+
+        let added = window.on_recv_without_buffer(-libc::ENOBUFS);
+        assert!(added.is_empty());
+        assert_eq!(window.bids(), 0..DEFAULT_RING_DEPTH);
+    }
+
+    /// Another error without a buffer leaves the window as it is.
+    #[test]
+    fn fill_window_holds_on_other_errors() {
+        let mut window = FillWindow::new(DEFAULT_RING_DEPTH);
+        let added = window.on_recv_without_buffer(-libc::ECONNREFUSED);
+        assert!(added.is_empty());
+        assert_eq!(window.bids(), 0..INITIAL_FILL);
+    }
+
+    /// A burst far past the first window all arrives, in order. Skipped if io_uring is unavailable.
+    #[test]
+    fn uring_burst_past_window() {
+        if probe().is_err() {
+            eprintln!("io_uring unavailable; skipping uring_burst_past_window");
+            return;
+        }
+
+        let recv_sock = UdpSocket::bind("127.0.0.1:0").unwrap();
+        recv_sock.set_nonblocking(true).unwrap();
+        let recv_addr = recv_sock.local_addr().unwrap();
+        let socket = BusyPoll(recv_sock);
+
+        let received = Arc::new(Mutex::new(Vec::new()));
+        let router = CaptureRouter {
+            received: received.clone(),
+        };
+
+        let pool = Pool::new(u16::MAX);
+        let reuse = SyncReuseRing::new();
+        let ring = spawn(0, socket, 64, pool, reuse, router)
+            .unwrap_or_else(|_| panic!("recv ring spawn must succeed when io_uring is available"));
+
+        // Give the ring thread a moment to register the buffer ring and arm the multishot recv.
+        std::thread::sleep(Duration::from_millis(50));
+
+        let send_sock = UdpSocket::bind("127.0.0.1:0").unwrap();
+        let count = 64u8;
+        for i in 0..count {
+            send_sock.send_to(&[i; 100], recv_addr).unwrap();
+        }
+
+        let deadline = std::time::Instant::now() + Duration::from_secs(5);
+        while received.lock().unwrap().len() < usize::from(count) {
+            assert!(
+                std::time::Instant::now() < deadline,
+                "timed out waiting for {count} datagrams; got {}",
+                received.lock().unwrap().len()
+            );
+            std::thread::sleep(Duration::from_millis(10));
+        }
+
+        drop(ring); // stop + join the ring thread
+
+        let got = received.lock().unwrap();
+        let marks: Vec<u8> = got.iter().map(|(payload, _)| payload[0]).collect();
+        let expected: Vec<u8> = (0..count).collect();
+        assert_eq!(marks, expected, "datagrams in order");
     }
 }
