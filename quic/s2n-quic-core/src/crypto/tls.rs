@@ -108,7 +108,23 @@ pub trait TlsSession: Send {
 
     #[cfg(feature = "alloc")]
     fn peer_cert_chain_der(&self) -> Result<Vec<Vec<u8>>, ChainError>;
+
+    /// The identity of the pre-shared key the handshake negotiated, where it negotiated one
+    /// (RFC 8446 section 4.2.11), such as the label of a key established externally.
+    ///
+    /// The default answers `None`, for a session that doesn't negotiate pre-shared keys.
+    #[cfg(feature = "alloc")]
+    fn negotiated_psk_identity(&self) -> Option<Vec<u8>> {
+        None
+    }
 }
+
+/// The identity of the pre-shared key a handshake negotiated, which a TLS provider hands to the
+/// connection through [`Context::on_tls_context`] at the end of the handshake, so that the
+/// application reads which key its peer proved.
+#[cfg(feature = "alloc")]
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct NegotiatedPskIdentity(pub Vec<u8>);
 
 #[cfg(feature = "alloc")]
 pub trait Context<Crypto: crate::crypto::CryptoSuite> {

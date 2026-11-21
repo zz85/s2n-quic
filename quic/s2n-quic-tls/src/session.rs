@@ -127,6 +127,25 @@ impl tls::TlsSession for Session {
             .collect::<Result<Vec<Vec<u8>>, s2n_tls::error::Error>>()
             .map_err(|_| tls::ChainError::failure())
     }
+
+    fn negotiated_psk_identity(&self) -> Option<Vec<u8>> {
+        //= https://www.rfc-editor.org/rfc/rfc8446#section-4.2.11
+        //# The "pre_shared_key" extension is used to negotiate the identity of
+        //# the pre-shared key to be used with a given handshake in association
+        //# with PSK key establishment.
+
+        // A handshake that didn't negotiate a pre-shared key, such as a certificate handshake,
+        // has an identity of length 0.
+        let length = self.connection.negotiated_psk_identity_length().ok()?;
+        if length == 0 {
+            return None;
+        }
+        let mut identity = vec![0; length];
+        self.connection
+            .negotiated_psk_identity(&mut identity)
+            .ok()?;
+        Some(identity)
+    }
 }
 
 impl tls::Session for Session {
@@ -161,6 +180,13 @@ impl tls::Session for Session {
                 if !self.handshake_complete {
                     self.state.on_handshake_complete();
                     context.on_handshake_complete()?;
+                    // Hand the connection the identity of the pre-shared key the handshake
+                    // negotiated, so that the application reads which key its peer proved. It
+                    // goes ahead of the exporter, so that a context an offload exporter handler
+                    // hands over still takes the connection's one TLS context.
+                    if let Some(identity) = tls::TlsSession::negotiated_psk_identity(self) {
+                        context.on_tls_context(Box::new(tls::NegotiatedPskIdentity(identity)));
+                    }
                     context.on_tls_exporter_ready(self)?;
                     self.handshake_complete = true;
                 }

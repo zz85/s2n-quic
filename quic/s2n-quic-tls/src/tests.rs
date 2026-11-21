@@ -105,6 +105,57 @@ impl crate::ConfigLoader for ResumptionConfig {
     }
 }
 
+/// The identity and the secret of the external pre-shared key that the PSK tests' client and
+/// server both hold.
+static PSK_IDENTITY: &[u8] = b"test-psk-identity";
+static PSK_SECRET: &[u8] = &[7; 32];
+
+/// Appends the tests' external pre-shared key to each connection before it negotiates.
+struct AppendPsk;
+
+impl s2n_tls::config::ConnectionInitializer for AppendPsk {
+    fn initialize_connection(
+        &self,
+        connection: &mut Connection,
+    ) -> Result<Option<std::pin::Pin<Box<dyn ConnectionFuture>>>, Error> {
+        let mut psk = s2n_tls::psk::Builder::new()?;
+        psk.set_identity(PSK_IDENTITY)?
+            .set_secret(PSK_SECRET)?
+            .set_hmac(s2n_tls::enums::PskHmac::SHA256)?;
+        connection.append_psk(&psk.build()?)?;
+        Ok(None)
+    }
+}
+
+/// A config that offers the tests' external pre-shared key on each connection: a server's, which
+/// holds the certificate, or a client's, which trusts it.
+struct PskConfig {
+    server: bool,
+}
+
+impl PskConfig {
+    fn build(&self) -> Result<s2n_tls::config::Config, Error> {
+        let mut config_builder = s2n_tls::config::Builder::new();
+        if self.server {
+            config_builder.load_pem(CERT_PEM.as_bytes(), KEY_PEM.as_bytes())?;
+        } else {
+            config_builder.trust_pem(CERT_PEM.as_bytes())?;
+        }
+        config_builder
+            .set_security_policy(&s2n_tls::security::DEFAULT_TLS13)?
+            .enable_quic()?
+            .set_application_protocol_preference([b"h3"])?
+            .set_connection_initializer(AppendPsk)?;
+        config_builder.build()
+    }
+}
+
+impl crate::ConfigLoader for PskConfig {
+    fn load(&mut self, _cx: crate::ConnectionContext) -> s2n_tls::config::Config {
+        self.build().expect("Config builder failed")
+    }
+}
+
 #[cfg(any(test, feature = "unstable_private_key"))]
 impl PrivateKeyCallback for MyCallbackHandler {
     fn handle_operation(
@@ -341,6 +392,58 @@ fn s2n_client_s2n_server_test() {
     let mut server_endpoint = s2n_server();
 
     run(&mut server_endpoint, &mut client_endpoint, None);
+}
+
+/// A handshake that negotiates an external pre-shared key hands each side's connection the
+/// identity of that key, and each side's session answers it.
+#[test]
+#[cfg_attr(miri, ignore)]
+fn s2n_client_s2n_server_psk_identity_test() {
+    let mut client_endpoint = client::Client::from_loader(PskConfig { server: false });
+    let mut server_endpoint = server::Server::from_loader(PskConfig { server: true });
+
+    let pair = run_result(&mut server_endpoint, &mut client_endpoint, None).unwrap();
+
+    let expected = tls::NegotiatedPskIdentity(PSK_IDENTITY.to_vec());
+    for tls_context in [
+        &pair.server.context.tls_context,
+        &pair.client.context.tls_context,
+    ] {
+        let identity = tls_context
+            .as_deref()
+            .and_then(|context| context.downcast_ref::<tls::NegotiatedPskIdentity>());
+        assert_eq!(identity, Some(&expected));
+    }
+    assert_eq!(
+        tls::TlsSession::negotiated_psk_identity(&pair.server.session),
+        Some(PSK_IDENTITY.to_vec())
+    );
+    assert_eq!(
+        tls::TlsSession::negotiated_psk_identity(&pair.client.session),
+        Some(PSK_IDENTITY.to_vec())
+    );
+}
+
+/// A certificate handshake doesn't negotiate a pre-shared key, so neither side's connection
+/// receives an identity, and neither side's session answers one.
+#[test]
+#[cfg_attr(miri, ignore)]
+fn s2n_client_s2n_server_certificate_psk_identity_test() {
+    let mut client_endpoint = s2n_client();
+    let mut server_endpoint = s2n_server();
+
+    let pair = run_result(&mut server_endpoint, &mut client_endpoint, None).unwrap();
+
+    assert!(pair.server.context.tls_context.is_none());
+    assert!(pair.client.context.tls_context.is_none());
+    assert_eq!(
+        tls::TlsSession::negotiated_psk_identity(&pair.server.session),
+        None
+    );
+    assert_eq!(
+        tls::TlsSession::negotiated_psk_identity(&pair.client.session),
+        None
+    );
 }
 
 #[test]

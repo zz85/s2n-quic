@@ -487,8 +487,12 @@ impl<S: CryptoSuite, H: ExporterHandler> tls::Context<S> for RemoteContext<'_, R
         Ok(())
     }
 
-    fn on_tls_context(&mut self, _context: Box<dyn Any + Send>) {
-        unimplemented!("TLS Context is not supported in Offload implementation");
+    fn on_tls_context(&mut self, context: Box<dyn Any + Send>) {
+        // Pass the TLS provider's context on to the connection, as an exporter handler's goes
+        match self.send_to_quic.push(Request::TlsContext(context)) {
+            Ok(_) => (),
+            Err(_) => self.error = Some(SLICE_ERROR),
+        }
     }
 
     fn on_tls_exporter_ready(

@@ -273,6 +273,7 @@ impl HandshakingPathInner {
             tls: session,
             peer_info: self.peer_info.as_ref(),
             peer: self.peer,
+            endpoint_type: self.endpoint_type,
         };
         match self.map.store.application_data(request) {
             Ok(application_data) => {
@@ -444,5 +445,83 @@ mod tests {
             .collect();
         let refs: Vec<&str> = many.iter().map(|s| s.as_str()).collect();
         assert!(validate("10.0.0.5:443", &refs).is_err());
+    }
+
+    /// Each handshake runs the `make_application_data` callback with this side's role, so that a
+    /// map that is both the client and the server of a path, as in a loopback, tells the two
+    /// sides of a handshake apart.
+    #[test]
+    fn application_data_request_carries_the_endpoint_type() {
+        use super::{HandshakingPath, Map};
+        use crate::path::secret::stateless_reset;
+        use s2n_quic_core::{
+            crypto::tls::{ChainError, CipherSuite, TlsExportError, TlsSession},
+            dc::{self, Path as _},
+            endpoint,
+            event::IntoEvent as _,
+            inet::{SocketAddress, SocketAddressV4},
+            time,
+        };
+        use std::sync::{Arc, Mutex};
+
+        /// A TLS session whose exporter leaves its output as it is, which is enough for the path
+        /// to derive its secret.
+        struct StubTlsSession;
+
+        impl TlsSession for StubTlsSession {
+            fn tls_exporter(
+                &self,
+                _label: &[u8],
+                _context: &[u8],
+                _output: &mut [u8],
+            ) -> Result<(), TlsExportError> {
+                Ok(())
+            }
+
+            fn cipher_suite(&self) -> CipherSuite {
+                CipherSuite::TLS_AES_128_GCM_SHA256
+            }
+
+            fn peer_cert_chain_der(&self) -> Result<Vec<Vec<u8>>, ChainError> {
+                Ok(vec![])
+            }
+        }
+
+        let map = Map::builder()
+            .with_signer(stateless_reset::Signer::random())
+            .with_capacity(10)
+            .with_clock(time::NoopClock)
+            .with_subscriber(crate::event::tracing::Subscriber::default())
+            .build()
+            .unwrap();
+        map.test_stop_cleaner();
+
+        let seen = Arc::new(Mutex::new(Vec::new()));
+        let recorder = seen.clone();
+        map.register_make_application_data(Box::new(
+            move |request: super::super::ApplicationDataRequest| {
+                recorder.lock().unwrap().push(request.endpoint_type);
+                Ok(None)
+            },
+        ));
+
+        let peer = SocketAddress::from(SocketAddressV4::new([127, 0, 0, 1], 4433));
+        for endpoint_type in [endpoint::Type::Server, endpoint::Type::Client] {
+            let connection_info = dc::ConnectionInfo::new(
+                &peer,
+                dc::SUPPORTED_VERSIONS[0],
+                dc::testing::TEST_APPLICATION_PARAMS,
+                endpoint_type.into_event(),
+                None,
+                None,
+            );
+            let mut path = HandshakingPath::new(&connection_info, map.clone());
+            path.on_path_secrets_ready(&StubTlsSession).unwrap();
+        }
+
+        assert_eq!(
+            *seen.lock().unwrap(),
+            [endpoint::Type::Server, endpoint::Type::Client]
+        );
     }
 }

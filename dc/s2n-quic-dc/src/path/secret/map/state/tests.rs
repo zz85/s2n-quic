@@ -457,6 +457,7 @@ fn application_data_none_without_callback() {
         tls: &StubTlsSession,
         peer_info: None,
         peer: "127.0.0.1:0".parse().unwrap(),
+        endpoint_type: s2n_quic_core::endpoint::Type::Server,
     };
     let data = Store::application_data(&*map, request).unwrap();
     assert!(data.is_none());
@@ -485,6 +486,7 @@ fn application_data_callback_receives_peer_info_and_returns_data() {
         tls: &StubTlsSession,
         peer_info: Some(&peer_info),
         peer: "127.0.0.1:0".parse().unwrap(),
+        endpoint_type: s2n_quic_core::endpoint::Type::Server,
     };
     let data = Store::application_data(&*map, request)
         .unwrap()
@@ -512,6 +514,7 @@ fn application_data_callback_error_propagates() {
         tls: &StubTlsSession,
         peer_info: None,
         peer: "127.0.0.1:0".parse().unwrap(),
+        endpoint_type: s2n_quic_core::endpoint::Type::Server,
     };
     let err = Store::application_data(&*map, request).unwrap_err();
     assert_eq!(err.msg, "boom");

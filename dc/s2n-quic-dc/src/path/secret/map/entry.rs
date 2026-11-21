@@ -34,7 +34,7 @@ pub type ApplicationData = Arc<dyn Any + Send + Sync>;
 
 /// Inputs to the `make_application_data` callback (registered via
 /// [`super::Map`]). Bundled in a `#[non_exhaustive]` struct so additional
-/// context (e.g. cert chain, endpoint type) can be added later without
+/// context (e.g. cert chain) can be added later without
 /// breaking the callback signature.
 ///
 /// `peer_info` is the remote peer's `DcPeerInfo` transport-parameter bytes,
@@ -42,11 +42,16 @@ pub type ApplicationData = Arc<dyn Any + Send + Sync>;
 /// time and store its result as the connection's [`ApplicationData`].
 ///
 /// `peer` is the remote peer's address for this handshake.
+///
+/// `endpoint_type` is this side's role in the handshake. Where one map is both the client and
+/// the server of a path, as in a loopback, the callback runs on both sides of each handshake, so
+/// a callback that acts on one side alone reads which side it runs on here.
 #[non_exhaustive]
 pub struct ApplicationDataRequest<'a> {
     pub tls: &'a dyn s2n_quic_core::crypto::tls::TlsSession,
     pub peer_info: Option<&'a bytes::Bytes>,
     pub peer: SocketAddr,
+    pub endpoint_type: s2n_quic_core::endpoint::Type,
 }
 
 pub const MAX_PEER_DATA_ADDRS: usize = 128;

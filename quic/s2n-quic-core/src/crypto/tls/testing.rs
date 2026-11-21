@@ -416,6 +416,10 @@ where
     pub application_protocol: Option<Bytes>,
     pub key_exchange_group: Option<NamedGroup>,
     pub transport_parameters: Option<Bytes>,
+    /// The TLS context the session handed over through `on_tls_context`, as a connection
+    /// answers it from `take_tls_context`.
+    #[cfg(feature = "alloc")]
+    pub tls_context: Option<Box<dyn core::any::Any + Send>>,
     endpoint: endpoint::Type,
     pub state: State,
     waker: Waker,
@@ -458,6 +462,8 @@ where
             application_protocol: None,
             key_exchange_group: None,
             transport_parameters: None,
+            #[cfg(feature = "alloc")]
+            tls_context: None,
             endpoint,
             state,
             waker,
@@ -851,5 +857,7 @@ where
     }
     /// Set tls context to [`quic::connection::Connection`]
     #[cfg(feature = "alloc")]
-    fn on_tls_context(&mut self, _context: Box<dyn core::any::Any + Send>) {}
+    fn on_tls_context(&mut self, context: Box<dyn core::any::Any + Send>) {
+        self.tls_context = Some(context);
+    }
 }
