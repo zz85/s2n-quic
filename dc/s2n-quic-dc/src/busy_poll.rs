@@ -14,6 +14,7 @@ use std::{
         Arc, Weak,
     },
     task::Context,
+    time::Instant,
 };
 
 pub mod clock;
@@ -112,6 +113,64 @@ impl Pool {
             })
             .expect("failed to spawn watchdog thread");
     }
+
+    /// Registers the pool's load gauges on `registry`, so a reporter can tell how busy a pool is
+    /// whose workers spin whether or not they have work (CPU time says nothing about it):
+    ///
+    /// - `busy_poll.pass_rate`, one variant per worker named by `label(worker_id)`: full
+    ///   task-list passes per second over the reporter's interval. It sits at its ceiling while
+    ///   every task returns `Pending` at once and falls as tasks spend time doing work, so it is
+    ///   an inverse load signal. The first sample after registration has no baseline and reports
+    ///   0, which the reporter suppresses, as it does for a parked worker.
+    /// - `busy_poll.workers`, variants `spinning` and `sleeping`: how many workers are in the spin
+    ///   loop and how many are parked with no tasks.
+    ///
+    /// The values are computed in the reporter's callbacks, off the worker threads. The only cost
+    /// on the hot path is the heartbeat increment the watchdog already needs. The callbacks hold
+    /// each worker's heartbeat, not a [`Handle`], so a registered pool still shuts down when its
+    /// last handle drops.
+    pub fn register_load_gauges(
+        &self,
+        registry: &crate::counter::Registry,
+        label: impl Fn(usize) -> String,
+    ) {
+        for handle in self.handles.iter() {
+            let heartbeat = handle.heartbeat.clone();
+            let mut prev: Option<(u64, Instant)> = None;
+            registry.register_nominal_gauge_callback(
+                "busy_poll.pass_rate",
+                label(handle.worker_id()),
+                move || {
+                    let now = Instant::now();
+                    let passes = heartbeat.counter.load(Ordering::Relaxed);
+                    let rate = match prev {
+                        Some((prev_passes, prev_at)) => {
+                            let secs = now.duration_since(prev_at).as_secs_f64();
+                            if secs > 0.0 {
+                                (passes.wrapping_sub(prev_passes) as f64 / secs) as i64
+                            } else {
+                                0
+                            }
+                        }
+                        None => 0,
+                    };
+                    prev = Some((passes, now));
+                    rate
+                },
+            );
+        }
+        let heartbeats: Arc<[Arc<Heartbeat>]> =
+            self.handles.iter().map(|h| h.heartbeat.clone()).collect();
+        for (variant, sleeping) in [("spinning", false), ("sleeping", true)] {
+            let heartbeats = heartbeats.clone();
+            registry.register_nominal_gauge_callback("busy_poll.workers", variant, move || {
+                heartbeats
+                    .iter()
+                    .filter(|hb| hb.sleeping.load(Ordering::Acquire) == sleeping)
+                    .count() as i64
+            });
+        }
+    }
 }
 
 impl<T> From<T> for Pool
@@ -134,6 +193,7 @@ impl ops::Deref for Pool {
 pub struct Handle {
     shared: Arc<Shared>,
     heartbeat: Arc<Heartbeat>,
+    worker_id: usize,
 }
 
 impl Handle {
@@ -150,6 +210,7 @@ impl Handle {
         let handle = Self {
             shared: shared.clone(),
             heartbeat: heartbeat.clone(),
+            worker_id,
         };
         let runner = Runner {
             shared: Arc::downgrade(&shared),
@@ -157,6 +218,23 @@ impl Handle {
             worker_id,
         };
         (handle, runner)
+    }
+
+    /// The worker slot this handle drives, as passed to [`Handle::new`].
+    pub fn worker_id(&self) -> usize {
+        self.worker_id
+    }
+
+    /// Full task-list passes the worker has completed so far. Bumped once per pass over every
+    /// task, so on an idle worker it climbs at the empty-pass rate and slows as tasks spend time
+    /// in `poll`. Monotonic, wrapping at `u64::MAX`.
+    pub fn passes(&self) -> u64 {
+        self.heartbeat.counter.load(Ordering::Relaxed)
+    }
+
+    /// Whether the worker is parked on the spawn condvar with no tasks, rather than spinning.
+    pub fn is_sleeping(&self) -> bool {
+        self.heartbeat.sleeping.load(Ordering::Acquire)
     }
 
     #[track_caller]
@@ -197,6 +275,7 @@ impl Clone for Handle {
         Self {
             shared: self.shared.clone(),
             heartbeat: self.heartbeat.clone(),
+            worker_id: self.worker_id,
         }
     }
 }
@@ -507,6 +586,59 @@ mod tests {
         });
         assert!(progressed);
         drop(handle);
+        worker.join().unwrap();
+    }
+
+    /// The load gauges read the heartbeat the watchdog keeps: a parked worker counts as
+    /// `sleeping` and reports no pass rate (zero is suppressed); once it has a task that stays
+    /// `Pending` it counts as `spinning` and the pass rate is positive.
+    #[test]
+    fn load_gauges_follow_the_worker() {
+        let inner = s2n_quic_dc_metrics::Registry::new();
+        let registry = crate::counter::Registry::with_inner(inner.clone());
+
+        let (handle, runner) = Handle::new(7);
+        let pool: Pool = vec![handle.clone()].into();
+        let worker = std::thread::spawn(move || runner.run());
+        pool.register_load_gauges(&registry, |id| format!("worker.{id}"));
+
+        let sleeping = wait_until(Duration::from_secs(1), || handle.is_sleeping());
+        assert!(sleeping);
+
+        // The first sample sets the baseline; it and a parked worker's rate both read 0.
+        let line = inner
+            .try_take_current_metrics_line_sparse(true)
+            .unwrap_or_default();
+        assert!(!line.contains("busy_poll.pass_rate"), "got: {line}");
+        assert!(
+            line.contains("busy_poll.workers=1 Variant|sleeping"),
+            "got: {line}"
+        );
+        assert!(!line.contains("Variant|spinning"), "got: {line}");
+
+        // A task that is never ready keeps the worker in its spin loop.
+        handle.spawn(std::future::pending::<()>());
+        let spinning = wait_until(Duration::from_secs(1), || handle.passes() > 0);
+        assert!(spinning);
+        std::thread::sleep(Duration::from_millis(20));
+
+        let line = inner
+            .try_take_current_metrics_line_sparse(true)
+            .expect("metrics were recorded");
+        let rate = line
+            .split_whitespace()
+            .find_map(|field| field.strip_prefix("busy_poll.pass_rate="))
+            .and_then(|v| v.parse::<i64>().ok())
+            .unwrap_or_else(|| panic!("no pass rate on: {line}"));
+        assert!(rate > 0, "got: {line}");
+        assert!(line.contains("Variant|worker.7"), "got: {line}");
+        assert!(
+            line.contains("busy_poll.workers=1 Variant|spinning"),
+            "got: {line}"
+        );
+        assert!(!line.contains("Variant|sleeping"), "got: {line}");
+
+        drop((handle, pool));
         worker.join().unwrap();
     }
 }

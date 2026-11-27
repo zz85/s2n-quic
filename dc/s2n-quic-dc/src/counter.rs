@@ -2483,6 +2483,37 @@ impl Registry {
         self.gauge_handle(inner, metric_id)
     }
 
+    /// Register a **pull-based** gauge under a variant: the supplied closure is invoked by the
+    /// reporter once per emit interval and its value is reported under `label` with the
+    /// aggregation `Variant|variant`, as [`register_nominal_gauge`] reports a pushed value. Use it
+    /// where [`register_gauge_callback`] fits but the value is one of a family, such as a
+    /// per-worker measure.
+    ///
+    /// There is no returned handle: the gauge has no backing store the caller writes to. A value
+    /// of zero is suppressed from the metrics output (same as [`register_gauge`]).
+    ///
+    /// [`register_nominal_gauge`]: Self::register_nominal_gauge
+    /// [`register_gauge_callback`]: Self::register_gauge_callback
+    /// [`register_gauge`]: Self::register_gauge
+    pub fn register_nominal_gauge_callback<F>(
+        &self,
+        label: impl core::fmt::Display,
+        variant: impl core::fmt::Display,
+        f: F,
+    ) where
+        F: FnMut() -> i64 + 'static + Send,
+    {
+        let label = label.to_string();
+        let variant = variant.to_string();
+        self.register_metric_metadata(&label, Some(&variant), MetricKind::Gauge, None, "");
+        self.inner.register_list_callback_zero_suppressed(
+            label,
+            Some(variant_aggregation(&variant)),
+            Unit::Count,
+            f,
+        );
+    }
+
     pub fn register_summary(&self, label: impl core::fmt::Display, unit: Unit) -> Summary {
         let label = label.to_string();
         let metric_id = self.register_metric_metadata(
@@ -2819,6 +2850,38 @@ mod tests {
     /// line — the convention the querylog consumer expects for all variants — across counters,
     /// summaries, timers, gauges, and queue-gauge/endpoint counters. dc-side metric metadata keeps
     /// the raw value.
+    #[test]
+    fn nominal_gauge_callback_emits_variant_key() {
+        let inner = s2n_quic_dc_metrics::Registry::new();
+        let registry = Registry::with_inner(inner.clone());
+
+        let mut calls = 0;
+        registry.register_nominal_gauge_callback("pool.rate", "worker.3", move || {
+            calls += 1;
+            calls * 10
+        });
+        // A zero is suppressed, as for `register_gauge_callback`.
+        registry.register_nominal_gauge_callback("pool.zero", "worker.3", || 0);
+
+        let line = inner
+            .try_take_current_metrics_line_sparse(true)
+            .expect("metrics were recorded");
+        assert!(
+            line.contains("pool.rate=10 Variant|worker.3"),
+            "got: {line}"
+        );
+        assert!(!line.contains("pool.zero"), "zero not suppressed: {line}");
+
+        // The closure is called again on each emit, so a stateful rate calculation works.
+        let line = inner
+            .try_take_current_metrics_line_sparse(true)
+            .expect("metrics were recorded");
+        assert!(
+            line.contains("pool.rate=20 Variant|worker.3"),
+            "got: {line}"
+        );
+    }
+
     #[test]
     fn nominal_dimensions_emit_variant_key() {
         let inner = s2n_quic_dc_metrics::Registry::new();
